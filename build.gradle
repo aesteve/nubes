@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    // vertx
+	// vertx
 	compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
 	compile 'io.vertx:vertx-apex:3.0.0-SNAPSHOT'
 	
