@@ -12,19 +12,19 @@ repositories {
 
 dependencies {
     // vertx
-    compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
+	compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
 	compile 'io.vertx:vertx-apex:3.0.0-SNAPSHOT'
-    
+	
 	// reflection
 	compile 'org.reflections:reflections:0.9.9'
 	
 	// JSON api
 	compile 'io.fastjson:boon:0.32'
 	
-    // tests
-    testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
-    testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.0.0-SNAPSHOT'
-    testCompile 'junit:junit:4.12'
+	// tests
+	testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
+	testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.0.0-SNAPSHOT'
+	testCompile 'junit:junit:4.12'
 }
 
 task wrapper(type: Wrapper) {
