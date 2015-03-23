@@ -1,27 +1,52 @@
 package io.vertx.mvc.controllers;
 
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.AfterFilter;
+import io.vertx.mvc.annotations.BeforeFilter;
 import io.vertx.mvc.annotations.Finalizer;
 
+import java.util.List;
+
 abstract public class ApiController {
-	abstract protected String contentType();
+	abstract protected List<String> contentTypes();
 	abstract protected String marshallPayload(Object payload);
 	
-	@AfterFilter
+	protected String matchingContentType(RoutingContext context) {
+		HttpServerRequest request = context.request();
+		String accept = request.getHeader("Accept");
+		if (accept == null) {
+			return null;
+		}
+		return contentTypes().stream().filter(contentType -> {
+			return accept.toLowerCase().indexOf(contentType.toLowerCase()) > -1;
+		}).findFirst().orElse(null);
+	}
+	
+	@BeforeFilter
 	public void setContentType(RoutingContext context) {
-		context.response().headers().add("Content-Type", contentType());
+		HttpServerResponse response = context.response();
+		String matchingContentType = matchingContentType(context);
+		if (matchingContentType == null) {
+			response.setStatusCode(406);
+			response.end("Not acceptable");
+			return;
+		}
+		response.headers().add("Content-Type", matchingContentType);
+		context.next();
 	}
 	
 	@AfterFilter
 	public void calculateETag(RoutingContext context) {
 		// TODO
+		context.next();
 	}
 	
 	@AfterFilter
-	public void setPaginationHeaders() {
+	public void setPaginationHeaders(RoutingContext context) {
 		// TODO
+		context.next();
 	}
 	
 	@Finalizer

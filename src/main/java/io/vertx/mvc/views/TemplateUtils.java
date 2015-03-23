@@ -14,7 +14,7 @@ public class TemplateUtils {
 	private static JadeTemplateEngine jadeEngine = JadeTemplateEngine.create();
 	private static ThymeleafTemplateEngine thymeleafEngine = ThymeleafTemplateEngine.create();
 	
-	public static TemplateEngine fromName(String tplName) {
+	public static TemplateEngine fromViewName(String tplName) {
 		int pointIdx = tplName.lastIndexOf(".");
 		if (pointIdx == -1) {
 			return defaultEngine;

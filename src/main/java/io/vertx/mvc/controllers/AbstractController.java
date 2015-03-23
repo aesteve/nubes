@@ -2,6 +2,7 @@ package io.vertx.mvc.controllers;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.apex.RoutingContext;
+import io.vertx.mvc.annotations.Controller;
 
 public abstract class AbstractController {
 

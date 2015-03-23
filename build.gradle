@@ -18,6 +18,9 @@ dependencies {
 	// reflection
 	compile 'org.reflections:reflections:0.9.9'
 	
+	// JSON api
+	compile 'io.fastjson:boon:0.32'
+	
     // tests
     testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
     testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.0.0-SNAPSHOT'
