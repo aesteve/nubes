@@ -1,13 +1,13 @@
 plugins {
-    id 'java'
-    id 'eclipse'
-    id 'idea'
+	id 'java'
+	id 'eclipse'
+	id 'idea'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
+	mavenLocal()
+	mavenCentral()
+	maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
@@ -28,5 +28,5 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+	gradleVersion = '2.3'
 }
