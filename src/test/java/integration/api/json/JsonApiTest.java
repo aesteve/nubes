@@ -1,17 +1,17 @@
 package integration.api.json;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import integration.VertxMVCTestBase;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+
+import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
 
 public class JsonApiTest extends VertxMVCTestBase {
 	
@@ -22,6 +22,15 @@ public class JsonApiTest extends VertxMVCTestBase {
 			assertEquals(406, response.statusCode());
 			async.complete();
 		});
+	}
+	
+	@Test
+	public void wrongContentType(TestContext context){
+		Async async = context.async();
+		client().get("/json/dog", response -> {
+			assertEquals(406, response.statusCode());
+			async.complete();
+		}).putHeader("Accept", "app/json").end();		
 	}
 	
 	@Test
@@ -74,6 +83,7 @@ public class JsonApiTest extends VertxMVCTestBase {
 	}
 	
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void getDomainObjects(TestContext context) {
 		Async async = context.async();
 		client().get("/json/dogs", response -> {

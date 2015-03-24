@@ -1,12 +1,16 @@
 package io.vertx.mvc;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.apex.Router;
 import io.vertx.mvc.annotations.AfterFilter;
 import io.vertx.mvc.annotations.BeforeFilter;
 import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Finalizer;
+import io.vertx.mvc.annotations.Paginated;
 import io.vertx.mvc.annotations.Route;
+import io.vertx.mvc.annotations.Throttled;
+import io.vertx.mvc.routing.MVCRoute;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,47 +21,34 @@ import org.reflections.Reflections;
 
 
 public class VertxMVC {
+
+	private Config config;
+	private Vertx vertx;
 	
-	public static Router bootstrap(Router router, List<String> controllerPackages) {
-		List<MVCRoute> routes = extractRoutesFromControllers(controllerPackages);
+	/**
+	 * TODO check config
+	 * @param vertx
+	 */
+	public VertxMVC(Vertx vertx, JsonObject json) {
+		this.vertx = vertx;
+		config = Config.fromJsonObject(json); 
+	}
+	
+	public Router bootstrap(Router router) {
+		List<MVCRoute> routes = extractRoutesFromControllers();
 		routes.forEach(route -> {
-			route.beforeFilters().forEach(filter -> {
-				setHandler(router, route, filter);
-			});
-			setHandler(router, route, route.mainHandler());
-			route.afterFilters().forEach(filter -> {
-				setHandler(router, route, filter);
-			});
-			if (route.finalizer() != null) {
-				setHandler(router, route, route.finalizer());
-			}
+			route.attachHandlersToRouter(router);
 		});
 		return router;
 	}
-
-	public static Router bootstrap(Router router, String controllerPackage) {
-		List<String> controllerPackages = new ArrayList<String>();
-		controllerPackages.add(controllerPackage);
-		return bootstrap(router, controllerPackages);
-	}
 	
-	public static Router bootstrap(Vertx vertx, List<String> controllerPackages) {
-		return bootstrap(Router.router(vertx), controllerPackages);
+	public Router bootstrap() {
+		return bootstrap(Router.router(vertx));
 	}
 
-	public static Router bootstrap(Vertx vertx, String controllerPackage) {
-		return bootstrap(Router.router(vertx), controllerPackage);
-	}
-	
-	public static List<MVCRoute> extractRoutesFromControllers(String controllerPackages) {
-		List<String> list = new ArrayList<String>();
-		list.add(controllerPackages);
-		return extractRoutesFromControllers(list);
-	}
-	
-	public static List<MVCRoute> extractRoutesFromControllers(List<String> controllerPackages) {
+	public List<MVCRoute> extractRoutesFromControllers() {
 		List<MVCRoute> routes = new ArrayList<MVCRoute>();
-		controllerPackages.forEach(controllerPackage -> {
+		config.controllerPackages.forEach(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
 			controllers.forEach(controller -> {
@@ -66,8 +57,8 @@ public class VertxMVC {
 		});
 		return routes;
 	}
-	
-	private static List<MVCRoute> extractRoutesFromController(Class<?> controller) {
+
+	private List<MVCRoute> extractRoutesFromController(Class<?> controller) {
 		List<MVCRoute> routes = new ArrayList<MVCRoute>();
 		Route base = (Route)controller.getAnnotation(Route.class);
 		Object instance;
@@ -90,7 +81,12 @@ public class VertxMVC {
 				afterFilters.add(method);
 			} else if (method.getAnnotation(Route.class) != null) {
 				Route path = (Route)method.getAnnotation(Route.class);
-				MVCRoute route = new MVCRoute(instance, basePath + path.path(), path.method());
+				boolean paginated = method.getAnnotation(Paginated.class) != null;
+				MVCRoute route = new MVCRoute(instance, basePath + path.path(), path.method(), paginated);
+				boolean throttled = method.getAnnotation(Throttled.class) != null;
+				if (throttled && config.rateLimit != null) {
+					route.setRateLimit(config.rateLimit);
+				}
 				route.setMainHandler(method);
 				routes.add(route);
 			} else if (method.getAnnotation(Finalizer.class) != null) {
@@ -109,8 +105,8 @@ public class VertxMVC {
 		}
 		return routes;
 	}
-	
-	private static void extractFiltersFromController(List<MVCRoute> routes, Class<?> controller) {
+
+	private void extractFiltersFromController(List<MVCRoute> routes, Class<?> controller) {
 		List<Method> beforeFilters = new ArrayList<Method>();
 		List<Method> afterFilters = new ArrayList<Method>();
 		Method finalizer = null;
@@ -133,19 +129,5 @@ public class VertxMVC {
 		if (controller.getSuperclass() != null && !controller.getSuperclass().equals(Object.class)) {
 			extractFiltersFromController(routes, controller.getSuperclass());
 		}
-	}
-	
-	private static void setHandler(Router router, MVCRoute route, Method method) {
-		router.route(route.method(), route.path()).handler(routingContext -> {
-			if (routingContext.response().ended()) {
-				return; // ignore
-			}
-			try {
-				method.invoke(route.controller(), routingContext);
-			} catch(Exception e) {
-				e.printStackTrace();
-				routingContext.fail(e);
-			}
-		});				
 	}
 }

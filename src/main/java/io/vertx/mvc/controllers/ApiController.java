@@ -9,7 +9,8 @@ import io.vertx.mvc.annotations.Finalizer;
 
 import java.util.List;
 
-abstract public class ApiController {
+abstract public class ApiController extends AbstractController {
+	
 	abstract protected List<String> contentTypes();
 	abstract protected String marshallPayload(Object payload);
 	
@@ -19,9 +20,18 @@ abstract public class ApiController {
 		if (accept == null) {
 			return null;
 		}
+		// FIXME : parse header properly
 		return contentTypes().stream().filter(contentType -> {
 			return accept.toLowerCase().indexOf(contentType.toLowerCase()) > -1;
-		}).findFirst().orElse(null);
+		}).findFirst().orElse(null); 
+	}
+	
+	protected Object getPayload(RoutingContext context) {
+		return context.data().get("payload");
+	}
+	
+	protected void setPayload(RoutingContext context, Object payload) {
+		context.data().put("payload", payload);
 	}
 	
 	@BeforeFilter

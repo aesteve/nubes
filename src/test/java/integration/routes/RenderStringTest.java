@@ -13,7 +13,7 @@ public class RenderStringTest extends VertxMVCTestBase {
 	public void receiveHello(TestContext context){
 		Async async = context.async();
 		client().getNow("/hello", response -> {
-			assertEquals(response.statusCode(), 200);
+			assertEquals(200, response.statusCode());
 			response.handler(buffer -> {
 				assertEquals(buffer.toString("UTF-8"), "Hello world!");
 				async.complete();
@@ -25,7 +25,7 @@ public class RenderStringTest extends VertxMVCTestBase {
 	public void completePath(TestContext context) {
 		Async async = context.async();
 		client().getNow("/base/test", response -> {
-			assertEquals(response.statusCode(), 200);
+			assertEquals(200, response.statusCode());
 			response.handler(buffer -> {
 				assertEquals(buffer.toString("UTF-8"), "/base/test");
 				async.complete();
