@@ -3,12 +3,16 @@ package integration.routes;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import integration.VertxMVCTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
+@RunWith(VertxUnitRunner.class)
 public class RenderStringTest extends VertxMVCTestBase {
+
     @Test
     public void simplePath(TestContext context) {
         Async async = context.async();

@@ -5,6 +5,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.apex.Router;
+import io.vertx.ext.apex.handler.CookieHandler;
 import io.vertx.mvc.context.ClientAccesses;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.context.RateLimit;
@@ -30,6 +31,7 @@ public class MVCRoute {
     private Method finalizer;
     private boolean paginated;
     private RateLimit rateLimit;
+    private boolean usesCookies;
 
     public MVCRoute(Object instance, String path, boolean paginated) {
         this(instance, path, HttpMethod.GET, paginated);
@@ -80,7 +82,18 @@ public class MVCRoute {
         return httpMethod;
     }
 
-    public void attachHandlersToRouter(Router router) {
+    public boolean usesCookies() {
+        return usesCookies;
+    }
+
+    public void usesCookies(boolean uses) {
+        usesCookies = uses;
+    }
+
+    public void attachHandlersToRouter(Router router, CookieHandler cookieHandler) {
+        if (cookieHandler != null) {
+            router.route(httpMethod, path).handler(cookieHandler);
+        }
         if (isRateLimited()) {
             attachLimitationHandler(router);
         }
@@ -100,6 +113,10 @@ public class MVCRoute {
         if (finalizer != null) {
             setHandler(router, finalizer);
         }
+    }
+
+    public void attachHandlersToRouter(Router router) {
+        attachHandlersToRouter(router, null);
     }
 
     private void setHandler(Router router, Method method) {
