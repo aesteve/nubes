@@ -47,18 +47,6 @@ abstract public class ApiController extends AbstractController {
 		context.next();
 	}
 	
-	@AfterFilter
-	public void calculateETag(RoutingContext context) {
-		// TODO
-		context.next();
-	}
-	
-	@AfterFilter
-	public void setPaginationHeaders(RoutingContext context) {
-		// TODO
-		context.next();
-	}
-	
 	@Finalizer
 	public void sendResponse(RoutingContext context) {
 		HttpServerResponse response = context.response();
