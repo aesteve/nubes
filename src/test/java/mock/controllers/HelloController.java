@@ -11,7 +11,7 @@ public class HelloController extends AbstractController {
 	
 	@Route(path="/hello", method=HttpMethod.GET)
 	public void sayHello(RoutingContext context){
-		render(context, "Hello world!");
+		renderText(context, "Hello world!");
 	}
 	
 }

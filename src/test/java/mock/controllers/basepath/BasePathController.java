@@ -11,6 +11,6 @@ public class BasePathController extends AbstractController {
 
 	@Route(path="test")
 	public void shouldReflectCompletePath(RoutingContext context){
-		render(context, "/base/test");
+		renderText(context, "/base/test");
 	}
 }

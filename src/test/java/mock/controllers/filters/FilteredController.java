@@ -51,7 +51,7 @@ public class FilteredController extends AbstractController {
 	@Finalizer
 	public void writeData(RoutingContext context){
 		JsonObject obj = new JsonObject(context.data());
-		render(context, obj.toString());
+		renderText(context, obj.toString());
 	}
 	
 }

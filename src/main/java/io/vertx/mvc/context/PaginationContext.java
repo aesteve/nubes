@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class PaginationContext {
 
-	public static final String DATA_ATTR = "paginationContext";
-	
+    public static final String DATA_ATTR = "paginationContext";
+
     // TODO : (to make it a generic service)
     // That's some configuration stuff, should not be found in an instanciated object (reflecting one request)
     // -> move it in config or let the user define it (set/get)
@@ -34,7 +34,7 @@ public class PaginationContext {
     private Integer totalPages; // Will be set once the request has been processed (payload)
 
     /**
-     * Prefer using fromRoutingContext but can be instanciated directly 
+     * Prefer using fromRoutingContext but can be instanciated directly
      * (for static page generation for instance)
      * 
      * @param pageAsked
@@ -86,7 +86,7 @@ public class PaginationContext {
     }
 
     public List<String> getNavLinks(HttpServerRequest request) {
-        if (totalPages == null || totalPages == 1) {
+        if (totalPages == null) {
             return null;
         }
         List<String> links = new ArrayList<String>();
