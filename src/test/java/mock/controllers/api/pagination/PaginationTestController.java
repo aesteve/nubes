@@ -7,19 +7,20 @@ import mock.domains.Dog;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Paginated;
-import io.vertx.mvc.annotations.Route;
+import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 
 @Controller
-@Route(path = "/pagination/")
+@Path("/pagination/")
 public class PaginationTestController extends JsonApiController {
+
     /**
      * Not paginated. Doesn't matter we set @Paginated on other methods
      * 
      * @param context
      */
-    @Route(path = "notPaginated")
+    @Path("notPaginated")
     public void notPaginated(RoutingContext context) {
         context.next();
     }
@@ -30,7 +31,7 @@ public class PaginationTestController extends JsonApiController {
      * 
      * @param context
      */
-    @Route(path = "notPaginatedButUsingPagination")
+    @Path("notPaginatedButUsingPagination")
     public void notPaginatedButUsingPagination(RoutingContext context) {
         getPaginationContext(context);
         context.next();
@@ -42,7 +43,7 @@ public class PaginationTestController extends JsonApiController {
      * 
      * @param context
      */
-    @Route(path = "paginationContextAvailable")
+    @Path("paginationContextAvailable")
     @Paginated
     public void paginationContextAvailable(RoutingContext context) {
         setPayload(context, new Dog("Milou", "Fox terrier"));
@@ -53,7 +54,7 @@ public class PaginationTestController extends JsonApiController {
      * Paginated, sends as many results as specified in "nbResults" query parameter
      * 
      */
-    @Route(path = "sendResults")
+    @Path("sendResults")
     @Paginated
     public void sendResults(RoutingContext context) {
         Integer nbResults = Integer.valueOf(context.request().getParam("nbResults"));

@@ -33,7 +33,7 @@ public class JsonApiTest extends VertxMVCTestBase {
         client().get("/json/dog", response -> {
             assertEquals(406, response.statusCode());
             async.complete();
-        }).putHeader("Accept", "app/json").end();
+        }).putHeader("accept", "yourmum").end();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class JsonApiTest extends VertxMVCTestBase {
                 assertEquals(json.getString("Bill"), "Cocker");
                 async.complete();
             });
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader("accept", "application/json").end();
     }
 
     @Test
@@ -67,7 +67,7 @@ public class JsonApiTest extends VertxMVCTestBase {
                 assertEquals(list.get(1), "Bill");
                 async.complete();
             });
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader("accept", "application/json").end();
     }
 
     @Test
@@ -83,7 +83,7 @@ public class JsonApiTest extends VertxMVCTestBase {
                 assertEquals(json.getString("breed"), "Beagle");
                 async.complete();
             });
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader("accept", "application/json").end();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class JsonApiTest extends VertxMVCTestBase {
         Async async = context.async();
         client().get("/json/dogs", response -> {
             assertEquals(200, response.statusCode());
-            assertEquals(response.getHeader("Content-Type"), "application/json");
+            assertEquals("application/json", response.getHeader("Content-Type"));
             response.handler(buffer -> {
                 JsonArray json = new JsonArray(buffer.toString("UTF-8"));
                 assertNotNull(json);
@@ -103,7 +103,7 @@ public class JsonApiTest extends VertxMVCTestBase {
                 assertEquals(((Map) list.get(1)).get("breed"), "Cocker");
                 async.complete();
             });
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader("accept", "application/json").end();
     }
 
 }

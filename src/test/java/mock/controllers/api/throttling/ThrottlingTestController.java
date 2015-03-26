@@ -3,21 +3,21 @@ package mock.controllers.api.throttling;
 import mock.domains.Dog;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Route;
+import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.annotations.Throttled;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 
 @Controller
-@Route(path = "/throttling/")
+@Path("/throttling/")
 public class ThrottlingTestController extends JsonApiController {
 
-    @Route(path = "notThrottled")
+    @Path("notThrottled")
     public void sendPublicDog(RoutingContext context) {
         setPayload(context, new Dog("Pluto", "Mutt"));
         context.next();
     }
 
-    @Route(path = "dog")
+    @Path("dog")
     @Throttled
     public void sendDog(RoutingContext context) {
         setPayload(context, new Dog("Idefix", "Westy"));

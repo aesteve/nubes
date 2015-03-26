@@ -5,15 +5,23 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.apex.Router;
+import io.vertx.ext.apex.RoutingContext;
 import io.vertx.ext.apex.handler.CookieHandler;
+import io.vertx.ext.apex.impl.Utils;
+import io.vertx.mvc.annotations.params.PathParameter;
+import io.vertx.mvc.annotations.params.QueryParameter;
 import io.vertx.mvc.context.ClientAccesses;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.context.RateLimit;
 import io.vertx.mvc.controllers.ApiController;
+import io.vertx.mvc.controllers.impl.JsonApiController;
+import io.vertx.mvc.exceptions.BadRequestException;
 import io.vertx.mvc.exceptions.HttpException;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,6 +102,9 @@ public class MVCRoute {
         if (cookieHandler != null) {
             router.route(httpMethod, path).handler(cookieHandler);
         }
+        if (instance instanceof JsonApiController) {
+            checkContentType(router, "application/json");
+        }
         if (isRateLimited()) {
             attachLimitationHandler(router);
         }
@@ -115,6 +126,23 @@ public class MVCRoute {
         }
     }
 
+    public void checkContentType(Router router, String contentType) {
+        router.route(httpMethod, path).handler(context -> {
+            String accept = context.request().getHeader("accept");
+            if (accept == null) {
+                context.fail(406);
+                return;
+            }
+            List<String> acceptableTypes = Utils.getSortedAcceptableMimeTypes(accept);
+            if (acceptableTypes.contains("application/json")) {
+                context.response().putHeader("Content-Type", "application/json");
+                context.next();
+            } else {
+                context.fail(406);
+            }
+        });
+    }
+
     public void attachHandlersToRouter(Router router) {
         attachHandlersToRouter(router, null);
     }
@@ -125,12 +153,61 @@ public class MVCRoute {
                 return;
             }
             try {
+                List<Object> parameters = new ArrayList<Object>();
+                Class<?>[] parameterClasses = method.getParameterTypes();
+                Annotation[][] parametersAnnotations = method.getParameterAnnotations();
+                for (int i = 0; i < parameterClasses.length; i++) {
+                    Object paramInstance = getParameterInstance(routingContext, parametersAnnotations[i], parameterClasses[i]);
+                    parameters.add(paramInstance);
+                }
                 method.invoke(instance, routingContext);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 routingContext.fail(e);
             }
         });
+    }
+
+    private Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass) throws BadRequestException {
+        if (annotations.length == 0) {
+            return context;
+        }
+        if (annotations.length > 1) {
+            throw new IllegalArgumentException("Every parameter should only have ONE annotation");
+        }
+        Annotation annotation = annotations[0];
+        if (annotation instanceof PathParameter) {
+            String name = ((PathParameter) annotation).value();
+            String value = context.request().getParam(name);
+            try {
+                return adaptParamToType(value, parameterClass);
+            } catch (Exception e) {
+                throw new BadRequestException(name + " is invalid");
+            }
+        } else if (annotation instanceof QueryParameter) {
+            String name = ((QueryParameter) annotation).value();
+            String value = context.request().getParam(name);
+            try {
+                return adaptParamToType(value, parameterClass);
+            } catch (Exception e) {
+                throw new BadRequestException(name + " is invalid");
+            }
+        }
+        return null;
+    }
+
+    private Object adaptParamToType(String value, Class<?> parameterClass) {
+        if (parameterClass.equals(String.class)) {
+            return value;
+        } else if (parameterClass.equals(Long.class)) {
+            return Long.valueOf(value);
+        } else if (parameterClass.equals(Integer.class)) {
+            return Integer.valueOf(value);
+        } else if (parameterClass.equals(Date.class)) {
+            // TODO : parse ISO
+            return null;
+        }
+        return null;
     }
 
     private void attachLimitationHandler(Router router) {
