@@ -7,8 +7,7 @@ import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.annotations.UsesCookies;
 import io.vertx.mvc.controllers.AbstractController;
 
-@Controller
-@Path("/cookies/")
+@Controller("/cookies/")
 public class CookieTestController extends AbstractController {
 
     @Path("noCookie")

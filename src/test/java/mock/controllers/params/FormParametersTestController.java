@@ -9,8 +9,7 @@ import io.vertx.mvc.annotations.params.Params;
 import io.vertx.mvc.controllers.AbstractController;
 import mock.domains.Dog;
 
-@Controller
-@Path("/params/form/")
+@Controller("/params/form/")
 public class FormParametersTestController extends AbstractController {
 
 	

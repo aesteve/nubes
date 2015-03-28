@@ -6,8 +6,7 @@ import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.annotations.params.PathParam;
 import io.vertx.mvc.controllers.AbstractController;
 
-@Controller
-@Path("/params/path/")
+@Controller("/params/path/")
 public class PathParametersTestController extends AbstractController {
 	
 	public enum Animal {

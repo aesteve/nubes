@@ -5,8 +5,7 @@ import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.controllers.AbstractController;
 
-@Controller
-@Path("/base/")
+@Controller("/base/")
 public class BasePathController extends AbstractController {
 
     @Path("test")

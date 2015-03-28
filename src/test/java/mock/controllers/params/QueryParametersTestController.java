@@ -8,8 +8,7 @@ import io.vertx.mvc.controllers.AbstractController;
 
 import java.util.Date;
 
-@Controller
-@Path("/params/query/")
+@Controller("/params/query/")
 public class QueryParametersTestController extends AbstractController {
 	
 	public enum Animal {

@@ -1,14 +1,13 @@
 package mock.controllers.api.throttling;
 
-import mock.domains.Dog;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.annotations.Throttled;
 import io.vertx.mvc.controllers.impl.JsonApiController;
+import mock.domains.Dog;
 
-@Controller
-@Path("/throttling/")
+@Controller("/throttling/")
 public class ThrottlingTestController extends JsonApiController {
 
     @Path("notThrottled")

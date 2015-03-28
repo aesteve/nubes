@@ -62,7 +62,7 @@ public class RouteDiscovery {
 
     private List<MVCRoute> extractRoutesFromController(Class<?> controller) {
         List<MVCRoute> routes = new ArrayList<MVCRoute>();
-        Path base = (Path) controller.getAnnotation(Path.class);
+        Controller base = (Controller) controller.getAnnotation(Controller.class);
         Object instance;
         try {
             instance = controller.newInstance();

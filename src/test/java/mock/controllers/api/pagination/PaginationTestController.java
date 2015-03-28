@@ -1,9 +1,5 @@
 package mock.controllers.api.pagination;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import mock.domains.Dog;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Paginated;
@@ -11,8 +7,12 @@ import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 
-@Controller
-@Path("/pagination/")
+import java.util.ArrayList;
+import java.util.List;
+
+import mock.domains.Dog;
+
+@Controller("/pagination/")
 public class PaginationTestController extends JsonApiController {
 
     /**

@@ -1,18 +1,18 @@
 package mock.controllers.api.json;
 
+import io.vertx.ext.apex.RoutingContext;
+import io.vertx.mvc.annotations.Controller;
+import io.vertx.mvc.annotations.Path;
+import io.vertx.mvc.controllers.impl.JsonApiController;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import mock.domains.Dog;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Path;
-import io.vertx.mvc.controllers.impl.JsonApiController;
 
-@Controller
-@Path("/json/")
+@Controller("/json/")
 public class JsonApiTestController extends JsonApiController {
 
     private final Dog snoopy = new Dog("Snoopy", "Beagle");

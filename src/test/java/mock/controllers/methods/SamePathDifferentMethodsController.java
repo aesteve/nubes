@@ -10,8 +10,7 @@ import io.vertx.mvc.annotations.methods.POST;
 import io.vertx.mvc.annotations.methods.PUT;
 import io.vertx.mvc.controllers.AbstractController;
 
-@Controller
-@Path("/testmethods/")
+@Controller("/testmethods/")
 public class SamePathDifferentMethodsController extends AbstractController {
 
     public final static String PATH = "singleRoute";
