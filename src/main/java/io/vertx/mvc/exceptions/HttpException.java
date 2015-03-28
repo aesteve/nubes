@@ -1,13 +1,17 @@
 package io.vertx.mvc.exceptions;
 
-public class HttpException extends Throwable {
+public class HttpException extends Exception {
     private static final long serialVersionUID = -6908483402149562812L;
 
     private int statusCode;
     private String statusMessage;
 
     public HttpException(int statusCode, String statusMessage) {
-        super(statusMessage);
+        this(statusCode, statusMessage, null);
+    }
+    
+    public HttpException(int statusCode, String statusMessage, Throwable cause) {
+    	super(statusMessage, cause);
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
     }

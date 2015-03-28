@@ -2,8 +2,10 @@ package io.vertx.mvc.controllers.impl;
 
 import io.vertx.mvc.controllers.ApiController;
 
+import org.boon.json.JsonFactory;
 import org.boon.json.JsonSerializer;
 import org.boon.json.JsonSerializerFactory;
+import org.boon.json.ObjectMapper;
 
 /**
  * Default implementation of an ApiController for "application/json" content-type
@@ -13,6 +15,7 @@ import org.boon.json.JsonSerializerFactory;
 public class JsonApiController extends ApiController {
 
     private JsonSerializer serializer;
+    private ObjectMapper mapper;
 
     public JsonApiController() {
         serializer = createSerializer();
@@ -26,16 +29,34 @@ public class JsonApiController extends ApiController {
     protected JsonSerializer createSerializer() {
         return new JsonSerializerFactory().create();
     }
+    
+    /**
+     * Override this method if you want to use a custom boon's object mapper
+     * 
+     * @return a boon ObjectMapper that will be used to read from the request body
+     */
+    protected ObjectMapper createMapper() {
+    	return JsonFactory.create();
+    }
 
     /**
      * By default, uses the boon serializer specified in createSerializer (or the default one)
-     * You can override this method to provide your own json serializer
+     * You can override this method to provide your own way to marshall json
      * 
      * @param the payload object
      * @return the payload in a json String
      */
     @Override
-    protected String marshallPayload(Object payload) {
+	public String marshallPayload(Object payload) {
         return serializer.serialize(payload).toString();
+    }
+    
+    /**
+     * Read from request body
+     * @param <T>
+     */
+    @Override
+	public <T> T fromRequestBody(Class<T> desiredInstance, String requestBody) {
+    	return mapper.fromJson(requestBody, desiredInstance);
     }
 }

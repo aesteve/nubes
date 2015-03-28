@@ -17,6 +17,7 @@ dependencies {
 	
 	// reflection
 	compile 'org.reflections:reflections:0.9.9'
+	compile 'commons-beanutils:commons-beanutils:1.9.2'
 	
 	// JSON api
 	compile 'io.fastjson:boon:0.32'
@@ -25,6 +26,12 @@ dependencies {
 	testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
 	testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.0.0-SNAPSHOT'
 	testCompile 'junit:junit:4.12'
+}
+
+test {
+	jacoco {
+		excludes = ["org.apache.commons.collections.*"]
+	}
 }
 
 task wrapper(type: Wrapper) {

@@ -1,15 +1,19 @@
 package io.vertx.mvc.routing;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.apex.Router;
 import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.apex.handler.BodyHandler;
 import io.vertx.ext.apex.handler.CookieHandler;
 import io.vertx.ext.apex.impl.Utils;
-import io.vertx.mvc.annotations.params.PathParameter;
-import io.vertx.mvc.annotations.params.QueryParameter;
+import io.vertx.mvc.annotations.params.Param;
+import io.vertx.mvc.annotations.params.Params;
+import io.vertx.mvc.annotations.params.PathParam;
+import io.vertx.mvc.annotations.params.RequestBody;
 import io.vertx.mvc.context.ClientAccesses;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.context.RateLimit;
@@ -17,11 +21,11 @@ import io.vertx.mvc.controllers.ApiController;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 import io.vertx.mvc.exceptions.BadRequestException;
 import io.vertx.mvc.exceptions.HttpException;
+import io.vertx.mvc.reflections.ParameterAdapter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +44,7 @@ public class MVCRoute {
     private boolean paginated;
     private RateLimit rateLimit;
     private boolean usesCookies;
+    private Class<?> bodyClass;
 
     public MVCRoute(Object instance, String path, boolean paginated) {
         this(instance, path, HttpMethod.GET, paginated);
@@ -97,8 +102,12 @@ public class MVCRoute {
     public void usesCookies(boolean uses) {
         usesCookies = uses;
     }
+    
+	public void setBodyClass(Class<?> bodyClass) {
+		this.bodyClass = bodyClass;
+	}
 
-    public void attachHandlersToRouter(Router router, CookieHandler cookieHandler) {
+	public void attachHandlersToRouter(Router router, CookieHandler cookieHandler) {
         if (cookieHandler != null) {
             router.route(httpMethod, path).handler(cookieHandler);
         }
@@ -114,6 +123,9 @@ public class MVCRoute {
         beforeFilters.forEach(filter -> {
             setHandler(router, filter);
         });
+        if (needsBodyHandling()) {
+        	attachBodyHandler(router);
+        }
         setHandler(router, mainHandler);
         afterFilters.forEach(filter -> {
             setHandler(router, filter);
@@ -126,7 +138,13 @@ public class MVCRoute {
         }
     }
 
-    public void checkContentType(Router router, String contentType) {
+	private boolean needsBodyHandling() {
+		return bodyClass != null ||
+				httpMethod == HttpMethod.POST ||
+				httpMethod == HttpMethod.PUT;
+	}
+	
+    private void checkContentType(Router router, String contentType) {
         router.route(httpMethod, path).handler(context -> {
             String accept = context.request().getHeader("accept");
             if (accept == null) {
@@ -147,6 +165,17 @@ public class MVCRoute {
         attachHandlersToRouter(router, null);
     }
 
+    private void attachBodyHandler(Router router) {
+    	router.route(httpMethod, path).handler(BodyHandler.create());
+    	router.route(httpMethod, path).handler(context -> {
+    		if (instance instanceof ApiController) {
+        		String body = context.getBodyAsString();
+    			context.data().put("body", ((ApiController)instance).fromRequestBody(bodyClass, body));
+    		}
+    		context.next();
+    	});
+    }
+    
     private void setHandler(Router router, Method method) {
         router.route(httpMethod, path).handler(routingContext -> {
             if (routingContext.response().ended()) {
@@ -160,55 +189,79 @@ public class MVCRoute {
                     Object paramInstance = getParameterInstance(routingContext, parametersAnnotations[i], parameterClasses[i]);
                     parameters.add(paramInstance);
                 }
-                method.invoke(instance, routingContext);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                routingContext.fail(e);
+                method.invoke(instance, parameters.toArray());
+            } catch (HttpException he) {
+            	routingContext.response().setStatusCode(he.getStatusCode());
+            	routingContext.response().setStatusMessage(he.getStatusMessage());
+            	routingContext.fail(he.getStatusCode());
+            } catch (Throwable others) {
+                routingContext.fail(others);
             }
         });
     }
 
     private Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass) throws BadRequestException {
         if (annotations.length == 0) {
-            return context;
+        	if (parameterClass.equals(RoutingContext.class)) {
+        		return context;
+        	} else if (parameterClass.equals(Vertx.class)) {
+        		return context.vertx();
+        	} else {
+        		// TODO : try to map context params on object ?
+        		return null;
+        	}
         }
         if (annotations.length > 1) {
             throw new IllegalArgumentException("Every parameter should only have ONE annotation");
         }
         Annotation annotation = annotations[0];
-        if (annotation instanceof PathParameter) {
-            String name = ((PathParameter) annotation).value();
+        if (annotation instanceof PathParam) {
+            String name = ((PathParam) annotation).value();
             String value = context.request().getParam(name);
             try {
-                return adaptParamToType(value, parameterClass);
+                return ParameterAdapter.adaptParamToType(value, parameterClass);
             } catch (Exception e) {
                 throw new BadRequestException(name + " is invalid");
             }
-        } else if (annotation instanceof QueryParameter) {
-            String name = ((QueryParameter) annotation).value();
+        } else if (annotation instanceof Param) {
+        	Param param = ((Param) annotation);
+            String name = param.value();
             String value = context.request().getParam(name);
-            try {
-                return adaptParamToType(value, parameterClass);
-            } catch (Exception e) {
-                throw new BadRequestException(name + " is invalid");
-            }
+            boolean mandatory = param.mandatory();
+            return fromRequestParam(name, value, mandatory, parameterClass);
+        } else if (annotation instanceof Params) {
+            return fromRequestParams(context.request().params(), parameterClass);
+        } else if (annotation instanceof RequestBody) {
+        	return context.data().get("body");
         }
         return null;
+    }
+    
+    public Object fromRequestParams(MultiMap params, Class<?> parameterClass) throws BadRequestException {
+        Object paramValue;
+        try {
+            paramValue = ParameterAdapter.adaptParamsToType(params, parameterClass);
+        } catch (Exception e) {
+            throw new BadRequestException("Parameters are invalid", e);
+        }
+        return paramValue;
+
+    }
+    
+    public Object fromRequestParam(String name, String value, boolean mandatory, Class<?> parameterClass) throws BadRequestException {
+        Object paramValue;
+        try {
+            paramValue = ParameterAdapter.adaptParamToType(value, parameterClass);
+        } catch (Exception e) {
+            throw new BadRequestException(name + " is invalid");
+        }
+        if (mandatory && paramValue == null) {
+        	throw new BadRequestException("Query parameter : " + name + " is mandatory");
+        }
+        return paramValue;
     }
 
-    private Object adaptParamToType(String value, Class<?> parameterClass) {
-        if (parameterClass.equals(String.class)) {
-            return value;
-        } else if (parameterClass.equals(Long.class)) {
-            return Long.valueOf(value);
-        } else if (parameterClass.equals(Integer.class)) {
-            return Integer.valueOf(value);
-        } else if (parameterClass.equals(Date.class)) {
-            // TODO : parse ISO
-            return null;
-        }
-        return null;
-    }
+
 
     private void attachLimitationHandler(Router router) {
         router.route(httpMethod, path).handler(context -> {

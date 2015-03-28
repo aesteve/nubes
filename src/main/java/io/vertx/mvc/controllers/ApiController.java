@@ -18,7 +18,17 @@ abstract public class ApiController extends AbstractController {
      * @param payload the payload to marshal
      * @return marshalled payload as a String
      */
-    abstract protected String marshallPayload(Object payload);
+    public abstract String marshallPayload(Object payload);
+    
+    /**
+     * Defines how you're going to marshall the request body into a String
+     * Default implementations are provided, but if you need some more advanced stuff : override it
+     * 
+     * @param desiredInstance the the desired instance
+     * @return requestBody the request body as a String
+     */
+    public abstract <T> T fromRequestBody(Class<T> desiredInstance, String requestBody);
+    
 
     /**
      * This is the core of the API
