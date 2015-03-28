@@ -17,19 +17,39 @@ public class TestVerticle extends AbstractVerticle {
 	public static final int PORT = 8000;
 	public static final int TIME_FRAME = 10; // We'll sleep through the whole time-frame for testing throttling
 	
+	private VertxMVC mvc;
+	
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		HttpServerOptions options = new HttpServerOptions();
 		options.setPort(PORT);
 		options.setHost(HOST);
 		HttpServer server = vertx.createHttpServer(options);
-		VertxMVC mvc = new VertxMVC(vertx, createTestConfig());
-		Router router = mvc.bootstrap();
-		System.out.println("Number of routes : "+ router.getRoutes().size());
-		server.requestHandler(router::accept);
-		server.listen();
-		System.out.println("Server listening on port : "+PORT);
-		startFuture.complete();
+		mvc = new VertxMVC(vertx, createTestConfig());
+		Future<Router> future = mvc.bootstrap();
+		future.setHandler(handler -> {
+			if (handler.failed()) {
+				startFuture.fail(handler.cause());
+			} else {
+				Router router = handler.result();
+				server.requestHandler(router::accept);
+				server.listen();
+				System.out.println("Server listening on port : "+PORT);
+				startFuture.complete();
+			}
+		});
+	}
+	
+	@Override
+	public void stop(Future<Void> stopFuture) throws Exception {
+		Future<Void> future = mvc.stop();
+		future.setHandler(handler -> {
+			if (handler.failed()) {
+				stopFuture.fail(handler.cause());
+			} else {
+				stopFuture.complete();
+			}
+		});
 	}
 	
 	private JsonObject createTestConfig() {
@@ -37,6 +57,9 @@ public class TestVerticle extends AbstractVerticle {
 		JsonArray controllerPackages = new JsonArray();
 		controllerPackages.add("mock.controllers");
 		config.put("controller-packages", controllerPackages);
+		JsonArray fixturePackages = new JsonArray();
+		fixturePackages.add("mock.fixtures");
+		config.put("fixture-packages", fixturePackages);
 		JsonObject throttling = new JsonObject();
 		throttling.put("time-frame", TIME_FRAME);
 		throttling.put("time-unit", TimeUnit.SECONDS.toString());
@@ -44,11 +67,6 @@ public class TestVerticle extends AbstractVerticle {
 		config.put("throttling", throttling);
 		System.out.println("Config : "+config.toString());
 		return config;
-	}
-
-	@Override
-	public void stop(Future<Void> stopFuture) throws Exception {
-		stopFuture.complete();
 	}
 
 }

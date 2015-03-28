@@ -1,12 +1,11 @@
 package integration.params;
 
 import static org.junit.Assert.assertEquals;
-
 import mock.domains.Dog;
+import mock.fixtures.DogFixture;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 
 import integration.VertxMVCTestBase;
 import io.vertx.core.buffer.Buffer;
@@ -38,9 +37,9 @@ public class FormParametersTest extends VertxMVCTestBase {
 	/* etc. : all types : no point in testing, it's the same as query parameters */
 	@Test
 	public void testBackingParams(TestContext context) {
-		Dog snoop = new Dog("Snoopy", "Beagle");
+		Dog dog = DogFixture.someDog();
 		Buffer data = Buffer.buffer();
-		data.appendString("name=" + snoop.getName() + "&breed=" + snoop.getBreed());
+		data.appendString("name=" + dog.getName() + "&breed=" + dog.getBreed());
 		Async async = context.async();
 		client().post("/params/form/dog").handler(response -> {
             Buffer buff = Buffer.buffer();
@@ -48,7 +47,7 @@ public class FormParametersTest extends VertxMVCTestBase {
                 buff.appendBuffer(buffer);
             });
             response.endHandler(handler -> {
-                assertEquals(snoop.toString(), buff.toString("UTF-8"));
+                assertEquals(dog.toString(), buff.toString("UTF-8"));
                 async.complete();
             });
 		}).putHeader("content-type", "application/x-www-form-urlencoded").end(data);		

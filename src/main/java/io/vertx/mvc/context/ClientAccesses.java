@@ -19,9 +19,6 @@ public class ClientAccesses {
     }
 
     public boolean isOverLimit(RateLimit limit) {
-        history.forEach(access -> {
-            System.out.println("    " + access);
-        });
         long minBound = System.currentTimeMillis() - limit.getTimeUnit().toMillis(limit.getValue());
         long count = history.stream().filter(access -> {
             return access > minBound;

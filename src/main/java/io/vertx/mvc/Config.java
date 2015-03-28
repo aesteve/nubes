@@ -3,6 +3,7 @@ package io.vertx.mvc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mvc.context.RateLimit;
+import io.vertx.mvc.exceptions.MissingConfigurationException;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class Config {
 	
 	public List<String> controllerPackages;
+	public List<String> fixturePackages;
 	public RateLimit rateLimit;
+	public String webroot;
+	public String assetsPath;
+	public String tplDir;
 	
 	/**
 	 * TODO : check config instead of throwing exceptions
@@ -18,16 +23,26 @@ public class Config {
 	 * @return config
 	 */
 	@SuppressWarnings("unchecked")
-	public static Config fromJsonObject(JsonObject json) {
-		System.out.println("Read config : "+json);
+	public static Config fromJsonObject(JsonObject json) throws MissingConfigurationException {
 		Config config = new Config();
 		JsonArray controllers = json.getJsonArray("controller-packages");
+		if (controllers == null) {
+			throw new MissingConfigurationException("controller-packages");
+		}
 		config.controllerPackages = controllers.getList();
+		JsonArray fixtures = json.getJsonArray("fixture-packages");
+		if (fixtures == null) {
+			throw new MissingConfigurationException("fixture-packages");
+		}
+		config.fixturePackages = fixtures.getList();
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
 		int count = rateLimitJson.getInteger("count");
 		int value = rateLimitJson.getInteger("time-frame");
 		TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
 		config.rateLimit = new RateLimit(count, value, timeUnit);
+		config.webroot = json.getString("webroot", "web/assets");
+		config.assetsPath = json.getString("static-path", "/assets");
+		config.tplDir = json.getString("views-dir", "web/views");
 		return config;
 	}
 }

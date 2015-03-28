@@ -51,14 +51,12 @@ public class PaginationTest extends VertxMVCTestBase {
         client().get("/pagination/sendResults?nbResults=" + total + "&page=" + page + "&perPage=" + perPage, response -> {
             assertEquals(200, response.statusCode());
             assertNotNull(response.headers().get("Link"));
-            System.out.println(response.headers().get("Link"));
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
             });
             response.endHandler(handler -> {
                 JsonArray obj = new JsonArray(buff.toString("UTF-8"));
-                System.out.println(obj);
                 assertNotNull(obj);
                 assertEquals(perPage, obj.size());
                 JsonObject dog = (JsonObject) obj.getValue(0);
