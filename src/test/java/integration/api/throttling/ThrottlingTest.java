@@ -51,7 +51,7 @@ public class ThrottlingTest extends VertxMVCTestBase {
     /**
      * TODO : this must be the perfect example for using a testsuite instead of nested lambdas ??
      */
-    @Test
+    
     public void testAndWait(TestContext context) {
         Async async = context.async();
         client().get("/throttling/dog", firstResponse -> {

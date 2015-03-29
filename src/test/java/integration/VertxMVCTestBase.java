@@ -47,6 +47,7 @@ public class VertxMVCTestBase {
         HttpClientOptions options = new HttpClientOptions();
         options.setDefaultHost(TestVerticle.HOST);
         options.setDefaultPort(TestVerticle.PORT);
+        options.setKeepAlive(false);
         return options;
     }
 

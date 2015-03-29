@@ -3,6 +3,7 @@ package io.vertx.mvc.reflections;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.apex.Router;
 import io.vertx.ext.apex.handler.CookieHandler;
+import io.vertx.ext.apex.handler.TemplateHandler;
 import io.vertx.mvc.Config;
 import io.vertx.mvc.annotations.AfterFilter;
 import io.vertx.mvc.annotations.BeforeFilter;
@@ -12,9 +13,11 @@ import io.vertx.mvc.annotations.Paginated;
 import io.vertx.mvc.annotations.Path;
 import io.vertx.mvc.annotations.Throttled;
 import io.vertx.mvc.annotations.UsesCookies;
+import io.vertx.mvc.annotations.View;
 import io.vertx.mvc.annotations.params.RequestBody;
 import io.vertx.mvc.routing.HttpMethodFactory;
 import io.vertx.mvc.routing.MVCRoute;
+import io.vertx.mvc.views.TemplateEngineManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -28,11 +31,13 @@ public class RouteDiscovery {
 	
 	private Router router;
 	private Config config;
+	private TemplateHandler templateHandler;
 	
 	
 	public RouteDiscovery(Router router, Config config) {
 		this.router = router;
 		this.config = config;
+		this.templateHandler = new TemplateEngineManager(config);
 	}
 	
 	public void createRoutes() {
@@ -44,7 +49,6 @@ public class RouteDiscovery {
             } else {
                 route.attachHandlersToRouter(router);
             }
-
         });
 	}
 	
@@ -101,7 +105,7 @@ public class RouteDiscovery {
                 boolean paginated = method.getAnnotation(Paginated.class) != null;
                 List<HttpMethod> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
                 for (HttpMethod httpMethod : httpMethods) {
-                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, paginated);
+                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, paginated, templateHandler);
                     boolean throttled = method.getAnnotation(Throttled.class) != null;
                     boolean usesCookies = method.getAnnotation(UsesCookies.class) != null;
                     if (throttled && config.rateLimit != null) {
@@ -113,6 +117,12 @@ public class RouteDiscovery {
                     route.setMainHandler(method);
                     if (bodyClass != null) {
                     	route.setBodyClass(bodyClass);
+                    }
+                    if (method.getAnnotation(View.class) != null) {
+                    	System.out.println("View found, path is : "+basePath+path.value());
+                    	View view = method.getAnnotation(View.class);
+                    	System.out.println("view file is : "+view.value());
+                    	route.setViewName(view.value());
                     }
                     routes.add(route);
                 }
