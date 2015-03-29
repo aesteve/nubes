@@ -3,6 +3,8 @@ package mock.controllers.api.json;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.Path;
+import io.vertx.mvc.annotations.methods.POST;
+import io.vertx.mvc.annotations.params.RequestBody;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 
 import java.util.ArrayList;
@@ -54,6 +56,14 @@ public class JsonApiTestController extends JsonApiController {
         dogs.add(bill);
         setPayload(context, dogs);
         context.next();
+    }
+    
+    @Path("postdog")
+    @POST
+    public void readDog(@RequestBody Dog dog, RoutingContext context) {
+    	setPayload(context, dog); // echo back
+    	context.next();
+    	
     }
 
 }

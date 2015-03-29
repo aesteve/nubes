@@ -19,6 +19,7 @@ public class JsonApiController extends ApiController {
 
     public JsonApiController() {
         serializer = createSerializer();
+        mapper = createMapper();
     }
 
     /**
