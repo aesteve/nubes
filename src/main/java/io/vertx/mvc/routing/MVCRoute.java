@@ -146,9 +146,6 @@ public class MVCRoute {
 		if (needsBodyHandling()) {
 			attachBodyHandler(router);
 		}
-		if (isView()) {
-			System.out.println("main handler null ? "+ mainHandler);
-		}
 		setHandler(router, mainHandler);
 		afterFilters.forEach(filter -> {
 			setHandler(router, filter);
@@ -160,7 +157,6 @@ public class MVCRoute {
 			setHandler(router, finalizer);
 		} else if (isView()) {
 			router.route(httpMethod, path).handler(context -> {
-				System.out.println("set template name");
 				context.data().put("tplName", viewName);
 				context.next();
 			});
@@ -209,11 +205,7 @@ public class MVCRoute {
 	private void setHandler(Router router, Method method) {
 
 		router.route(httpMethod, path).handler(routingContext -> {
-			if (isView()) {
-				System.out.println("Calling main handler on a view");
-			}
 			if (routingContext.response().ended()) {
-				System.out.println("Calling main handler on an already ended route");
 				return;
 			}
 			try {
@@ -241,6 +233,8 @@ public class MVCRoute {
 				return context;
 			} else if (parameterClass.equals(Vertx.class)) {
 				return context.vertx();
+			} else if (parameterClass.equals(PaginationContext.class)) {
+				return context.get(PaginationContext.DATA_ATTR);
 			} else {
 				// TODO : try to map context params on object ?
 				return null;

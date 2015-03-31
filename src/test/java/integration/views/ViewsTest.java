@@ -1,8 +1,14 @@
 package integration.views;
 
+import static org.junit.Assert.*;
 import integration.VertxMVCTestBase;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import mock.domains.Dog;
+import mock.fixtures.DogFixture;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
@@ -26,7 +32,7 @@ public class ViewsTest extends VertxMVCTestBase {
 			});
 		});
 	}
-	
+	*/
 	@Test
 	public void testHandlebars(TestContext context) {
 		Dog dog = DogFixture.someDog();
@@ -40,7 +46,7 @@ public class ViewsTest extends VertxMVCTestBase {
 			});
 		});
 	}
-	
+	/*
 	@Test
 	public void testMvel(TestContext context) {
 		Dog dog = DogFixture.someDog();

@@ -15,6 +15,7 @@ import io.vertx.mvc.annotations.Throttled;
 import io.vertx.mvc.annotations.UsesCookies;
 import io.vertx.mvc.annotations.View;
 import io.vertx.mvc.annotations.params.RequestBody;
+import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.routing.HttpMethodFactory;
 import io.vertx.mvc.routing.MVCRoute;
 import io.vertx.mvc.views.TemplateEngineManager;
@@ -22,6 +23,7 @@ import io.vertx.mvc.views.TemplateEngineManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -103,6 +105,7 @@ public class RouteDiscovery {
             	
                 Path path = (Path) method.getAnnotation(Path.class);
                 boolean paginated = method.getAnnotation(Paginated.class) != null;
+                paginated = paginated || Arrays.asList(method.getParameterTypes()).contains(PaginationContext.class);
                 List<HttpMethod> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
                 for (HttpMethod httpMethod : httpMethods) {
                     MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, paginated, templateHandler);
@@ -119,9 +122,7 @@ public class RouteDiscovery {
                     	route.setBodyClass(bodyClass);
                     }
                     if (method.getAnnotation(View.class) != null) {
-                    	System.out.println("View found, path is : "+basePath+path.value());
                     	View view = method.getAnnotation(View.class);
-                    	System.out.println("view file is : "+view.value());
                     	route.setViewName(view.value());
                     }
                     routes.add(route);

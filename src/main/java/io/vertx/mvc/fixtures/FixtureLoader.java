@@ -4,7 +4,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.mvc.Config;
 import io.vertx.mvc.utils.MultipleFutures;
-import io.vertx.mvc.utils.SimpleFuture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,14 +34,14 @@ public class FixtureLoader {
 			startFuture.complete();
 			return;
 		}
-		MultipleFutures<Void> future = new MultipleFutures<Void>();
+		MultipleFutures<Void> futures = new MultipleFutures<Void>();
 		final Map<Class<? extends Fixture>, Future<Void>> fixtureFutures = new HashMap<Class<? extends Fixture>, Future<Void>>();
 		for (String fixturePackage : config.fixturePackages) {
 			Reflections reflections = new Reflections(fixturePackage);
 			Set<Class<? extends Fixture>> fixtures = reflections.getSubTypesOf(Fixture.class);
 			for (Class<? extends Fixture> fixtureClass : fixtures) {
-				Future<Void> fixtureFuture = new SimpleFuture<Void>();
-				future.addFuture(fixtureFuture);
+				Future<Void> fixtureFuture = Future.future();
+				futures.addFuture(fixtureFuture);
 				fixtureFutures.put(fixtureClass, fixtureFuture);
 			}
 		}
@@ -50,7 +49,7 @@ public class FixtureLoader {
 			startFuture.complete();
 			return;
 		}
-		future.setHandler(handler -> {
+		futures.setHandler(handler -> {
 			if (handler.succeeded()) {
 				startFuture.complete();
 			} else {

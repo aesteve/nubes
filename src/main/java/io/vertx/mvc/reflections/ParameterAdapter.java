@@ -35,7 +35,6 @@ public class ParameterAdapter {
     }
     
     public static Object adaptParamsToType(MultiMap params, Class<?> parameterClass) throws Exception {
-    	System.out.println("Adapt params to : "+ parameterClass);
     	Object instance = parameterClass.newInstance();
     	Field[] fields = parameterClass.getDeclaredFields();
     	for (Field field : fields) {

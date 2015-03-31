@@ -137,12 +137,17 @@ public class PaginationContext {
     }
 
     public void setNbItems(Integer nbTotalItems) {
-        this.totalPages = nbTotalItems / itemsPerPage;
-        int modulo = nbTotalItems % itemsPerPage;
+        this.totalPages = (int)(nbTotalItems / itemsPerPage);
+        int modulo = (int)(nbTotalItems % itemsPerPage);
         if (modulo > 0) {
             this.totalPages = this.totalPages + 1;
         }
     }
+    
+    public void setNbItems(Long nbTotalItems) {
+    	setNbItems(nbTotalItems.intValue());
+    }
+    
 
     public boolean hasMorePages() {
         return totalPages > pageAsked;

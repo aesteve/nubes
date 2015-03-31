@@ -33,9 +33,8 @@ public class VertxMVC {
         config = Config.fromJsonObject(json);
     }
 
-    public Future<Router> bootstrap(Router paramRouter) {
+    public void bootstrap(Future<Router> future, Router paramRouter) {
     	router = paramRouter;
-        SimpleFuture<Router> future = new SimpleFuture<Router>();
     	RouteDiscovery routeDiscovery = new RouteDiscovery(router, config);
     	routeDiscovery.createRoutes();
     	StaticHandler staticHandler;
@@ -46,7 +45,7 @@ public class VertxMVC {
     	}
     	router.route(config.assetsPath+"/*").handler(staticHandler);
     	fixtureLoader = new FixtureLoader(vertx, config);
-    	Future<Void> fixturesFuture = new SimpleFuture<Void>();
+    	Future<Void> fixturesFuture = Future.future();
     	fixturesFuture.setHandler(handler -> {
     		if (handler.succeeded()) {
                 periodicallyCleanHistoryMap();
@@ -56,11 +55,10 @@ public class VertxMVC {
     		}
     	});
     	fixtureLoader.setUp(fixturesFuture);
-        return future;
     }
 
-    public Future<Router> bootstrap() {
-        return bootstrap(Router.router(vertx));
+    public void bootstrap(Future<Router> future) {
+        bootstrap(future, Router.router(vertx));
     }
 
     public Future<Void> stop() {

@@ -26,7 +26,7 @@ public class TestVerticle extends AbstractVerticle {
 		options.setHost(HOST);
 		HttpServer server = vertx.createHttpServer(options);
 		mvc = new VertxMVC(vertx, createTestConfig());
-		Future<Router> future = mvc.bootstrap();
+		Future<Router> future = Future.future();
 		future.setHandler(handler -> {
 			if (handler.failed()) {
 				startFuture.fail(handler.cause());
@@ -38,6 +38,7 @@ public class TestVerticle extends AbstractVerticle {
 				startFuture.complete();
 			}
 		});
+		mvc.bootstrap(future);
 	}
 	
 	@Override
