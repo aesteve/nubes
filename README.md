@@ -48,7 +48,7 @@ public class PeanutsPages {
 ```html
 <html>
   <body>
-    Hi, I'm a Peanuts character, and my name is : {{name}}
+    Hello, I'm a Peanuts character, and my name is {{name}}
   </body>
 </html>
 ```
