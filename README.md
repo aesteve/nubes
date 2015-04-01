@@ -43,6 +43,8 @@ public class PeanutsPages {
 
 ### The view : 
 
+`character.hbs`
+
 ```html
 <html>
   <body>
