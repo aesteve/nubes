@@ -81,8 +81,10 @@ public class CharactersController extends JsonApiController {
   @Path("/character")
   @POST
   public void createCharacter(RoutingContext context, @RequestBody PeanutsCharacter character) {
-    myDatabaseService.save(character); // save it using JDBC service, mongo service, hibernate service, etc.
-    context.next()
+    yourDatabaseService.save(character, handler -> {
+      context.next();  
+    }); // save it using JDBC service, mongo service, hibernate service, etc.
+    
   }
 }
 ```
