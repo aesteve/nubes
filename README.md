@@ -77,6 +77,13 @@ public class CharactersController extends JsonApiController {
     }
     context.next()
   }
+  
+  @Path("/character")
+  @POST
+  public void createCharacter(RoutingContext context, @RequestBody PeanutsCharacter character) {
+    myDatabaseService.save(character); // save it using JDBC service, mongo service, hibernate service, etc.
+    context.next()
+  }
 }
 ```
 
@@ -109,3 +116,16 @@ public class PeanutsCharacter {
   "birthDate":"1950-11-04T08:00:00.000Z"
 }
 ```
+
+
+`POST "/api/1/peanuts/characters"` with the following request body : 
+
+```json
+{
+  "name":"Snoopy",
+  "type":"DOG",
+  "birthDate":"1950-11-04T08:00:00.000Z"
+}
+```
+
+Will save our favorite cartoon dog into the database, then return an HTTP 204.
