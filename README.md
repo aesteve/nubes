@@ -92,6 +92,8 @@ public class PeanutsCharacter {
   private CharacterType type;
   private String name;
   private Date birthDate;
+  
+  // getters, setters, constructors and stuff
 }
 ```
 
