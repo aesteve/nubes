@@ -43,7 +43,7 @@ public class PeanutsPages {
 
 ### The view : 
 
-`character.hbs`
+`web/views/character.hbs`
 
 ```html
 <html>
