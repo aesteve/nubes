@@ -2,9 +2,9 @@ package mock.controllers.api.json;
 
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Path;
-import io.vertx.mvc.annotations.methods.POST;
 import io.vertx.mvc.annotations.params.RequestBody;
+import io.vertx.mvc.annotations.routing.POST;
+import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 
 import java.util.ArrayList;

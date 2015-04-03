@@ -1,8 +1,9 @@
 package io.vertx.mvc.controllers;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.Finalizer;
+import io.vertx.mvc.annotations.filters.Finalizer;
 
 /**
  * This is the basic API controller containing every method
@@ -54,6 +55,15 @@ abstract public class ApiController extends AbstractController {
         context.data().put("payload", payload);
     }
 
+    protected<T> void resultAsPayload(RoutingContext context, AsyncResult<T> result) {
+		if (result.succeeded()) {
+			setPayload(context, result.result());
+			context.next();
+		} else {
+			context.fail(result.cause());
+		}
+    }
+    
     /**
      * The response finalizer (will be called last, after every of your handlers)
      * 

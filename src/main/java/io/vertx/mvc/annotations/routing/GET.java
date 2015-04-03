@@ -1,4 +1,4 @@
-package io.vertx.mvc.annotations;
+package io.vertx.mvc.annotations.routing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Finalizer {
-	
+public @interface GET {
+
 }

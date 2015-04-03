@@ -2,10 +2,10 @@ package mock.controllers.params;
 
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Path;
-import io.vertx.mvc.annotations.methods.POST;
 import io.vertx.mvc.annotations.params.Param;
 import io.vertx.mvc.annotations.params.Params;
+import io.vertx.mvc.annotations.routing.POST;
+import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.controllers.AbstractController;
 import mock.domains.Dog;
 

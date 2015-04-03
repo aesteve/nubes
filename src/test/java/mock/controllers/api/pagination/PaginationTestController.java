@@ -2,8 +2,8 @@ package mock.controllers.api.pagination;
 
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Paginated;
-import io.vertx.mvc.annotations.Path;
+import io.vertx.mvc.annotations.mixins.Paginated;
+import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.context.PaginationContext;
 import io.vertx.mvc.controllers.impl.JsonApiController;
 

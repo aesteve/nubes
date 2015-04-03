@@ -18,6 +18,9 @@ public class ParameterAdapter {
 	
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object adaptParamToType(String value, Class<?> parameterClass) throws Exception {
+    	if (value == null) {
+    		return null;
+    	}
         if (parameterClass.equals(String.class)) {
             return value;
         } else if (parameterClass.equals(Long.class)) {

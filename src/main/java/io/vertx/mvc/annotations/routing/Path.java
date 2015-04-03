@@ -1,4 +1,4 @@
-package io.vertx.mvc.annotations;
+package io.vertx.mvc.annotations.routing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Throttled {
+@Target(ElementType.METHOD)
+public @interface Path {
+    String value();
 }

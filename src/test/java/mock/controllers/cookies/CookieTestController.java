@@ -3,8 +3,8 @@ package mock.controllers.cookies;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.ext.apex.Cookie;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Path;
-import io.vertx.mvc.annotations.UsesCookies;
+import io.vertx.mvc.annotations.cookies.UsesCookies;
+import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.controllers.AbstractController;
 
 @Controller("/cookies/")

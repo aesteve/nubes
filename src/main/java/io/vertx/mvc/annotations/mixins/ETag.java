@@ -1,4 +1,4 @@
-package io.vertx.mvc.annotations;
+package io.vertx.mvc.annotations.mixins;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

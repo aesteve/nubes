@@ -1,10 +1,10 @@
 package io.vertx.mvc.routing;
 
 import io.vertx.core.http.HttpMethod;
-import io.vertx.mvc.annotations.methods.DELETE;
-import io.vertx.mvc.annotations.methods.OPTIONS;
-import io.vertx.mvc.annotations.methods.POST;
-import io.vertx.mvc.annotations.methods.PUT;
+import io.vertx.mvc.annotations.routing.DELETE;
+import io.vertx.mvc.annotations.routing.OPTIONS;
+import io.vertx.mvc.annotations.routing.POST;
+import io.vertx.mvc.annotations.routing.PUT;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

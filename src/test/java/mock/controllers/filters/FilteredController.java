@@ -2,11 +2,11 @@ package mock.controllers.filters;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.AfterFilter;
-import io.vertx.mvc.annotations.BeforeFilter;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.Finalizer;
-import io.vertx.mvc.annotations.Path;
+import io.vertx.mvc.annotations.filters.AfterFilter;
+import io.vertx.mvc.annotations.filters.BeforeFilter;
+import io.vertx.mvc.annotations.filters.Finalizer;
+import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.controllers.AbstractController;
 
 @Controller
