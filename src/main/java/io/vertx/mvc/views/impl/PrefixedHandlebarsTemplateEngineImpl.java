@@ -116,4 +116,9 @@ public class PrefixedHandlebarsTemplateEngineImpl extends CachingTemplateEngine<
 			return extension;
 		}
 	}
+
+	@Override
+	public Handlebars getHandlebars() {
+		return handlebars;
+	}
 }
