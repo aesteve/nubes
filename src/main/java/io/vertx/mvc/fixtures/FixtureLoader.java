@@ -5,9 +5,11 @@ import io.vertx.core.Vertx;
 import io.vertx.mvc.Config;
 import io.vertx.mvc.utils.MultipleFutures;
 
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.reflections.Reflections;
 
@@ -15,6 +17,9 @@ public class FixtureLoader {
 	
 	public Vertx vertx;
 	public Config config;
+	public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> {
+		return Integer.compare(f1.executionOrder(), f2.executionOrder());
+	};
 	
 	public FixtureLoader(Vertx vertx, Config config) {
 		this.vertx = vertx;
@@ -35,19 +40,29 @@ public class FixtureLoader {
 			return;
 		}
 		MultipleFutures<Void> futures = new MultipleFutures<Void>();
-		final Map<Class<? extends Fixture>, Future<Void>> fixtureFutures = new HashMap<Class<? extends Fixture>, Future<Void>>();
+		Set<Fixture> fixtures = new TreeSet<Fixture>();
 		for (String fixturePackage : config.fixturePackages) {
 			Reflections reflections = new Reflections(fixturePackage);
-			Set<Class<? extends Fixture>> fixtures = reflections.getSubTypesOf(Fixture.class);
-			for (Class<? extends Fixture> fixtureClass : fixtures) {
-				Future<Void> fixtureFuture = Future.future();
-				futures.addFuture(fixtureFuture);
-				fixtureFutures.put(fixtureClass, fixtureFuture);
+			Set<Class<? extends Fixture>> fixtureClasses = reflections.getSubTypesOf(Fixture.class);
+			for (Class<? extends Fixture> fixtureClass : fixtureClasses) {
+				try {
+					Fixture fixture = fixtureClass.newInstance();
+					fixtures.add(fixture);
+				} catch(Exception e) {
+					startFuture.fail(e);
+					return;
+				}
 			}
 		}
-		if (fixtureFutures.isEmpty()) {
+		if (fixtures.isEmpty()) {
 			startFuture.complete();
 			return;
+		}
+		final Map<Fixture, Future<Void>> fixtureFutures = new LinkedHashMap<Fixture, Future<Void>>();
+		for (Fixture fixture : fixtures) {
+			Future<Void> fixtureFuture = Future.future();
+			futures.addFuture(fixtureFuture);
+			fixtureFutures.put(fixture, fixtureFuture);
 		}
 		futures.setHandler(handler -> {
 			if (handler.succeeded()) {
@@ -56,10 +71,9 @@ public class FixtureLoader {
 				startFuture.fail(handler.cause());
 			}
 		});
-		for (Class<? extends Fixture> fixtureClass : fixtureFutures.keySet()) {
-			Future<Void> fixtureFuture = fixtureFutures.get(fixtureClass);
+		for (Fixture fixture : fixtureFutures.keySet()) {
+			Future<Void> fixtureFuture = fixtureFutures.get(fixture);
 			try {
-				Fixture fixture = fixtureClass.newInstance();
 				switch (methodName) {
 					case "startUp":
 						fixture.startUp(vertx, fixtureFuture);

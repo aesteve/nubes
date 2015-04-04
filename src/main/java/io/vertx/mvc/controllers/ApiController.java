@@ -1,7 +1,12 @@
 package io.vertx.mvc.controllers;
 
+
+
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.filters.Finalizer;
 
@@ -13,13 +18,16 @@ import io.vertx.mvc.annotations.filters.Finalizer;
  */
 abstract public class ApiController extends AbstractController {
 
+	private static final Logger log = LoggerFactory.getLogger(ApiController.class);
+	
+	
     /**
      * Defines how you're going to marshall the API's payload object
      * 
      * @param payload the payload to marshal
      * @return marshalled payload as a String
      */
-    public abstract String marshallPayload(Object payload);
+    public abstract void marshallPayload(Future<String> future, Object payload);
     
     /**
      * Defines how you're going to marshall the request body into a String
@@ -76,8 +84,17 @@ abstract public class ApiController extends AbstractController {
         HttpServerResponse response = context.response();
         Object payload = getPayload(context);
         if (payload != null) {
-            response.setStatusCode(200);
-            response.end(marshallPayload(payload));
+            Future<String> marshallFuture = Future.future();
+            marshallFuture.setHandler(handler -> {
+            	if (handler.succeeded()) {
+            		response.end(handler.result());
+                    response.setStatusCode(200);
+            	} else {
+            		context.fail(handler.cause());
+            		log.error(handler.cause());
+            	}
+            });
+            marshallPayload(marshallFuture, payload);
         } else {
             response.setStatusCode(204);
             response.end();

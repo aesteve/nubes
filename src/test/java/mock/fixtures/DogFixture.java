@@ -9,11 +9,16 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.mvc.fixtures.Fixture;
 
-public class DogFixture implements Fixture {
+public class DogFixture extends Fixture {
 
 	public static List<Dog> dogs = new ArrayList<Dog>(); // in a real use case it would be the database for example
 	
 	private final static Random rand = new Random();
+	
+	@Override
+	public int executionOrder() {
+		return 1;
+	}
 	
 	@Override
 	public void startUp(Vertx vertx, Future<Void> future) {

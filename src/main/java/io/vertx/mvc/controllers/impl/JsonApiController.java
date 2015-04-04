@@ -1,5 +1,6 @@
 package io.vertx.mvc.controllers.impl;
 
+import io.vertx.core.Future;
 import io.vertx.mvc.controllers.ApiController;
 
 import org.boon.json.JsonFactory;
@@ -14,8 +15,8 @@ import org.boon.json.ObjectMapper;
  */
 public class JsonApiController extends ApiController {
 
-    private JsonSerializer serializer;
-    private ObjectMapper mapper;
+    protected JsonSerializer serializer;
+    protected ObjectMapper mapper;
 
     public JsonApiController() {
         serializer = createSerializer();
@@ -28,7 +29,7 @@ public class JsonApiController extends ApiController {
      * @return a boon JsonSerializer that will be used to marshall your payload as json
      */
     protected JsonSerializer createSerializer() {
-        return new JsonSerializerFactory().create();
+        return new JsonSerializerFactory().useAnnotations().create();
     }
     
     /**
@@ -48,8 +49,12 @@ public class JsonApiController extends ApiController {
      * @return the payload in a json String
      */
     @Override
-	public String marshallPayload(Object payload) {
-        return serializer.serialize(payload).toString();
+	public void marshallPayload(Future<String> future, Object payload) {
+    	try {
+    		future.complete(serializer.serialize(payload).toString());
+    	} catch(Exception e ){
+    		future.fail(e);
+    	}
     }
     
     /**
