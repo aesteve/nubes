@@ -1,8 +1,6 @@
 package mock.domains;
 
-import io.vertx.mvc.domains.DomainObject;
-
-public class Dog extends DomainObject {
+public class Dog {
 	
 	private String name;
 	private String breed;
@@ -29,10 +27,6 @@ public class Dog extends DomainObject {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public boolean validate(){
-		return name != null && breed != null;
 	}
 	
 	@Override

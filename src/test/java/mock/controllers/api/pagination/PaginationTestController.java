@@ -2,10 +2,10 @@ package mock.controllers.api.pagination;
 
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.mixins.Paginated;
+import io.vertx.mvc.annotations.mixins.ContentType;
 import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.context.PaginationContext;
-import io.vertx.mvc.controllers.impl.JsonApiController;
+import io.vertx.mvc.marshallers.Payload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,8 @@ import java.util.List;
 import mock.domains.Dog;
 
 @Controller("/pagination/")
-public class PaginationTestController extends JsonApiController {
+@ContentType("application/json")
+public class PaginationTestController {
 
     /**
      * Not paginated. Doesn't matter we set @Paginated on other methods
@@ -32,8 +33,7 @@ public class PaginationTestController extends JsonApiController {
      * @param context
      */
     @Path("notPaginatedButUsingPagination")
-    public void notPaginatedButUsingPagination(RoutingContext context) {
-        getPaginationContext(context);
+    public void notPaginatedButUsingPagination(RoutingContext context, PaginationContext pageContext) {
         context.next();
     }
 
@@ -44,9 +44,8 @@ public class PaginationTestController extends JsonApiController {
      * @param context
      */
     @Path("paginationContextAvailable")
-    @Paginated
-    public void paginationContextAvailable(RoutingContext context) {
-        setPayload(context, new Dog("Milou", "Fox terrier"));
+    public void paginationContextAvailable(RoutingContext context, PaginationContext pageContext, Payload<Dog> payload) {
+        payload.set(new Dog("Milou", "Fox terrier"));
         context.next();
     }
 
@@ -55,17 +54,15 @@ public class PaginationTestController extends JsonApiController {
      * 
      */
     @Path("sendResults")
-    @Paginated
-    public void sendResults(RoutingContext context) {
+    public void sendResults(RoutingContext context, PaginationContext pageContext, Payload<List<Dog>> payload) {
         Integer nbResults = Integer.valueOf(context.request().getParam("nbResults"));
         List<Dog> dogs = new ArrayList<Dog>(nbResults);
         for (int i = 0; i < nbResults; i++) {
             dogs.add(new Dog("My name is dog number " + i + " I wish I have a real name :'( ", "Border collie"));
         }
         // User will have to truncate it's data (especially set a Limit on the database query for example)
-        PaginationContext pageContext = getPaginationContext(context);
         pageContext.setNbItems(nbResults);
-        setPayload(context, dogs.subList(pageContext.firstItemInPage(), pageContext.lastItemInPage()));
+        payload.set(dogs.subList(pageContext.firstItemInPage(), pageContext.lastItemInPage()));
         context.next();
     }
 }

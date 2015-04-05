@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.mvc.reflections.ParameterAdapter;
+import io.vertx.mvc.reflections.impl.DefaultParameterAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -111,7 +111,7 @@ public class QueryParametersTest extends VertxMVCTestBase {
 	@Test
 	public void testDate(TestContext context) throws Exception {
     	Date date = new Date();
-    	SimpleDateFormat format = ParameterAdapter.parser;
+    	SimpleDateFormat format = DefaultParameterAdapter.parser;
     	String iso = format.format(date);
         Async async = context.async();
         client().getNow("/params/query/date?parameter="+iso, response -> {

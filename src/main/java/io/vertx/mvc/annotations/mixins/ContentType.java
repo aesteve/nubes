@@ -1,12 +1,14 @@
-package io.vertx.mvc.annotations.filters;
+package io.vertx.mvc.annotations.mixins;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Finalizer {
-	
+@Inherited
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ContentType {
+	public String[] value();
 }

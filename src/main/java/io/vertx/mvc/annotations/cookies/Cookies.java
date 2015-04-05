@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target({ ElementType.METHOD, ElementType.TYPE })
-public @interface UsesCookies {
+public @interface Cookies {
 
 }

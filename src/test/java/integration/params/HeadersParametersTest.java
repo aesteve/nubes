@@ -5,7 +5,7 @@ import integration.VertxMVCTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.mvc.reflections.ParameterAdapter;
+import io.vertx.mvc.reflections.impl.DefaultParameterAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +22,7 @@ public class HeadersParametersTest extends VertxMVCTestBase {
 	
 	@Before
 	public void setUp(TestContext context) throws Exception {
-		this.parser = ParameterAdapter.parser;
+		this.parser = DefaultParameterAdapter.parser;
 		super.setUp(context);
 	}
 	
