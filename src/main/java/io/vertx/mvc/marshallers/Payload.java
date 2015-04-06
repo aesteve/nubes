@@ -1,6 +1,9 @@
 package io.vertx.mvc.marshallers;
 
 public class Payload<T> {
+	
+	public static final String DATA_ATTR = "user-payload";
+	
 	private T userPayload;
 	
 	public void set(T userPayload) {

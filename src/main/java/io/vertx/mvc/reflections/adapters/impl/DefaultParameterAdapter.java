@@ -1,7 +1,7 @@
-package io.vertx.mvc.reflections.impl;
+package io.vertx.mvc.reflections.adapters.impl;
 
 import io.vertx.core.MultiMap;
-import io.vertx.mvc.reflections.ParameterAdapter;
+import io.vertx.mvc.reflections.adapters.ParameterAdapter;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;

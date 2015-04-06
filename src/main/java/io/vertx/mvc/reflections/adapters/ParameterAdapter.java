@@ -1,4 +1,4 @@
-package io.vertx.mvc.reflections;
+package io.vertx.mvc.reflections.adapters;
 
 import io.vertx.core.MultiMap;
 

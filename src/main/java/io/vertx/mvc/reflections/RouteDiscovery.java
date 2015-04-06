@@ -4,21 +4,18 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.apex.Router;
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.handler.TemplateHandler;
 import io.vertx.mvc.Config;
 import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.View;
 import io.vertx.mvc.annotations.filters.AfterFilter;
 import io.vertx.mvc.annotations.filters.BeforeFilter;
-import io.vertx.mvc.annotations.params.RequestBody;
 import io.vertx.mvc.annotations.routing.Path;
 import io.vertx.mvc.handlers.AnnotationProcessor;
 import io.vertx.mvc.handlers.AnnotationProcessorRegistry;
 import io.vertx.mvc.handlers.Processor;
-import io.vertx.mvc.marshallers.PayloadMarshaller;
+import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.mvc.routing.HttpMethodFactory;
 import io.vertx.mvc.routing.MVCRoute;
-import io.vertx.mvc.views.TemplateEngineManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -34,30 +31,27 @@ public class RouteDiscovery {
 	
 	private Router router;
 	private Config config;
-	private TemplateHandler templateHandler;
-	private ParameterAdapterRegistry registry;
 	private AnnotationProcessorRegistry apRegistry;
 	private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
 	private Map<Class<?>, Processor> typeProcessors;
-	private Map<String, PayloadMarshaller> marshallers;
-	
+	private TypedParamInjectorRegistry typedInjectors;
+	private AnnotatedParamInjectorRegistry annotInjectors;
 	
 	public RouteDiscovery(
 			Router router, 
 			Config config, 
-			ParameterAdapterRegistry registry, 
 			Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers,
 			Map<Class<?>, Processor> typeProcessors,
 			AnnotationProcessorRegistry apRegistry,
-			Map<String, PayloadMarshaller> marshallers) {
+			TypedParamInjectorRegistry typedInjectors,
+			AnnotatedParamInjectorRegistry annotInjectors) {
 		this.router = router;
 		this.config = config;
-		this.templateHandler = new TemplateEngineManager(config);
-		this.registry = registry;
 		this.annotationHandlers = annotationHandlers;
 		this.typeProcessors = typeProcessors;
 		this.apRegistry = apRegistry;
-		this.marshallers = marshallers;
+		this.typedInjectors = typedInjectors;
+		this.annotInjectors = annotInjectors;
 	}
 	
 	public void createRoutes() {
@@ -95,7 +89,6 @@ public class RouteDiscovery {
         }
         for (Method method : controller.getDeclaredMethods()) {
             if (method.getAnnotation(Path.class) != null) {
-            	Class<?> bodyClass = null;
             	Set<Handler<RoutingContext>> paramsHandlers = new LinkedHashSet<Handler<RoutingContext>>();
                 Class<?>[] parameterClasses = method.getParameterTypes();
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
@@ -112,9 +105,6 @@ public class RouteDiscovery {
                 			if (paramHandler != null) {
                 				paramsHandlers.addAll(paramHandler);
                 			}
-	                		if (annotation instanceof RequestBody) {
-	                			bodyClass = parameterClass;
-	                		}
                 		}
                 	} 
                 }
@@ -122,7 +112,7 @@ public class RouteDiscovery {
                 Path path = (Path) method.getAnnotation(Path.class);
                 List<HttpMethod> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
                 for (HttpMethod httpMethod : httpMethods) {
-                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, templateHandler, registry, marshallers);
+                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, typedInjectors, annotInjectors);
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
                     	Set<Handler<RoutingContext>> handler = annotationHandlers.get(methodAnnotation.annotationType());
                     	if (handler != null) {
@@ -136,13 +126,6 @@ public class RouteDiscovery {
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
                     route.setMainHandler(method);
-                    if (bodyClass != null) {
-                    	route.setBodyClass(bodyClass);
-                    }
-                    if (method.getAnnotation(View.class) != null) {
-                    	View view = method.getAnnotation(View.class);
-                    	route.setViewName(view.value());
-                    }
                     routes.add(route);
                 }
             }

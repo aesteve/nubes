@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.mvc.reflections.impl.DefaultParameterAdapter;
+import io.vertx.mvc.reflections.adapters.impl.DefaultParameterAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

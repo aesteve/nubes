@@ -10,11 +10,11 @@ import io.vertx.ext.apex.RoutingContext;
 import io.vertx.ext.apex.handler.BodyHandler;
 import io.vertx.ext.apex.handler.CookieHandler;
 import io.vertx.ext.apex.handler.StaticHandler;
+import io.vertx.mvc.annotations.View;
 import io.vertx.mvc.annotations.cookies.CookieValue;
 import io.vertx.mvc.annotations.cookies.Cookies;
 import io.vertx.mvc.annotations.mixins.ContentType;
 import io.vertx.mvc.annotations.mixins.Throttled;
-import io.vertx.mvc.annotations.params.RequestBody;
 import io.vertx.mvc.annotations.routing.POST;
 import io.vertx.mvc.annotations.routing.PUT;
 import io.vertx.mvc.context.ClientAccesses;
@@ -27,14 +27,22 @@ import io.vertx.mvc.handlers.AnnotationProcessorRegistry;
 import io.vertx.mvc.handlers.Processor;
 import io.vertx.mvc.handlers.impl.ContentTypeProcessor;
 import io.vertx.mvc.handlers.impl.PaginationProcessor;
+import io.vertx.mvc.handlers.impl.PayloadTypeProcessor;
 import io.vertx.mvc.handlers.impl.RateLimitationHandler;
+import io.vertx.mvc.handlers.impl.ViewProcessor;
+import io.vertx.mvc.marshallers.Payload;
 import io.vertx.mvc.marshallers.PayloadMarshaller;
 import io.vertx.mvc.marshallers.impl.BoonPayloadMarshaller;
-import io.vertx.mvc.reflections.ParameterAdapter;
-import io.vertx.mvc.reflections.ParameterAdapterRegistry;
 import io.vertx.mvc.reflections.RouteDiscovery;
-import io.vertx.mvc.reflections.impl.DefaultParameterAdapter;
+import io.vertx.mvc.reflections.adapters.ParameterAdapter;
+import io.vertx.mvc.reflections.adapters.ParameterAdapterRegistry;
+import io.vertx.mvc.reflections.adapters.impl.DefaultParameterAdapter;
+import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjector;
+import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import io.vertx.mvc.reflections.injectors.typed.ParamInjector;
+import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.mvc.utils.SimpleFuture;
+import io.vertx.mvc.views.TemplateEngineManager;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -52,6 +60,8 @@ public class VertxMVC {
     private FixtureLoader fixtureLoader;
     private ParameterAdapterRegistry registry;
     private AnnotationProcessorRegistry apRegistry;
+    private TypedParamInjectorRegistry typeInjectors;
+    private AnnotatedParamInjectorRegistry annotInjectors;
     private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
     private Map<Class<?>, Processor> typeProcessors;
     private Map<String, PayloadMarshaller> marshallers;
@@ -69,24 +79,31 @@ public class VertxMVC {
         typeProcessors = new HashMap<Class<?>, Processor>();
         apRegistry = new AnnotationProcessorRegistry();
         marshallers = new HashMap<String, PayloadMarshaller>();
+        typeInjectors = new TypedParamInjectorRegistry();
+        annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
         CookieHandler cookieHandler = CookieHandler.create();
         BodyHandler bodyHandler = BodyHandler.create();
-        PaginationProcessor pageProcessor = new PaginationProcessor();
         registerAnnotationHandler(Cookies.class, cookieHandler);
         registerAnnotationHandler(CookieValue.class, cookieHandler);
         registerAnnotationHandler(Throttled.class, RateLimitationHandler.create(config));
         registerAnnotationHandler(POST.class, bodyHandler);
         registerAnnotationHandler(PUT.class, bodyHandler);
-        registerAnnotationHandler(RequestBody.class, bodyHandler);
-        registerAnnotationHandler(RequestBody.class, bodyHandler);
-        registerTypeProcessor(PaginationContext.class, pageProcessor);
+        registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
+        registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
         registerAnnotationProcessor(ContentType.class, new ContentTypeProcessor());
+        registerAnnotationProcessor(View.class, new ViewProcessor(new TemplateEngineManager(config)));
         registerMarshaller("application/json", new BoonPayloadMarshaller());
     }
 
     public void bootstrap(Future<Router> future, Router paramRouter) {
     	router = paramRouter;
-    	RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, registry, annotationHandlers, typeProcessors, apRegistry, marshallers);
+    	RouteDiscovery routeDiscovery = new RouteDiscovery(router, 
+    			config, 
+    			annotationHandlers, 
+    			typeProcessors, 
+    			apRegistry, 
+    			typeInjectors,
+    			annotInjectors);
     	routeDiscovery.createRoutes();
     	StaticHandler staticHandler;
     	if (config.webroot != null) {
@@ -142,6 +159,14 @@ public class VertxMVC {
     
     public void registerMarshaller(String contentType, PayloadMarshaller marshaller) {
     	marshallers.put(contentType, marshaller);
+    }
+    
+    public<T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
+    	typeInjectors.registerInjector(clazz, injector);
+    }
+    
+    public<T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
+    	annotInjectors.registerInjector(clazz, injector);
     }
     
     private void periodicallyCleanHistoryMap() {
