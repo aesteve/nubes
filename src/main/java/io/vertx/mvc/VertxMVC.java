@@ -41,7 +41,6 @@ import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjector;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.ParamInjector;
 import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
-import io.vertx.mvc.utils.SimpleFuture;
 import io.vertx.mvc.views.TemplateEngineManager;
 
 import java.lang.annotation.Annotation;
@@ -129,11 +128,9 @@ public class VertxMVC {
         bootstrap(future, Router.router(vertx));
     }
 
-    public Future<Void> stop() {
-    	SimpleFuture<Void> future = new SimpleFuture<Void>();
+    public void stop(Future<Void> future) {
     	router.clear();
     	fixtureLoader.tearDown(future);
-    	return future;
     }
     
     public<T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {

@@ -4,4 +4,5 @@ import java.lang.annotation.Annotation;
 
 public interface AnnotationProcessor<T extends Annotation> extends Processor {
 	public void init(T annotation);
+	public Class<? extends T> getAnnotationType();
 }

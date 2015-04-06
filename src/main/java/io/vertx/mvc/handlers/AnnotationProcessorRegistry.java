@@ -22,7 +22,6 @@ public class AnnotationProcessorRegistry {
 		if (processor == null) {
 			return null;
 		}
-		processor.init(annotation);
 		return processor;
 	}
 	

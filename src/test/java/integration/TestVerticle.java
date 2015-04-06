@@ -43,14 +43,7 @@ public class TestVerticle extends AbstractVerticle {
 	
 	@Override
 	public void stop(Future<Void> stopFuture) throws Exception {
-		Future<Void> future = mvc.stop();
-		future.setHandler(handler -> {
-			if (handler.failed()) {
-				stopFuture.fail(handler.cause());
-			} else {
-				stopFuture.complete();
-			}
-		});
+		mvc.stop(stopFuture);
 	}
 	
 	private JsonObject createTestConfig() {

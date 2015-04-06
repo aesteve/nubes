@@ -42,4 +42,9 @@ public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 		context.next();
 	}
 
+	@Override
+	public Class<? extends ContentType> getAnnotationType() {
+		return ContentType.class;
+	}
+
 }

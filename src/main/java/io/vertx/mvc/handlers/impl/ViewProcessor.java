@@ -21,6 +21,7 @@ public class ViewProcessor implements AnnotationProcessor<View> {
 
 	@Override
 	public void postHandle(RoutingContext context) {
+		System.out.println("view processor, viewName = "+viewName);
 		context.put("tplName", viewName);
 		templateHandler.handle(context);
 	}
@@ -28,6 +29,11 @@ public class ViewProcessor implements AnnotationProcessor<View> {
 	@Override
 	public void init(View annotation) {
 		this.viewName = annotation.value();
+	}
+
+	@Override
+	public Class<? extends View> getAnnotationType() {
+		return View.class;
 	}
 
 }

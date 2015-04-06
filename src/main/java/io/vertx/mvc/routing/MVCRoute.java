@@ -4,11 +4,14 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.apex.Router;
 import io.vertx.ext.apex.RoutingContext;
+import io.vertx.mvc.handlers.AnnotationProcessor;
 import io.vertx.mvc.handlers.Processor;
 import io.vertx.mvc.handlers.impl.MethodInvocationHandler;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
 
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -85,9 +88,20 @@ public class MVCRoute {
 		return httpMethod;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void attachHandlersToRouter(Router router) {
 		processors.forEach(processor -> {
-			router.route(httpMethod, path).handler(processor::preHandle);
+			router.route(httpMethod, path).handler(context -> {
+				if (processor instanceof AnnotationProcessor) {
+					AnnotationProcessor realProcessor = (AnnotationProcessor)processor;
+					Annotation annotation = mainHandler.getAnnotation(realProcessor.getAnnotationType());
+					if (annotation == null){
+						annotation = instance.getClass().getAnnotation(realProcessor.getAnnotationType());
+					}
+					realProcessor.init(annotation);
+				}
+				processor.preHandle(context);	
+			});
 		});
 		handlers.forEach(handler -> {
 			router.route(httpMethod, path).handler(handler);
