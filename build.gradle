@@ -29,8 +29,7 @@ dependencies {
 	runtime 'org.mvel:mvel2:2.2.0.Final'
 	
 	// tests
-	testCompile group: 'io.vertx', name: 'vertx-core', version: '3.0.0-SNAPSHOT', classifier: 'tests'
-	testCompile group: 'io.vertx', name: 'vertx-unit', version: '3.0.0-SNAPSHOT'
+	testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'
 	testCompile 'junit:junit:4.12'
 }
 
