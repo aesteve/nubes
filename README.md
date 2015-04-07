@@ -69,7 +69,7 @@ package com.peanuts.controllers;
 public class CharactersController {
   
   @Path("/character")
-  public void getCharacter(RoutingContext context, @Param("type") CharacterType type, Payload<Dog> payload) {
+  public void getCharacter(RoutingContext context, @Param("type") CharacterType type, Payload<PeanutsCharacter> payload) {
     switch(type) {
       case DOG: 
         payload.set(new PeanutsCharacter(CharacterType.DOG, "Snoopy", snoopysBirthDate));
