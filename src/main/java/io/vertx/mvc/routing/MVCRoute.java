@@ -98,7 +98,7 @@ public class MVCRoute {
 					if (annotation == null){
 						annotation = instance.getClass().getAnnotation(realProcessor.getAnnotationType());
 					}
-					realProcessor.init(annotation);
+					realProcessor.init(context, annotation);
 				}
 				processor.preHandle(context);	
 			});

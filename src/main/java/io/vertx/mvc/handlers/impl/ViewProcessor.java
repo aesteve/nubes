@@ -7,7 +7,6 @@ import io.vertx.mvc.views.TemplateEngineManager;
 
 public class ViewProcessor implements AnnotationProcessor<View> {
 
-	private String viewName;
 	private TemplateEngineManager templateHandler;
 	
 	public ViewProcessor(TemplateEngineManager templateHandler) {
@@ -21,13 +20,12 @@ public class ViewProcessor implements AnnotationProcessor<View> {
 
 	@Override
 	public void postHandle(RoutingContext context) {
-		context.put("tplName", viewName);
 		templateHandler.handle(context);
 	}
 
 	@Override
-	public void init(View annotation) {
-		this.viewName = annotation.value();
+	public void init(RoutingContext context, View annotation) {
+		context.put("tplName", annotation.value());
 	}
 
 	@Override

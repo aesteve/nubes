@@ -11,15 +11,14 @@ import java.util.Optional;
 
 public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 
-	private List<String> contentTypes;
-
-	public void init(ContentType contentType) {
-		this.contentTypes = Arrays.asList(contentType.value());
+	public void init(RoutingContext context, ContentType contentType) {
+		context.put("content-types", Arrays.asList(contentType.value()));
 	}
 
 	@Override
 	public void preHandle(RoutingContext context) {
 		String accept = context.request().getHeader("accept");
+		List<String> contentTypes = context.get("content-types");
 		if (accept == null) {
 			context.fail(406);
 			return;
