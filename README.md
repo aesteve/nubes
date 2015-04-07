@@ -65,7 +65,7 @@ public class PeanutsPages {
 package com.peanuts.controllers;
 
 @Controller("/api/1/peanuts")
-@ContentType('application/json")
+@ContentType("application/json")
 public class CharactersController {
   
   @Path("/character")
