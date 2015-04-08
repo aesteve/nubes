@@ -7,7 +7,7 @@ Indicates that this class is a controller and contains routes.
 
 * Retention : Class
 * Attributes :
-** value (nullable) : the base path for every route defined in this controller
+	* value (nullable) : the base path for every route defined in this controller
   
 
 ## `@Path`
@@ -16,7 +16,7 @@ Indicates that this method is a route.
 
 * Retention : Method
 * Attributes :
-** value (mandatory) : the path for this route
+	* value (mandatory) : the path for this route
 
 ## `@GET`, `@POST`, `@PUT`, `@DELETE`, `@OPTIONS`
 
@@ -31,7 +31,7 @@ A method which will be executed before every route defined in this controller. (
 
 * Retention : Method
 * Attributes : 
-** value : an Integer : the execution order of this filter (the smallest the first in execution order)
+	* value : an Integer : the execution order of this filter (the smallest the first in execution order)
 
 ## `@BeforeFilter`
 
@@ -39,7 +39,7 @@ A method which will be executed after every route defined in this controller. (s
 
 * Retention : Method
 * Attributes : 
-** value : an Integer : the execution order of this filter (the smallest the first in execution order)
+	* value : an Integer : the execution order of this filter (the smallest the first in execution order)
 
 ## `@View`
 
@@ -47,7 +47,7 @@ Indicates that this route is a view, and should delegate to a template handler.
 
 * Retention : Method
 * Attributes :
-** value (mandatory) : the name of the view (suffixed by the template extension : `@View("users.hbs")`)
+	* value (mandatory) : the name of the view (suffixed by the template extension : `@View("users.hbs")`)
 
 ## `@ContentType`
 
@@ -58,7 +58,7 @@ The accept header is parsed in order to determine (and inject in routingContext.
 
 * Retention : Method or Class
 * Attributes : 
-** value : a list of content-types you know how to handle. Example : `@ContentType({"application/json", "text/xml"})`
+	* value : a list of content-types you know how to handle. Example : `@ContentType({"application/json", "text/xml"})`
 
 
 TODO (WIP).

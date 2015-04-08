@@ -1,5 +1,3 @@
-
-
 Every public method defined in a controller will be evaluated to inject the correct parameter values.
 
 There are two types of parameters.
@@ -10,20 +8,18 @@ There are two types of parameters.
 ## Default parameters (already provided by the framework)
 
 * By type :
-
-** `RoutingContext` simply the RoutingContext of the request, as specified in Vertx Apex
-** `Vertx` the vertx instance which is handling the current request
-** `PaginationContext` an utility object holding pagination parameters, see [the pagination documentation](PAGINATION.md).
-** `Payload` an object which holds the response body you want to send (as a Java object). See the [marshalling data documentation](MARSHALLING.md).
+	* `RoutingContext` simply the RoutingContext of the request, as specified in Vertx Apex
+	* `Vertx` the vertx instance which is handling the current request
+	* `PaginationContext` an utility object holding pagination parameters, see [the pagination documentation](PAGINATION.md).
+	* `Payload` an object which holds the response body you want to send (as a Java object). See the [marshalling data documentation](MARSHALLING.md).
 
 * By annotation :
-
-** `@CookieValue("my.cookie") Cookie cookie` the value of a given cookie (here : "my.cookie")
-** `@Header("Accept") String acceptHeader` some http request header 
-** `@Param("from") Date from` a parameter of the http request
-** `@PathParam("userId") Long userId` a parameter captured in route path
-** `@Params YourObject backedParameters` fulfills an object with the whole parameters' map (from request query params / path params) 
-** `@RequestBody YourObject unmarshalledFromRequest` the unmarshalled request body as an object of your type
+	* `@CookieValue("my.cookie") Cookie cookie` the value of a given cookie (here : "my.cookie")
+	* `@Header("Accept") String acceptHeader` some http request header 
+	* `@Param("from") Date from` a parameter of the http request
+	* `@PathParam("userId") Long userId` a parameter captured in route path
+	* `@Params YourObject backedParameters` fulfills an object with the whole parameters' map (from request query params / path params) 
+	* `@RequestBody YourObject unmarshalledFromRequest` the unmarshalled request body as an object of your type
 
 ## Extending the framework
 
