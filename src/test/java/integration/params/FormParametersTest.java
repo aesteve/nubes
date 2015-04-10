@@ -1,28 +1,27 @@
 package integration.params;
 
 import static org.junit.Assert.assertEquals;
-import mock.domains.Dog;
-import mock.fixtures.DogFixture;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import integration.TestVerticle;
 import integration.VertxMVCTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import mock.domains.Dog;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
 public class FormParametersTest extends VertxMVCTestBase {
 
-	@Test
-	public void testFormString(TestContext context) {
-		String myString = "Snoopy";
-		Buffer data = Buffer.buffer();
-		data.appendString("parameter=" + myString);
-		Async async = context.async();
-		client().post("/params/form/string").handler(response -> {
+    @Test
+    public void testFormString(TestContext context) {
+        String myString = "Snoopy";
+        Buffer data = Buffer.buffer();
+        data.appendString("parameter=" + myString);
+        Async async = context.async();
+        client().post("/params/form/string").handler(response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -31,17 +30,17 @@ public class FormParametersTest extends VertxMVCTestBase {
                 assertEquals(myString, buff.toString("UTF-8"));
                 async.complete();
             });
-		}).putHeader("content-type", "application/x-www-form-urlencoded").end(data);
-	}
-	
-	/* etc. : all types : no point in testing, it's the same as query parameters */
-	@Test
-	public void testBackingParams(TestContext context) {
-		Dog dog = DogFixture.someDog();
-		Buffer data = Buffer.buffer();
-		data.appendString("name=" + dog.getName() + "&breed=" + dog.getBreed());
-		Async async = context.async();
-		client().post("/params/form/dog").handler(response -> {
+        }).putHeader("content-type", "application/x-www-form-urlencoded").end(data);
+    }
+
+    /* etc. : all types : no point in testing, it's the same as query parameters */
+    @Test
+    public void testBackingParams(TestContext context) {
+        Dog dog = TestVerticle.dogService.someDog();
+        Buffer data = Buffer.buffer();
+        data.appendString("name=" + dog.getName() + "&breed=" + dog.getBreed());
+        Async async = context.async();
+        client().post("/params/form/dog").handler(response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -50,6 +49,6 @@ public class FormParametersTest extends VertxMVCTestBase {
                 assertEquals(dog.toString(), buff.toString("UTF-8"));
                 async.complete();
             });
-		}).putHeader("content-type", "application/x-www-form-urlencoded").end(data);		
-	}
+        }).putHeader("content-type", "application/x-www-form-urlencoded").end(data);
+    }
 }

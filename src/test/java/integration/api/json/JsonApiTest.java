@@ -2,6 +2,7 @@ package integration.api.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import integration.TestVerticle;
 import integration.VertxMVCTestBase;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import mock.domains.Dog;
-import mock.fixtures.DogFixture;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -111,22 +111,22 @@ public class JsonApiTest extends VertxMVCTestBase {
 
     @Test
     public void postSomeStuff(TestContext context) {
-    	Dog dog = DogFixture.someDog();
-    	JsonObject dogJson = new JsonObject();
-    	dogJson.put("name", dog.getName());
-    	dogJson.put("breed", dog.getBreed());
-    	Async async = context.async();
-    	client().post("/json/postdog", response -> {
-    		assertEquals(200, response.statusCode());
+        Dog dog = TestVerticle.dogService.someDog();
+        JsonObject dogJson = new JsonObject();
+        dogJson.put("name", dog.getName());
+        dogJson.put("breed", dog.getBreed());
+        Async async = context.async();
+        client().post("/json/postdog", response -> {
+            assertEquals(200, response.statusCode());
             assertEquals("application/json", response.getHeader("Content-Type"));
             response.bodyHandler(buffer -> {
-            	String json = buffer.toString("UTF-8");
-            	JsonObject receivedDog = new JsonObject(json);
-            	assertEquals(dog.getName(), receivedDog.getString("name"));
-            	assertEquals(dog.getBreed(), receivedDog.getString("breed"));
-            	async.complete();
+                String json = buffer.toString("UTF-8");
+                JsonObject receivedDog = new JsonObject(json);
+                assertEquals(dog.getName(), receivedDog.getString("name"));
+                assertEquals(dog.getBreed(), receivedDog.getString("breed"));
+                async.complete();
             });
-    	}).putHeader("accept","application/json").end(dogJson.toString());
+        }).putHeader("accept", "application/json").end(dogJson.toString());
     }
-    
+
 }

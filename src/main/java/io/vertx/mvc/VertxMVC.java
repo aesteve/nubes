@@ -41,6 +41,9 @@ import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjector;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.ParamInjector;
 import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
+import io.vertx.mvc.services.Service;
+import io.vertx.mvc.services.ServiceRegistry;
+import io.vertx.mvc.utils.MultipleFutures;
 import io.vertx.mvc.views.TemplateEngineManager;
 
 import java.lang.annotation.Annotation;
@@ -64,7 +67,8 @@ public class VertxMVC {
     private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
     private Map<Class<?>, Processor> typeProcessors;
     private Map<String, PayloadMarshaller> marshallers;
-    
+    private ServiceRegistry serviceRegistry;
+
     /**
      * TODO check config
      * 
@@ -80,6 +84,7 @@ public class VertxMVC {
         marshallers = new HashMap<String, PayloadMarshaller>();
         typeInjectors = new TypedParamInjectorRegistry();
         annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
+        serviceRegistry = new ServiceRegistry(vertx);
         CookieHandler cookieHandler = CookieHandler.create();
         BodyHandler bodyHandler = BodyHandler.create();
         registerAnnotationHandler(Cookies.class, cookieHandler);
@@ -95,33 +100,42 @@ public class VertxMVC {
     }
 
     public void bootstrap(Future<Router> future, Router paramRouter) {
-    	router = paramRouter;
-    	RouteDiscovery routeDiscovery = new RouteDiscovery(router, 
-    			config, 
-    			annotationHandlers, 
-    			typeProcessors, 
-    			apRegistry, 
-    			typeInjectors,
-    			annotInjectors);
-    	routeDiscovery.createRoutes();
-    	StaticHandler staticHandler;
-    	if (config.webroot != null) {
-    		staticHandler = StaticHandler.create(config.webroot);
-    	} else {
-    		staticHandler = StaticHandler.create();
-    	}
-    	router.route(config.assetsPath+"/*").handler(staticHandler);
-    	fixtureLoader = new FixtureLoader(vertx, config);
-    	Future<Void> fixturesFuture = Future.future();
-    	fixturesFuture.setHandler(handler -> {
-    		if (handler.succeeded()) {
+        router = paramRouter;
+        RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry);
+        routeDiscovery.createRoutes();
+        StaticHandler staticHandler;
+        if (config.webroot != null) {
+            staticHandler = StaticHandler.create(config.webroot);
+        } else {
+            staticHandler = StaticHandler.create();
+        }
+        router.route(config.assetsPath + "/*").handler(staticHandler);
+
+        // fixtures
+        fixtureLoader = new FixtureLoader(vertx, config, serviceRegistry);
+        Future<Void> fixturesFuture = Future.future();
+        // services
+        Future<Void> servicesFuture = Future.future();
+
+        fixturesFuture.setHandler(result -> {
+            if (result.succeeded()) {
                 periodicallyCleanHistoryMap();
                 future.complete(router);
-    		} else {
-    			future.fail(handler.cause());
-    		}
-    	});
-    	fixtureLoader.setUp(fixturesFuture);
+            } else {
+                future.fail(result.cause());
+            }
+        });
+
+        servicesFuture.setHandler(result -> {
+            System.out.println("services started correctly");
+            if (result.succeeded()) {
+                fixtureLoader.setUp(fixturesFuture);
+            } else {
+                future.fail(result.cause());
+            }
+        });
+
+        serviceRegistry.startAll(servicesFuture);
     }
 
     public void bootstrap(Future<Router> future) {
@@ -129,43 +143,60 @@ public class VertxMVC {
     }
 
     public void stop(Future<Void> future) {
-    	router.clear();
-    	fixtureLoader.tearDown(future);
+        router.clear();
+        MultipleFutures<Void> futures = new MultipleFutures<Void>();
+        Future<Void> fixturesFuture = Future.future();
+        Future<Void> servicesFuture = Future.future();
+        futures.addFuture(fixturesFuture);
+        futures.addFuture(servicesFuture);
+        futures.setHandler(res -> {
+            if (res.succeeded()) {
+                future.complete();
+            } else {
+                future.fail(res.cause());
+            }
+        });
+        serviceRegistry.stopAll(servicesFuture);
+        fixtureLoader.tearDown(fixturesFuture);
     }
-    
-    public<T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
-    	registry.registerAdapter(parameterClass, adapter);
+
+    public void registerService(Service service) {
+        serviceRegistry.registerService(service);
     }
-    
+
+    public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
+        registry.registerAdapter(parameterClass, adapter);
+    }
+
     public void registerAnnotationHandler(Class<? extends Annotation> annotation, Handler<RoutingContext> handler) {
-    	Set<Handler<RoutingContext>> handlers = annotationHandlers.get(annotation);
-    	if (handlers == null) {
-    		handlers = new LinkedHashSet<Handler<RoutingContext>>();
-    	} 
-    	handlers.add(handler);
-    	annotationHandlers.put(annotation, handlers);
+        Set<Handler<RoutingContext>> handlers = annotationHandlers.get(annotation);
+        if (handlers == null) {
+            handlers = new LinkedHashSet<Handler<RoutingContext>>();
+        }
+        handlers.add(handler);
+        annotationHandlers.put(annotation, handlers);
     }
-    
+
     public void registerTypeProcessor(Class<?> type, Processor processor) {
-    	typeProcessors.put(type, processor);
+        typeProcessors.put(type, processor);
     }
-    
-    public<T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
-    	apRegistry.registerProcessor(annotation, processor);
+
+    public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
+        apRegistry.registerProcessor(annotation, processor);
     }
-    
+
     public void registerMarshaller(String contentType, PayloadMarshaller marshaller) {
-    	marshallers.put(contentType, marshaller);
+        marshallers.put(contentType, marshaller);
     }
-    
-    public<T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
-    	typeInjectors.registerInjector(clazz, injector);
+
+    public <T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
+        typeInjectors.registerInjector(clazz, injector);
     }
-    
-    public<T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
-    	annotInjectors.registerInjector(clazz, injector);
+
+    public <T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
+        annotInjectors.registerInjector(clazz, injector);
     }
-    
+
     private void periodicallyCleanHistoryMap() {
         vertx.setPeriodic(60000, timerId -> {
             LocalMap<Object, Object> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");

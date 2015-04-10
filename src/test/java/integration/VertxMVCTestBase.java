@@ -5,7 +5,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.ext.unit.TestContext;
-import mock.fixtures.DogFixture;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,9 +14,9 @@ public class VertxMVCTestBase {
 
     @Before
     public void setUp(TestContext context) throws Exception {
-    	vertx = Vertx.vertx();
+        vertx = Vertx.vertx();
         vertx.deployVerticle("integration.TestVerticle", context.asyncAssertSuccess(handler -> {
-        	assertTrue(DogFixture.dogs.size() > 0);
+            assertTrue(TestVerticle.dogService.size() > 0);
         }));
     }
 
@@ -25,7 +24,7 @@ public class VertxMVCTestBase {
     public void tearDown(TestContext context) throws Exception {
         if (vertx != null) {
             vertx.close(context.asyncAssertSuccess(handler -> {
-            	assertTrue(DogFixture.dogs.isEmpty());
+                assertTrue(TestVerticle.dogService.isEmpty());
             }));
         }
     }
