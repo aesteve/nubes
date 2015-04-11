@@ -17,6 +17,7 @@ public class Config {
 	public String webroot;
 	public String assetsPath;
 	public String tplDir;
+	public boolean displayErrors;
 	
 	/**
 	 * TODO : check config instead of throwing exceptions
@@ -47,6 +48,7 @@ public class Config {
 		config.webroot = json.getString("webroot", "web/assets");
 		config.assetsPath = json.getString("static-path", "/assets");
 		config.tplDir = json.getString("views-dir", "web/views");
+		config.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
 		return config;
 	}
 }
