@@ -1,19 +1,18 @@
 package io.vertx.mvc.handlers.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.impl.Utils;
 import io.vertx.mvc.Config;
 import io.vertx.mvc.exceptions.HttpException;
+import io.vertx.mvc.marshallers.PayloadMarshaller;
+import io.vertx.mvc.utils.StackTracePrinter;
 import io.vertx.mvc.views.TemplateEngineManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ErrorHandler implements Handler<RoutingContext> {
 
@@ -23,17 +22,18 @@ public class ErrorHandler implements Handler<RoutingContext> {
 	private Config config;
 	private Map<Integer, String> errorTemplates;
 	private TemplateEngineManager templManager;
+	private Map<String, PayloadMarshaller> marshallers;
 	
-	public ErrorHandler(Config config, TemplateEngineManager templManager) {
+	public ErrorHandler(Config config, TemplateEngineManager templManager, HashMap<String, PayloadMarshaller> marshallers) {
 		this.config = config;
 		this.templManager = templManager;
+		this.marshallers = marshallers;
 		errorTemplates = new HashMap<Integer, String>();
 		addDefaultErrorPages();
 	}
 	
 	@Override
 	public void handle(RoutingContext context) {
-		Vertx vertx = context.vertx();
 		Throwable cause = context.failure();
 		HttpServerResponse response = context.response();
 		log.error("Error caught in routing context", cause);
@@ -43,40 +43,24 @@ public class ErrorHandler implements Handler<RoutingContext> {
 			response.setStatusMessage(he.getMessage());
 			if (isView(context)) {
 				String tpl = errorTemplates.get(he.getStatusCode());
-				if (tpl != null) {
-					try {
-						response.end(Utils.readFileToString(vertx, tpl));
-					} catch(VertxException ve) {
-						log.error("Could not read error template : "+tpl, ve);
-						response.end(DEFAULT_ERROR_MSG);
-					}
-				} else {
-					response.end(he.getMessage());
-				}
+				renderViewError(tpl, context, he);
 			}
 			else {
-				// find the best marshaller
-				// marshall error
+				PayloadMarshaller marshaller = marshallers.get(context.get("best-content-type"));
+				if (marshaller != null) {
+					marshaller.marshallHttpError(he, config.displayErrors);
+				}
 			}
 		} else if (cause != null) {
 			response.setStatusCode(500);
 			if (isView(context)) {
 				String tplFile = errorTemplates.get(500);
-				try {
-					String tpl = Utils.readFileToString(vertx, tplFile);
-					if (config.displayErrors) {
-						tplFile.replace("{errorMsg}", cause.getMessage());
-						StringBuilder sb = new StringBuilder();
-						tplFile.replace("{stack}", createStackTrace(sb, cause));
-					} else {
-						tplFile.replace("{errorMsg}", DEFAULT_ERROR_MSG);
-						tplFile.replace("{stack}", "");
-					}
-					
-				} catch(VertxException ve) {
-					log.error("Could not read error template : "+tplFile, ve);
-					response.end(DEFAULT_ERROR_MSG);
-				}
+				renderViewError(tplFile, context, cause);
+			} else {
+				PayloadMarshaller marshaller = marshallers.get(context.get("best-content-type"));
+				if (marshaller != null) {
+					marshaller.marshallUnexpectedError(cause, config.displayErrors);
+				}			
 			}
 		} else {
 			response.end(DEFAULT_ERROR_MSG);
@@ -95,19 +79,24 @@ public class ErrorHandler implements Handler<RoutingContext> {
 		return context.get("tplName") != null;
 	}
 	
-	private StringBuilder createStackTrace(StringBuilder sb, Throwable t) {
-		sb.append("<div class=\"exception\">");
-		sb.append("<div class=\"exception-msg\">" + t.getMessage() + "</div>");
-		sb.append("<ul class=\"stacktrace\">");
-		for (StackTraceElement ste : t.getStackTrace()) {
-			sb.append("<li>" + ste.toString() + "</li>");
+	private void renderViewError(String tpl, RoutingContext context, Throwable cause) {
+		HttpServerResponse response = context.response();
+		if (tpl != null) {
+			context.put("error", cause);
+			if (config.displayErrors) {
+				context.put("stackTrace", StackTracePrinter.asHtml(null, cause).toString());
+			}
+			templManager.fromViewName(tpl).render(context, tpl, res -> {
+				if (res.succeeded()) {
+					response.end(res.result());
+				} else {
+					log.error("Could not read error template : "+tpl, res.cause());
+					response.end(DEFAULT_ERROR_MSG);
+				}
+			});
+		} else {
+			response.end(cause.getMessage());
 		}
-		sb.append("</ul>");
-		sb.append("</div>");
-		if (t.getCause() != null) {
-			createStackTrace(sb, t.getCause());
-		}
-		return sb;
 	}
 	
 }

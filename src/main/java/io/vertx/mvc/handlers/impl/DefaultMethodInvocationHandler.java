@@ -1,18 +1,15 @@
 package io.vertx.mvc.handlers.impl;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.exceptions.HttpException;
 import io.vertx.mvc.handlers.AbstractMethodInvocationHandler;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
 
     public DefaultMethodInvocationHandler(Object instance, Method method, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors) {
         super(instance, method, typedInjectors, annotInjectors);
@@ -28,11 +25,14 @@ public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHand
         } catch (HttpException he) {
             routingContext.response().setStatusCode(he.getStatusCode());
             routingContext.response().setStatusMessage(he.getStatusMessage());
-            routingContext.fail(he.getStatusCode());
+            routingContext.fail(he);
+            return;
+        } catch(InvocationTargetException ite) {
+        	routingContext.fail(ite.getCause());
+        	return;
         } catch (Throwable others) {
-            log.error(others);
             routingContext.fail(others);
+            return;
         }
-
     }
 }

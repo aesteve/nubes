@@ -9,6 +9,7 @@ import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.filters.AfterFilter;
 import io.vertx.mvc.annotations.filters.BeforeFilter;
 import io.vertx.mvc.annotations.routing.Path;
+import io.vertx.mvc.annotations.routing.ServerRedirect;
 import io.vertx.mvc.handlers.AnnotationProcessor;
 import io.vertx.mvc.handlers.AnnotationProcessorRegistry;
 import io.vertx.mvc.handlers.Processor;
@@ -40,6 +41,7 @@ public class RouteDiscovery {
     private TypedParamInjectorRegistry typedInjectors;
     private AnnotatedParamInjectorRegistry annotInjectors;
     private ServiceRegistry serviceRegistry;
+    private RouteRegistry routeRegistry;
 
     public RouteDiscovery(Router router, Config config, Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers, Map<Class<?>, Processor> typeProcessors, AnnotationProcessorRegistry apRegistry, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors, ServiceRegistry serviceRegistry) {
         this.router = router;
@@ -50,12 +52,13 @@ public class RouteDiscovery {
         this.typedInjectors = typedInjectors;
         this.annotInjectors = annotInjectors;
         this.serviceRegistry = serviceRegistry;
+        this.routeRegistry = new RouteRegistry();
     }
 
     public void createRoutes() {
         List<MVCRoute> routes = extractRoutesFromControllers();
         routes.forEach(route -> {
-            route.attachHandlersToRouter(router);
+            route.attachHandlersToRouter(router, null, null);
         });
     }
 
@@ -119,13 +122,22 @@ public class RouteDiscovery {
                         }
                         AnnotationProcessor<?> annProcessor = apRegistry.getProcessor(methodAnnotation);
                         if (annProcessor != null) {
+                        	System.out.println("add annotation processor : " + annProcessor + " onto : " + route);
                             route.addProcessor(annProcessor);
                         }
+                    }
+                    if (basePath.contains("redirect")) {
+                    	System.out.println("processors = "+processors);
                     }
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
                     route.setMainHandler(method);
                     routes.add(route);
+//                    routeRegistry.register(controller, method, route);
+//                    if (method.isAnnotationPresent(ServerRedirect.class)) {
+//                    	ServerRedirect redirect = method.getAnnotation(ServerRedirect.class);
+//                    	routeRegistry.bindRedirect(route, redirect);
+//                    }
                 }
             }
         }
