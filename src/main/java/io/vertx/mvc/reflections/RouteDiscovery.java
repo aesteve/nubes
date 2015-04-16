@@ -9,7 +9,6 @@ import io.vertx.mvc.annotations.Controller;
 import io.vertx.mvc.annotations.filters.AfterFilter;
 import io.vertx.mvc.annotations.filters.BeforeFilter;
 import io.vertx.mvc.annotations.routing.Path;
-import io.vertx.mvc.annotations.routing.ServerRedirect;
 import io.vertx.mvc.handlers.AnnotationProcessor;
 import io.vertx.mvc.handlers.AnnotationProcessorRegistry;
 import io.vertx.mvc.handlers.Processor;
@@ -122,22 +121,22 @@ public class RouteDiscovery {
                         }
                         AnnotationProcessor<?> annProcessor = apRegistry.getProcessor(methodAnnotation);
                         if (annProcessor != null) {
-                        	System.out.println("add annotation processor : " + annProcessor + " onto : " + route);
+                            System.out.println("add annotation processor : " + annProcessor + " onto : " + route);
                             route.addProcessor(annProcessor);
                         }
                     }
                     if (basePath.contains("redirect")) {
-                    	System.out.println("processors = "+processors);
+                        System.out.println("processors = " + processors);
                     }
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
                     route.setMainHandler(method);
                     routes.add(route);
-//                    routeRegistry.register(controller, method, route);
-//                    if (method.isAnnotationPresent(ServerRedirect.class)) {
-//                    	ServerRedirect redirect = method.getAnnotation(ServerRedirect.class);
-//                    	routeRegistry.bindRedirect(route, redirect);
-//                    }
+                    // routeRegistry.register(controller, method, route);
+                    // if (method.isAnnotationPresent(ServerRedirect.class)) {
+                    // ServerRedirect redirect = method.getAnnotation(ServerRedirect.class);
+                    // routeRegistry.bindRedirect(route, redirect);
+                    // }
                 }
             }
         }

@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class VertxMVC {
+public class VertxNubes {
 
     private Config config;
     private Vertx vertx;
@@ -76,7 +76,7 @@ public class VertxMVC {
      * 
      * @param vertx
      */
-    public VertxMVC(Vertx vertx, JsonObject json) throws MissingConfigurationException {
+    public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
         this.vertx = vertx;
         config = Config.fromJsonObject(json);
         registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());

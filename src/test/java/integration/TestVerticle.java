@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.apex.Router;
-import io.vertx.mvc.VertxMVC;
+import io.vertx.mvc.VertxNubes;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +21,7 @@ public class TestVerticle extends AbstractVerticle {
 
     public static DogService dogService;
 
-    private VertxMVC mvc;
+    private VertxNubes mvc;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -29,7 +29,7 @@ public class TestVerticle extends AbstractVerticle {
         options.setPort(PORT);
         options.setHost(HOST);
         HttpServer server = vertx.createHttpServer(options);
-        mvc = new VertxMVC(vertx, createTestConfig());
+        mvc = new VertxNubes(vertx, createTestConfig());
         dogService = new DogService();
         mvc.registerService(dogService); // TODO : discover services
         Future<Router> future = Future.future();
