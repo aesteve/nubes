@@ -1,4 +1,4 @@
-# vertx-mvc
+# vertx-nubes
 ## Provides an annotation layer (jersey-like) on top of vertx-apex
 
 
@@ -136,9 +136,9 @@ Will save our favorite cartoon dog into the database, then return an HTTP 204.
 
 # How it works
 
-## VertxMVC the nervous system
+## VertxNubes the nervous system
 
-The starting point of every work with the framwork is creatning a `VertxMVC` instance.
+The starting point of every work with the framwork is creatning a `VertxNubes` instance.
 
 You'll notice the constructor takes two arguments : 
 
@@ -147,14 +147,14 @@ You'll notice the constructor takes two arguments :
 
 Please take a look at [docs/CONFIG.md](the configuration doc) for the configuration options.
 
-Once you've created the VertxMVC instance, you need to bootstrap it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Apex routes/handlers and attach it to an Apex router.
+Once you've created the VertxNubes instance, you need to bootstrap it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Apex routes/handlers and attach it to an Apex router.
 
-You can provide your own `Router`, if you want to keep to add custom routes and stuff, you can also let `VertxMVC` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping.
+You can provide your own `Router`, if you want to keep to add custom routes and stuff, you can also let `VertxNubes` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping.
 
 ## What is a `@Controller` ?
 
-A controller is a Java singleton defining a set of methods which will be translated into Apex handlers.
-It's important that your controller defines a no-argument constructor, VertxMVC expect that.
+A controller is a Java singleton defining a set of vmethods which will be translated into Apex handlers.
+It's important that your controller defines a no-argument constructor, VertxNubes expect that.
 
 In a controller you'll find routes, annotated with `@Path` but also filters of two differents types : `@BeforeFilter` and `@AfterFilter`.
 
@@ -174,7 +174,7 @@ Keep in mind that under the hood, every of your method is mapped as an Apex hand
 
 ### What is an AnnotationHandler
 
-It's a simple Apex Handler<RoutingContext>, mapped by an annotation. This means when VertxMVC discovers a method annotated with this annotation, it will attach the Handler **before** your routing method is called.
+It's a simple Apex Handler<RoutingContext>, mapped by an annotation. This means when VertxNubes discovers a method annotated with this annotation, it will attach the Handler **before** your routing method is called.
 
 ### What is an AnnotationProcessor
 
@@ -194,12 +194,12 @@ Before the request reaches the routing method, you'd check the ETag header of th
 
 After your routing method has been called, you would then calculate the Etag for the response body.
 
-The `VertxMVC` class provides an API so that you can register your own annotation handlers / processors. It (itself) uses this API for every default annotation (ContentType, ...).
+The `VertxNubes` class provides an API so that you can register your own annotation handlers / processors. It (itself) uses this API for every default annotation (ContentType, ...).
 
 
 ## Type injection
 
-One other feature of `VertxMVC` is the ability to call every method you defined with the right parameter instances, determined at runtime.
+One other feature of `VertxNubes` is the ability to call every method you defined with the right parameter instances, determined at runtime.
 
 There are two types of parameters you can use : 
 
@@ -235,7 +235,7 @@ public void myDog(RoutingContext context, Vertx vertx) {
 
 The vertx instance is simply injected by executing : `context.vertx()`. Well, you could have guessed, or even better, you could have done it yourself.
 
-What's more interesting though, is to provide **your own** parameter injector. The `VertxMVC` holds a registry and itself uses the registry for the default types it knows how to handle (RoutingContext, Vertx, Payload, ...).
+What's more interesting though, is to provide **your own** parameter injector. The `VertxNubes` holds a registry and itself uses the registry for the default types it knows how to handle (RoutingContext, Vertx, Payload, ...).
 
 Simple implement the `ParameterInjector` interface, to provide the way to inject an object given its type and the RoutingContext.
 
@@ -252,7 +252,7 @@ public class UserInjector implements ParameterInjector<User> {
 Then, before bootstrapping, you would call :
 
 ```java
-vertxMVC.registerTypeParamInjector(User.class, new UserInjector());
+vertxNubes.registerTypeParamInjector(User.class, new UserInjector());
 ```
 
 In your routing methods (or filters) you're now able to write : 
