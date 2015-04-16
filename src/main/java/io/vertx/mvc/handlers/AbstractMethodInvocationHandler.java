@@ -3,7 +3,6 @@ package io.vertx.mvc.handlers;
 import io.vertx.core.Handler;
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.mvc.exceptions.BadRequestException;
-import io.vertx.mvc.exceptions.HttpException;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjector;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.ParamInjector;
@@ -31,7 +30,7 @@ public abstract class AbstractMethodInvocationHandler implements Handler<Routing
     @Override
     abstract public void handle(RoutingContext routingContext);
 
-    protected Object[] getParameters(RoutingContext routingContext) throws HttpException {
+    protected Object[] getParameters(RoutingContext routingContext) throws BadRequestException {
         List<Object> parameters = new ArrayList<Object>();
         Class<?>[] parameterClasses = method.getParameterTypes();
         Annotation[][] parametersAnnotations = method.getParameterAnnotations();

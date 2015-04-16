@@ -28,6 +28,7 @@ import io.vertx.mvc.handlers.AnnotationProcessorRegistry;
 import io.vertx.mvc.handlers.Processor;
 import io.vertx.mvc.handlers.impl.ClientRedirectProcessor;
 import io.vertx.mvc.handlers.impl.ContentTypeProcessor;
+import io.vertx.mvc.handlers.impl.DefaultErrorHandler;
 import io.vertx.mvc.handlers.impl.PaginationProcessor;
 import io.vertx.mvc.handlers.impl.PayloadTypeProcessor;
 import io.vertx.mvc.handlers.impl.RateLimitationHandler;
@@ -70,6 +71,8 @@ public class VertxNubes {
     private Map<Class<?>, Processor> typeProcessors;
     private Map<String, PayloadMarshaller> marshallers;
     private ServiceRegistry serviceRegistry;
+    private Handler<RoutingContext> failureHandler;
+    private TemplateEngineManager templManager;
 
     /**
      * TODO check config
@@ -87,6 +90,7 @@ public class VertxNubes {
         typeInjectors = new TypedParamInjectorRegistry();
         annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
         serviceRegistry = new ServiceRegistry(vertx);
+        templManager = new TemplateEngineManager(config);
         CookieHandler cookieHandler = CookieHandler.create();
         BodyHandler bodyHandler = BodyHandler.create();
         registerAnnotationHandler(Cookies.class, cookieHandler);
@@ -98,12 +102,14 @@ public class VertxNubes {
         registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
         registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessor());
         registerAnnotationProcessor(ContentType.class, new ContentTypeProcessor());
-        registerAnnotationProcessor(View.class, new ViewProcessor(new TemplateEngineManager(config)));
+        registerAnnotationProcessor(View.class, new ViewProcessor(templManager));
         registerMarshaller("application/json", new BoonPayloadMarshaller());
+        failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
     }
 
     public void bootstrap(Future<Router> future, Router paramRouter) {
         router = paramRouter;
+        router.route().failureHandler(failureHandler);
         RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry);
         routeDiscovery.createRoutes();
         StaticHandler staticHandler;
@@ -130,7 +136,6 @@ public class VertxNubes {
         });
 
         servicesFuture.setHandler(result -> {
-            System.out.println("services started correctly");
             if (result.succeeded()) {
                 fixtureLoader.setUp(fixturesFuture);
             } else {
@@ -161,6 +166,10 @@ public class VertxNubes {
         });
         serviceRegistry.stopAll(servicesFuture);
         fixtureLoader.tearDown(fixturesFuture);
+    }
+
+    public void setFailureHandler(Handler<RoutingContext> handler) {
+        failureHandler = handler;
     }
 
     public void registerService(Service service) {

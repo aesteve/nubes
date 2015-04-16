@@ -8,22 +8,23 @@ import io.vertx.mvc.annotations.routing.Path;
 
 @Controller("/accessibleAfterRedirect")
 public class AfterRedirectController {
-	
-	@BeforeFilter
-	public void before(RoutingContext context) {
-		context.response().putHeader("afterredirect-beforefilter", "true");
-		context.next();
-	}
-	
-	@Path("/after")
-	public void handleRedirect(RoutingContext context) {
-		context.response().putHeader("afterredirect-method", "true");
-		context.next();
-	}
-	
-	@AfterFilter
-	public void after(RoutingContext context) {
-		context.response().putHeader("after-redirect-afterfilter", "true");
-		context.response().end();
-	}
+
+    @BeforeFilter
+    public void before(RoutingContext context) {
+        context.response().putHeader("afterredirect-beforefilter", "true");
+        context.next();
+    }
+
+    @Path("/after")
+    public void handleRedirect(RoutingContext context) {
+        context.response().putHeader("afterredirect-method", "true");
+        context.next();
+    }
+
+    @AfterFilter
+    public void after(RoutingContext context) {
+        context.response().putHeader("afterredirect-afterfilter", "true");
+        context.response().setStatusCode(204);
+        context.response().end();
+    }
 }

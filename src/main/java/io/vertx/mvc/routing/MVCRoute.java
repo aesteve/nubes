@@ -46,9 +46,9 @@ public class MVCRoute {
     }
 
     public void redirectTo(MVCRoute anotherRoute) {
-    	redirectRoute = anotherRoute;
+        redirectRoute = anotherRoute;
     }
-    
+
     public void addProcessor(Processor processor) {
         processors.add(processor);
     }
@@ -58,8 +58,10 @@ public class MVCRoute {
     }
 
     public void addProcessorsFirst(Set<Processor> processors) {
-        processors.addAll(this.processors);
-        this.processors = processors;
+        Set<Processor> oldProcessors = this.processors;
+        this.processors = new LinkedHashSet<Processor>();
+        this.processors.addAll(processors);
+        this.processors.addAll(oldProcessors);
     }
 
     public void attachHandler(Handler<RoutingContext> handler) {
@@ -92,14 +94,14 @@ public class MVCRoute {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void attachHandlersToRouter(Router router, HttpMethod httpMethod, String path) {
-    	if (httpMethod == null) {
-    		httpMethod = this.httpMethod;
-    	}
-    	if (path == null) {
-    		path = this.path;
-    	}
-    	final HttpMethod httpMethodFinal = httpMethod;
-    	final String pathFinal = path;
+        if (httpMethod == null) {
+            httpMethod = this.httpMethod;
+        }
+        if (path == null) {
+            path = this.path;
+        }
+        final HttpMethod httpMethodFinal = httpMethod;
+        final String pathFinal = path;
         processors.forEach(processor -> {
             router.route(httpMethodFinal, pathFinal).handler(context -> {
                 if (processor instanceof AnnotationProcessor) {
@@ -117,24 +119,24 @@ public class MVCRoute {
             router.route(httpMethodFinal, pathFinal).handler(handler);
         });
         beforeFilters.forEach(filter -> {
-            setHandler(router, filter);
+            setHandler(router, filter, httpMethodFinal, pathFinal);
         });
-        setHandler(router, mainHandler);
+        setHandler(router, mainHandler, httpMethodFinal, pathFinal);
         if (redirectRoute != null) {
-        	System.out.println("redirecting to : "+redirectRoute);
-        	// intercepted -> redirected => do not call post processing handlers
-        	redirectRoute.attachHandlersToRouter(router, httpMethod, path);
+            System.out.println("redirecting to : " + redirectRoute);
+            // intercepted -> redirected => do not call post processing handlers
+            redirectRoute.attachHandlersToRouter(router, httpMethod, path);
         }
         afterFilters.forEach(filter -> {
-            setHandler(router, filter);
+            setHandler(router, filter, httpMethodFinal, pathFinal);
         });
         processors.forEach(processor -> {
             router.route(httpMethodFinal, pathFinal).handler(processor::postHandle);
         });
-        
+
     }
 
-    private void setHandler(Router router, Method method) {
+    private void setHandler(Router router, Method method, HttpMethod httpMethod, String path) {
         Handler<RoutingContext> handler;
         if (method.isAnnotationPresent(Blocking.class)) {
             handler = new BlockingMethodInvocationHandler(instance, method, typedInjectors, annotatedInjectors);

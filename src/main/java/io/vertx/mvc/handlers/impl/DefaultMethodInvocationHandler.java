@@ -1,7 +1,7 @@
 package io.vertx.mvc.handlers.impl;
 
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.exceptions.HttpException;
+import io.vertx.mvc.exceptions.BadRequestException;
 import io.vertx.mvc.handlers.AbstractMethodInvocationHandler;
 import io.vertx.mvc.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.mvc.reflections.injectors.typed.TypedParamInjectorRegistry;
@@ -17,19 +17,27 @@ public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHand
 
     @Override
     public void handle(RoutingContext routingContext) {
+        System.out.println("invoking ?" + method.getName());
+        System.out.println("context failed ?" + routingContext.failed());
+
         if (routingContext.response().ended()) {
             return;
         }
-        try {
-            method.invoke(instance, getParameters(routingContext));
-        } catch (HttpException he) {
-            routingContext.response().setStatusCode(he.getStatusCode());
-            routingContext.response().setStatusMessage(he.getStatusMessage());
-            routingContext.fail(he);
+        if (routingContext.failed()) {
             return;
-        } catch(InvocationTargetException ite) {
-        	routingContext.fail(ite.getCause());
-        	return;
+        }
+        Object[] parameters = null;
+        try {
+            parameters = getParameters(routingContext);
+        } catch (BadRequestException bre) {
+            routingContext.fail(bre);
+            return;
+        }
+        try {
+            method.invoke(instance, parameters);
+        } catch (InvocationTargetException ite) {
+            routingContext.fail(ite.getCause());
+            return;
         } catch (Throwable others) {
             routingContext.fail(others);
             return;
