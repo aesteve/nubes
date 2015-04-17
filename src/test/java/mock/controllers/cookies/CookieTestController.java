@@ -2,10 +2,10 @@ package mock.controllers.cookies;
 
 import io.vertx.ext.apex.RoutingContext;
 import io.vertx.ext.apex.Cookie;
-import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.cookies.Cookies;
-import io.vertx.mvc.annotations.routing.Path;
-import io.vertx.mvc.controllers.AbstractController;
+import io.vertx.nubes.annotations.Controller;
+import io.vertx.nubes.annotations.cookies.Cookies;
+import io.vertx.nubes.annotations.routing.Path;
+import io.vertx.nubes.controllers.AbstractController;
 
 @Controller("/cookies/")
 public class CookieTestController extends AbstractController {

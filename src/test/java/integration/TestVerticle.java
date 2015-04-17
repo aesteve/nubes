@@ -7,7 +7,7 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.apex.Router;
-import io.vertx.mvc.VertxNubes;
+import io.vertx.nubes.VertxNubes;
 
 import java.util.concurrent.TimeUnit;
 

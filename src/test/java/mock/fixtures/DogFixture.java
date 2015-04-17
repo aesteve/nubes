@@ -2,7 +2,7 @@ package mock.fixtures;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.mvc.fixtures.Fixture;
+import io.vertx.nubes.fixtures.Fixture;
 import mock.domains.Dog;
 import mock.services.DogService;
 

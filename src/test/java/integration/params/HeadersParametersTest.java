@@ -5,7 +5,7 @@ import integration.VertxMVCTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.mvc.reflections.adapters.impl.DefaultParameterAdapter;
+import io.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

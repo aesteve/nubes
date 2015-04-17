@@ -1,10 +1,10 @@
 package mock.controllers.errors;
 
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.mixins.ContentType;
-import io.vertx.mvc.annotations.routing.Path;
-import io.vertx.mvc.exceptions.BadRequestException;
+import io.vertx.nubes.annotations.Controller;
+import io.vertx.nubes.annotations.mixins.ContentType;
+import io.vertx.nubes.annotations.routing.Path;
+import io.vertx.nubes.exceptions.BadRequestException;
 
 @Controller("/errors/json")
 @ContentType("application/json")

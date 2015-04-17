@@ -16,18 +16,18 @@ There are two types of parameters.
 * By annotation :
 	* `@CookieValue("my.cookie") Cookie cookie` the value of a given cookie (here : "my.cookie")
 	* `@Header("Accept") String acceptHeader` some http request header 
-	* `@Param("from") Date from` a parameter of the http request
+	* `@Param("from") Date from` some parameter (named 'from') of the http request
 	* `@PathParam("userId") Long userId` a parameter captured in route path
 	* `@Params YourObject backedParameters` fulfills an object with the whole parameters' map (from request query params / path params) 
-	* `@RequestBody YourObject unmarshalledFromRequest` the unmarshalled request body as an object of your type
+	* `@RequestBody YourObject unmarshalledFromRequest` the request body unmarshalled as an object of your specified type
 
 ## Extending the framework
 
-You can provide your own "injectors". An injector is an interface you have to implement in order to tell the framework how to inject a parameter instance into the controller's method.
+You can provide your own `injectors`. An injector is an interface you have to implement in order to tell the framework how to inject a parameter instance into the route's method.
 
 The framework itself uses this API in order to manage the inject parameters mentionned above.
 
-Simply call `VertxMVC.registerXXXInjector` where XXX is either
+Simply call `VertxNubes.registerXXXInjector` where XXX is either
 
 * Typed
 or 
@@ -39,7 +39,7 @@ The type of the parameter (and the RoutingContext) is sufficient to determine th
 
 In this case you should implement `io.vertx.mvc.injectors.typed.ParamInjector`.
 
-To help you understand, let's have a look at a very simple existing example : the `VertxInjector` (that the framework uses).
+To help you understand, let's have a look at a very simple existing example : the `VertxInjector` (that the framework itself registers).
 
 ```java
 public class VertxParamInjector implements ParamInjector<Vertx> {
@@ -52,9 +52,11 @@ public class VertxParamInjector implements ParamInjector<Vertx> {
 }
 ```
 
-Nothing really interesting to mention here :)
+Nothing really fancy there :)
 
-Now let's imagine you store a map of : 
+Let's dive into a more concrete example
+
+Let's imagine you store a map of : 
 ```json
 {
 	"token":"userName"
@@ -117,3 +119,58 @@ public class MyController {
 
 }
 ```
+
+
+### Annotated parameters
+
+Sometimes the type of the parameter is not enough to tell the framework how it could resolve and inject the correct instance into your route.
+
+In this case, you can annotate the parameter to provide more information.
+
+Once again, let's take a concrete existing example : the `@Header` annotation. You want to inject an header value into your method, but which one ? You have to provide, in some way the name of the header. This is done through the `value()` (default) method of the `Header` annotation.
+
+Let's have a look at how it's implemented (the code is simplified for now) :
+
+First : the annotation is a simple Runtime annotation.
+
+```java
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Header {
+	public String value();
+    boolean mandatory() default false;
+}
+
+```
+
+You'll notice the `mandatory()` method too.
+
+How is the injector implemented ?
+
+```java
+public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
+
+	@Override
+	public Object resolve(RoutingContext context, Header annotation, Class<?> resultClass) throws BadRequestException {
+		String headerValue = context.request().getHeader(annotation.value());
+		if(headerValue == null) {
+			if (annotation.mandatory()) {
+				throw new BadRequestException("Header : " + annotation.value()+ " is mandatory");
+			} else {
+				return null;
+			}
+		}
+		return headerValue;
+	}
+	
+}
+```
+
+We simply get the value of the annotation, this is the header name.
+
+Then we get the header value for this header name, thanks to Apex's `RoutingContext`. 
+
+We could just return this value, null or not. But when we defined the annotation we added a `mandatory()` parameter indicating that the header must be set by the client.
+
+Therefore, in the method body, if the header is absent, we throw a `BadRequestException`. In this case, the framework will fail the `RoutingContext` with an http status code 400 and a proper error message indicating that the expected header is missing.

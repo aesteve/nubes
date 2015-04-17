@@ -7,7 +7,7 @@ import java.util.Random;
 import mock.domains.Dog;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.mvc.services.Service;
+import io.vertx.nubes.services.Service;
 
 public class DogService implements Service {
 

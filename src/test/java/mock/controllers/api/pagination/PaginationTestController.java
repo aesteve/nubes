@@ -1,11 +1,11 @@
 package mock.controllers.api.pagination;
 
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.mixins.ContentType;
-import io.vertx.mvc.annotations.routing.Path;
-import io.vertx.mvc.context.PaginationContext;
-import io.vertx.mvc.marshallers.Payload;
+import io.vertx.nubes.annotations.Controller;
+import io.vertx.nubes.annotations.mixins.ContentType;
+import io.vertx.nubes.annotations.routing.Path;
+import io.vertx.nubes.context.PaginationContext;
+import io.vertx.nubes.marshallers.Payload;
 
 import java.util.ArrayList;
 import java.util.List;

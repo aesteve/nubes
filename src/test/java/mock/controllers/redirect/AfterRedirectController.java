@@ -1,10 +1,10 @@
 package mock.controllers.redirect;
 
 import io.vertx.ext.apex.RoutingContext;
-import io.vertx.mvc.annotations.Controller;
-import io.vertx.mvc.annotations.filters.AfterFilter;
-import io.vertx.mvc.annotations.filters.BeforeFilter;
-import io.vertx.mvc.annotations.routing.Path;
+import io.vertx.nubes.annotations.Controller;
+import io.vertx.nubes.annotations.filters.AfterFilter;
+import io.vertx.nubes.annotations.filters.BeforeFilter;
+import io.vertx.nubes.annotations.routing.Path;
 
 @Controller("/accessibleAfterRedirect")
 public class AfterRedirectController {
