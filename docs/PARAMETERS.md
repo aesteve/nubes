@@ -63,7 +63,7 @@ Let's imagine you store a map of :
 }
 ```
 
-somewhere (maybe in `vertx.sharedData().localMap()` ? even though it's probably not a bes practice... but let's imagine...). 
+somewhere (maybe in `vertx.sharedData().localMap()` ? even though it's probably not a best practice... but let's imagine...). 
 
 You could write an `UserParamInjector` like this :
 

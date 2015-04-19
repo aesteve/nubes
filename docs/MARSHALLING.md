@@ -81,7 +81,7 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
 
 There are 4 methods to override in `PayloadMarshaller`.
 
-* `marshallPayload` : from a POJO, you return a Json string
+* `marshallPayload` : from a POJO, you return a string (the response body)
 * `unmarshallPayload` : from a String (the request body as a String), you return a typed object
 * `marshallHttpError` : from an http error (i.e. an error related to a well known http code : 404, 406, 400, ...) : how would you just tell the client about it
 * `marshallUnexpectedError` : in case of a bug, (error 500), how would you tell the API client ? 
