@@ -20,7 +20,6 @@ public class DogService implements Service {
 
     @Override
     public void start(Future<Void> future) {
-        System.out.println("dog service started");
         dogs = new ArrayList<Dog>();
         future.complete();
     }

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -16,7 +16,7 @@ import io.vertx.ext.unit.TestContext;
  * Since the assets path is set as a relative path ("web/assets/") it can only work when ran from the root of the project
  */
 @RunWith(VertxUnitRunner.class)
-public class AssetsTest extends VertxMVCTestBase {
+public class AssetsTest extends VertxNubesTestBase {
 	@Test
 	public void txtFile(TestContext context) throws Exception {
 		Async async = context.async();

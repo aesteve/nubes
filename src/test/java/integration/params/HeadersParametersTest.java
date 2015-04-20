@@ -1,7 +1,7 @@
 package integration.params;
 
 import static org.junit.Assert.assertEquals;
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(VertxUnitRunner.class)
-public class HeadersParametersTest extends VertxMVCTestBase {
+public class HeadersParametersTest extends VertxNubesTestBase {
 
 	private SimpleDateFormat parser;
 	

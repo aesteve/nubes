@@ -5,13 +5,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 @RunWith(VertxUnitRunner.class)
-public class RedirectTest extends VertxMVCTestBase {
+public class RedirectTest extends VertxNubesTestBase {
 
     @Test
     public void serverRedirect(TestContext context) {

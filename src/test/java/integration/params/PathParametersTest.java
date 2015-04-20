@@ -6,14 +6,14 @@ import mock.controllers.params.PathParametersTestController.Animal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
 @RunWith(VertxUnitRunner.class)
-public class PathParametersTest extends VertxMVCTestBase {
+public class PathParametersTest extends VertxNubesTestBase {
 
     @Test
     public void testStringParam(TestContext context) {

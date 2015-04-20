@@ -6,13 +6,13 @@ import mock.controllers.methods.SamePathDifferentMethodsController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
 @RunWith(VertxUnitRunner.class)
-public class MethodsTest extends VertxMVCTestBase {
+public class MethodsTest extends VertxNubesTestBase {
 
     public static String path = "/testmethods/" + SamePathDifferentMethodsController.PATH;
 

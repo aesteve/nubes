@@ -11,21 +11,21 @@ import io.vertx.nubes.handlers.impl.BlockingMethodInvocationHandler;
 import io.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
+import io.vertx.nubes.utils.Filter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class MVCRoute {
 
     private final String path;
     private final HttpMethod httpMethod;
     private final Object instance;
-    private List<Method> beforeFilters;
-    private List<Method> afterFilters;
+    private Set<Filter> beforeFilters;
+    private Set<Filter> afterFilters;
     private Method mainHandler;
     private Set<Handler<RoutingContext>> handlers;
     private Set<Processor> processors;
@@ -37,8 +37,8 @@ public class MVCRoute {
         this.instance = instance;
         this.path = path;
         this.httpMethod = method;
-        this.beforeFilters = new ArrayList<Method>();
-        this.afterFilters = new ArrayList<Method>();
+        this.beforeFilters = new TreeSet<Filter>();
+        this.afterFilters = new TreeSet<Filter>();
         this.handlers = new LinkedHashSet<Handler<RoutingContext>>();
         this.processors = new LinkedHashSet<Processor>();
         this.typedInjectors = typedInjectors;
@@ -76,11 +76,11 @@ public class MVCRoute {
         this.mainHandler = mainHandler;
     }
 
-    public void addBeforeFilters(List<Method> beforeFilters) {
+    public void addBeforeFilters(Set<Filter> beforeFilters) {
         this.beforeFilters.addAll(beforeFilters);
     }
 
-    public void addAfterFilters(List<Method> afterFilters) {
+    public void addAfterFilters(Set<Filter> afterFilters) {
         this.afterFilters.addAll(afterFilters);
     }
 
@@ -119,16 +119,15 @@ public class MVCRoute {
             router.route(httpMethodFinal, pathFinal).handler(handler);
         });
         beforeFilters.forEach(filter -> {
-            setHandler(router, filter, httpMethodFinal, pathFinal);
+            setHandler(router, filter.method(), httpMethodFinal, pathFinal);
         });
         setHandler(router, mainHandler, httpMethodFinal, pathFinal);
         if (redirectRoute != null) {
-            System.out.println("redirecting to : " + redirectRoute);
             // intercepted -> redirected => do not call post processing handlers
             redirectRoute.attachHandlersToRouter(router, httpMethod, path);
         }
         afterFilters.forEach(filter -> {
-            setHandler(router, filter, httpMethodFinal, pathFinal);
+            setHandler(router, filter.method(), httpMethodFinal, pathFinal);
         });
         processors.forEach(processor -> {
             router.route(httpMethodFinal, pathFinal).handler(processor::postHandle);

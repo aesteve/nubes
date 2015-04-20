@@ -3,7 +3,7 @@ package integration.api.pagination;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class PaginationTest extends VertxMVCTestBase {
+public class PaginationTest extends VertxNubesTestBase {
 
     public void notPaginatedMethod(TestContext context) {
         Async async = context.async();

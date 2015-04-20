@@ -30,7 +30,6 @@ public class RouteRegistry {
 
     public void bindRedirect(MVCRoute route, ServerRedirect redirect) {
         MVCRoute redirectRoute = get(redirect);
-        System.out.println("redirect route for " + route + " is : " + redirectRoute);
         if (redirectRoute != null) {
             route.redirectTo(redirectRoute);
         } else {

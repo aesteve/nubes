@@ -5,14 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 @RunWith(VertxUnitRunner.class)
-public class CookieTest extends VertxMVCTestBase {
+public class CookieTest extends VertxNubesTestBase {
     @Test
     public void testNoCookieValue(TestContext context) {
         Async async = context.async();

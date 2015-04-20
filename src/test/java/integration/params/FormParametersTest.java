@@ -2,7 +2,7 @@ package integration.params;
 
 import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class FormParametersTest extends VertxMVCTestBase {
+public class FormParametersTest extends VertxNubesTestBase {
 
     @Test
     public void testFormString(TestContext context) {

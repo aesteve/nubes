@@ -2,7 +2,7 @@ package integration.views;
 
 import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class ViewsTest extends VertxMVCTestBase {
+public class ViewsTest extends VertxNubesTestBase {
 
     // FIXME : some tests are just hanging out and doing nothing ?
     // While in the browser, everything works fine, even though we render the page 100 times...

@@ -17,9 +17,6 @@ public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHand
 
     @Override
     public void handle(RoutingContext routingContext) {
-        System.out.println("invoking ?" + method.getName());
-        System.out.println("context failed ?" + routingContext.failed());
-
         if (routingContext.response().ended()) {
             return;
         }

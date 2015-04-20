@@ -3,7 +3,7 @@ package integration.api.json;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import integration.TestVerticle;
-import integration.VertxMVCTestBase;
+import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class JsonApiTest extends VertxMVCTestBase {
+public class JsonApiTest extends VertxNubesTestBase {
 
     @Test
     public void noContentType(TestContext context) {

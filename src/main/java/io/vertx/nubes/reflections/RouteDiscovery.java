@@ -19,6 +19,7 @@ import io.vertx.nubes.routing.HttpMethodFactory;
 import io.vertx.nubes.routing.MVCRoute;
 import io.vertx.nubes.services.Service;
 import io.vertx.nubes.services.ServiceRegistry;
+import io.vertx.nubes.utils.Filter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -28,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.reflections.Reflections;
 
@@ -144,13 +146,13 @@ public class RouteDiscovery {
     }
 
     private void extractFiltersFromController(List<MVCRoute> routes, Class<?> controller) {
-        List<Method> beforeFilters = new ArrayList<Method>();
-        List<Method> afterFilters = new ArrayList<Method>();
+        Set<Filter> beforeFilters = new TreeSet<Filter>();
+        Set<Filter> afterFilters = new TreeSet<Filter>();
         for (Method method : controller.getDeclaredMethods()) {
             if (method.getAnnotation(BeforeFilter.class) != null) {
-                beforeFilters.add(method);
+                beforeFilters.add(new Filter(method, method.getAnnotation(BeforeFilter.class)));
             } else if (method.getAnnotation(AfterFilter.class) != null) {
-                afterFilters.add(method);
+                afterFilters.add(new Filter(method, method.getAnnotation(AfterFilter.class)));
             }
         }
         Set<Processor> controllerProcessors = new LinkedHashSet<Processor>();

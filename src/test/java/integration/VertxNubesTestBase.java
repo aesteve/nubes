@@ -9,7 +9,7 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.After;
 import org.junit.Before;
 
-public class VertxMVCTestBase {
+public class VertxNubesTestBase {
     protected Vertx vertx;
 
     @Before
