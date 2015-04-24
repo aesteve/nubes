@@ -7,7 +7,6 @@ import io.vertx.ext.apex.RoutingContext;
 import io.vertx.nubes.annotations.Blocking;
 import io.vertx.nubes.handlers.AnnotationProcessor;
 import io.vertx.nubes.handlers.Processor;
-import io.vertx.nubes.handlers.impl.BlockingMethodInvocationHandler;
 import io.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
@@ -136,13 +135,12 @@ public class MVCRoute {
     }
 
     private void setHandler(Router router, Method method, HttpMethod httpMethod, String path) {
-        Handler<RoutingContext> handler;
+        Handler<RoutingContext> handler = new DefaultMethodInvocationHandler(instance, method, typedInjectors, annotatedInjectors);
         if (method.isAnnotationPresent(Blocking.class)) {
-            handler = new BlockingMethodInvocationHandler(instance, method, typedInjectors, annotatedInjectors);
+            router.route(httpMethod, path).blockingHandler(handler);
         } else {
-            handler = new DefaultMethodInvocationHandler(instance, method, typedInjectors, annotatedInjectors);
+            router.route(httpMethod, path).handler(handler);
         }
-        router.route(httpMethod, path).handler(handler);
     }
 
     @Override
