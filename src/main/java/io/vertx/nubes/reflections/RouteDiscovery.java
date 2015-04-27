@@ -44,8 +44,9 @@ public class RouteDiscovery {
     private AnnotatedParamInjectorRegistry annotInjectors;
     private ServiceRegistry serviceRegistry;
     private RouteRegistry routeRegistry;
+    private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
 
-    public RouteDiscovery(Router router, Config config, Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers, Map<Class<?>, Processor> typeProcessors, AnnotationProcessorRegistry apRegistry, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors, ServiceRegistry serviceRegistry) {
+    public RouteDiscovery(Router router, Config config, Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers, Map<Class<?>, Processor> typeProcessors, AnnotationProcessorRegistry apRegistry, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors, ServiceRegistry serviceRegistry, Map<Class<?>, Handler<RoutingContext>> paramHandlers) {
         this.router = router;
         this.config = config;
         this.annotationHandlers = annotationHandlers;
@@ -54,6 +55,7 @@ public class RouteDiscovery {
         this.typedInjectors = typedInjectors;
         this.annotInjectors = annotInjectors;
         this.serviceRegistry = serviceRegistry;
+        this.paramHandlers = paramHandlers;
         this.routeRegistry = new RouteRegistry();
     }
 
@@ -101,6 +103,10 @@ public class RouteDiscovery {
                     Processor typeProcessor = typeProcessors.get(parameterClass);
                     if (typeProcessor != null) {
                         processors.add(typeProcessor);
+                    }
+                    Handler<RoutingContext> handler = paramHandlers.get(parameterClass);
+                    if (handler != null) {
+                        paramsHandlers.add(handler);
                     }
                     Annotation[] paramAnnotations = parametersAnnotations[i];
                     if (paramAnnotations != null) {

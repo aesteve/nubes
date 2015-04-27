@@ -29,10 +29,14 @@ import io.vertx.nubes.handlers.Processor;
 import io.vertx.nubes.handlers.impl.ClientRedirectProcessor;
 import io.vertx.nubes.handlers.impl.ContentTypeProcessor;
 import io.vertx.nubes.handlers.impl.DefaultErrorHandler;
+import io.vertx.nubes.handlers.impl.LocaleHandler;
 import io.vertx.nubes.handlers.impl.PaginationProcessor;
 import io.vertx.nubes.handlers.impl.PayloadTypeProcessor;
 import io.vertx.nubes.handlers.impl.RateLimitationHandler;
 import io.vertx.nubes.handlers.impl.ViewProcessor;
+import io.vertx.nubes.i18n.LocaleResolver;
+import io.vertx.nubes.i18n.LocaleResolverRegistry;
+import io.vertx.nubes.i18n.impl.AcceptLanguageLocaleResolver;
 import io.vertx.nubes.marshallers.Payload;
 import io.vertx.nubes.marshallers.PayloadMarshaller;
 import io.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
@@ -44,6 +48,7 @@ import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
+import io.vertx.nubes.reflections.injectors.typed.impl.LocaleParamInjector;
 import io.vertx.nubes.services.Service;
 import io.vertx.nubes.services.ServiceRegistry;
 import io.vertx.nubes.utils.MultipleFutures;
@@ -54,6 +59,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,9 +76,11 @@ public class VertxNubes {
     private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
     private Map<Class<?>, Processor> typeProcessors;
     private Map<String, PayloadMarshaller> marshallers;
+    private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
     private ServiceRegistry serviceRegistry;
     private Handler<RoutingContext> failureHandler;
     private TemplateEngineManager templManager;
+    private LocaleResolverRegistry locResolvers;
 
     /**
      * TODO check config
@@ -84,6 +92,7 @@ public class VertxNubes {
         config = Config.fromJsonObject(json);
         registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
         annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
+        paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
         typeProcessors = new HashMap<Class<?>, Processor>();
         apRegistry = new AnnotationProcessorRegistry();
         marshallers = new HashMap<String, PayloadMarshaller>();
@@ -110,7 +119,7 @@ public class VertxNubes {
     public void bootstrap(Future<Router> future, Router paramRouter) {
         router = paramRouter;
         router.route().failureHandler(failureHandler);
-        RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry);
+        RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers);
         routeDiscovery.createRoutes();
         StaticHandler staticHandler;
         if (config.webroot != null) {
@@ -168,12 +177,44 @@ public class VertxNubes {
         fixtureLoader.tearDown(fixturesFuture);
     }
 
+    public void setAvailableLocales(List<Locale> availableLocales) {
+        if (locResolvers == null) {
+            locResolvers = new LocaleResolverRegistry(availableLocales);
+            locResolvers.addResolver(new AcceptLanguageLocaleResolver());
+            registerTypeParamInjector(Locale.class, new LocaleParamInjector());
+            registerHandler(Locale.class, new LocaleHandler(locResolvers));
+        } else {
+            locResolvers.addLocales(availableLocales);
+        }
+    }
+
+    public void setDefaultLocale(Locale defaultLocale) {
+        if (locResolvers == null) {
+            locResolvers = new LocaleResolverRegistry(defaultLocale);
+            locResolvers.addResolver(new AcceptLanguageLocaleResolver());
+            registerTypeParamInjector(Locale.class, new LocaleParamInjector());
+            registerHandler(Locale.class, new LocaleHandler(locResolvers));
+        }
+        locResolvers.setDefaultLocale(defaultLocale);
+    }
+
+    public void addLocaleResolver(LocaleResolver resolver) {
+        if (locResolvers == null) {
+            throw new IllegalArgumentException("Please set a list of available locales first. We can't guess the list of locales you're handling in your application.");
+        }
+        locResolvers.addResolver(resolver);
+    }
+
     public void setFailureHandler(Handler<RoutingContext> handler) {
         failureHandler = handler;
     }
 
     public void registerService(Service service) {
         serviceRegistry.registerService(service);
+    }
+
+    public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
+        paramHandlers.put(parameterClass, handler);
     }
 
     public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {

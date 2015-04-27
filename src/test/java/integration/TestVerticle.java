@@ -9,6 +9,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.apex.Router;
 import io.vertx.nubes.VertxNubes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import mock.services.DogService;
@@ -32,6 +35,13 @@ public class TestVerticle extends AbstractVerticle {
         mvc = new VertxNubes(vertx, createTestConfig());
         dogService = new DogService();
         mvc.registerService(dogService); // TODO : discover services
+        List<Locale> locales = new ArrayList<Locale>();
+        locales.add(Locale.FRENCH);
+        locales.add(Locale.US);
+        locales.add(Locale.JAPANESE);
+        locales.add(Locale.ENGLISH);
+        mvc.setAvailableLocales(locales);
+        mvc.setDefaultLocale(Locale.GERMAN);
         Future<Router> future = Future.future();
         future.setHandler(handler -> {
             if (handler.failed()) {
