@@ -1,6 +1,6 @@
 package mock.controllers.methods;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.Controller;
 import io.vertx.nubes.annotations.routing.DELETE;
 import io.vertx.nubes.annotations.routing.GET;

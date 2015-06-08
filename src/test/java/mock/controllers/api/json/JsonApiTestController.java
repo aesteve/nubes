@@ -1,6 +1,6 @@
 package mock.controllers.api.json;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.Controller;
 import io.vertx.nubes.annotations.mixins.ContentType;
 import io.vertx.nubes.annotations.params.RequestBody;
@@ -59,13 +59,13 @@ public class JsonApiTestController {
         payload.set(dogs);
         context.next();
     }
-    
+
     @Path("postdog")
     @POST
     public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
-    	payload.set(dog); // echo back
-    	context.next();
-    	
+        payload.set(dog); // echo back
+        context.next();
+
     }
 
 }

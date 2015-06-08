@@ -1,7 +1,7 @@
 package io.vertx.nubes.handlers.impl;
 
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.routing.ClientRedirect;
 import io.vertx.nubes.handlers.AnnotationProcessor;
 

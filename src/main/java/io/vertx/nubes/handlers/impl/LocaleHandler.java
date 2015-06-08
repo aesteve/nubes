@@ -1,7 +1,7 @@
 package io.vertx.nubes.handlers.impl;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.i18n.LocaleResolverRegistry;
 import io.vertx.nubes.reflections.injectors.typed.impl.LocaleParamInjector;
 

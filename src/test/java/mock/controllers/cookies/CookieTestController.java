@@ -1,7 +1,7 @@
 package mock.controllers.cookies;
 
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.Cookie;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.Cookie;
 import io.vertx.nubes.annotations.Controller;
 import io.vertx.nubes.annotations.cookies.Cookies;
 import io.vertx.nubes.annotations.routing.Path;

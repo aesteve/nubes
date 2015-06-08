@@ -1,12 +1,12 @@
 package io.vertx.nubes.views;
 
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.handler.TemplateHandler;
-import io.vertx.ext.apex.templ.HandlebarsTemplateEngine;
-import io.vertx.ext.apex.templ.JadeTemplateEngine;
-import io.vertx.ext.apex.templ.MVELTemplateEngine;
-import io.vertx.ext.apex.templ.TemplateEngine;
-import io.vertx.ext.apex.templ.ThymeleafTemplateEngine;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.TemplateHandler;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+import io.vertx.ext.web.templ.JadeTemplateEngine;
+import io.vertx.ext.web.templ.MVELTemplateEngine;
+import io.vertx.ext.web.templ.TemplateEngine;
+import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 import io.vertx.nubes.Config;
 import io.vertx.nubes.views.impl.PrefixedHandlebarsTemplateEngineImpl;
 

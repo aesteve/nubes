@@ -1,6 +1,6 @@
 package io.vertx.nubes.reflections.injectors.typed.impl;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 import java.util.Locale;

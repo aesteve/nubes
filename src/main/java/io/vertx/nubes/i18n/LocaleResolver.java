@@ -1,6 +1,6 @@
 package io.vertx.nubes.i18n;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 
 import java.util.List;
 import java.util.Locale;

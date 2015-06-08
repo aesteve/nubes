@@ -2,7 +2,7 @@ package io.vertx.nubes.context;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.exceptions.BadRequestException;
 
 import java.util.ArrayList;
@@ -137,17 +137,16 @@ public class PaginationContext {
     }
 
     public void setNbItems(Integer nbTotalItems) {
-        this.totalPages = (int)(nbTotalItems / itemsPerPage);
-        int modulo = (int)(nbTotalItems % itemsPerPage);
+        this.totalPages = (int) (nbTotalItems / itemsPerPage);
+        int modulo = (int) (nbTotalItems % itemsPerPage);
         if (modulo > 0) {
             this.totalPages = this.totalPages + 1;
         }
     }
-    
+
     public void setNbItems(Long nbTotalItems) {
-    	setNbItems(nbTotalItems.intValue());
+        setNbItems(nbTotalItems.intValue());
     }
-    
 
     public boolean hasMorePages() {
         return totalPages > pageAsked;

@@ -2,8 +2,8 @@ package io.vertx.nubes.reflections;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.apex.Router;
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.Config;
 import io.vertx.nubes.annotations.Controller;
 import io.vertx.nubes.annotations.filters.AfterFilter;

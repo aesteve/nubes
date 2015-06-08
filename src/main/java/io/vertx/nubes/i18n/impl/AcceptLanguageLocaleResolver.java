@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Locale.LanguageRange;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.i18n.LocaleResolver;
 
 public class AcceptLanguageLocaleResolver implements LocaleResolver {

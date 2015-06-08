@@ -1,6 +1,6 @@
 package mock.controllers.params;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.Controller;
 import io.vertx.nubes.annotations.params.Param;
 import io.vertx.nubes.annotations.params.Params;
@@ -12,20 +12,19 @@ import mock.domains.Dog;
 @Controller("/params/form/")
 public class FormParametersTestController extends AbstractController {
 
-	
-	public enum Animal {
-		CAT, DOG, LIZARD;
-	}
+    public enum Animal {
+        CAT, DOG, LIZARD;
+    }
 
     @Path("string")
     @POST
     public void testParam(RoutingContext context, @Param("parameter") String parameter) {
         renderText(context, parameter);
     }
-    
+
     @Path("dog")
     @POST
     public void testParam(RoutingContext context, @Params Dog dog) {
-    	renderText(context, dog.toString());
+        renderText(context, dog.toString());
     }
 }

@@ -1,6 +1,6 @@
 package io.vertx.nubes.reflections.injectors.annot;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.exceptions.BadRequestException;
 
 import java.lang.annotation.Annotation;

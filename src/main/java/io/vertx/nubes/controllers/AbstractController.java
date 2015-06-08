@@ -1,6 +1,6 @@
 package io.vertx.nubes.controllers;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractController {
 

@@ -6,7 +6,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.apex.Router;
+import io.vertx.ext.web.Router;
 import io.vertx.nubes.VertxNubes;
 
 import java.util.ArrayList;

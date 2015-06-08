@@ -1,6 +1,6 @@
 package io.vertx.nubes.handlers.impl;
 
-import io.vertx.ext.apex.RoutingContext;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.exceptions.BadRequestException;
 import io.vertx.nubes.handlers.AbstractMethodInvocationHandler;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
