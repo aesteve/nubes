@@ -12,6 +12,8 @@ import mock.domains.Dog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static io.vertx.core.http.HttpHeaders.*;
+
 @RunWith(VertxUnitRunner.class)
 public class FormParametersTest extends VertxNubesTestBase {
 
@@ -30,7 +32,7 @@ public class FormParametersTest extends VertxNubesTestBase {
                 assertEquals(myString, buff.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("content-type", "application/x-www-form-urlencoded").end(data);
+        }).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);
     }
 
     /* etc. : all types : no point in testing, it's the same as query parameters */
@@ -49,6 +51,6 @@ public class FormParametersTest extends VertxNubesTestBase {
                 assertEquals(dog.toString(), buff.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("content-type", "application/x-www-form-urlencoded").end(data);
+        }).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);
     }
 }

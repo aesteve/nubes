@@ -9,6 +9,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static io.vertx.core.http.HttpHeaders.*;
+
 @RunWith(VertxUnitRunner.class)
 public class ThrottlingTest extends VertxNubesTestBase {
 
@@ -18,7 +20,7 @@ public class ThrottlingTest extends VertxNubesTestBase {
         client().get("/throttling/dog", response -> {
             assertEquals(200, response.statusCode());
             async.complete();
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     @Test
@@ -29,8 +31,8 @@ public class ThrottlingTest extends VertxNubesTestBase {
             client().get("/throttling/dog", secondResponse -> {
                 assertEquals(200, secondResponse.statusCode());
                 async.complete();
-            }).putHeader("Accept", "application/json").end();
-        }).putHeader("Accept", "application/json").end();
+            }).putHeader(ACCEPT, "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     @Test
@@ -43,15 +45,15 @@ public class ThrottlingTest extends VertxNubesTestBase {
                 client().get("/throttling/dog", thirdResponse -> {
                     assertEquals(420, thirdResponse.statusCode());
                     async.complete();
-                }).putHeader("Accept", "application/json").end();
-            }).putHeader("Accept", "application/json").end();
-        }).putHeader("Accept", "application/json").end();
+                }).putHeader(ACCEPT, "application/json").end();
+            }).putHeader(ACCEPT, "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     /**
      * TODO : this must be the perfect example for using a testsuite instead of nested lambdas ??
      */
-    
+
     public void testAndWait(TestContext context) {
         Async async = context.async();
         client().get("/throttling/dog", firstResponse -> {
@@ -70,11 +72,11 @@ public class ThrottlingTest extends VertxNubesTestBase {
                         client().get("/throttling/dog", fourthResponse -> {
                             assertEquals(200, fourthResponse.statusCode());
                             async.complete();
-                        }).putHeader("Accept", "application/json").end();
+                        }).putHeader(ACCEPT, "application/json").end();
                     });
-                }).putHeader("Accept", "application/json").end();
-            }).putHeader("Accept", "application/json").end();
-        }).putHeader("Accept", "application/json").end();
+                }).putHeader(ACCEPT, "application/json").end();
+            }).putHeader(ACCEPT, "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     @Test
@@ -87,9 +89,9 @@ public class ThrottlingTest extends VertxNubesTestBase {
                 client().get("/throttling/dog", thirdResponse -> {
                     assertEquals(200, thirdResponse.statusCode());
                     async.complete();
-                }).putHeader("Accept", "application/json").end();
-            }).putHeader("Accept", "application/json").end();
-        }).putHeader("Accept", "application/json").end();
+                }).putHeader(ACCEPT, "application/json").end();
+            }).putHeader(ACCEPT, "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     /**

@@ -14,6 +14,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static io.vertx.core.http.HttpHeaders.*;
+
 @RunWith(VertxUnitRunner.class)
 public class PaginationTest extends VertxNubesTestBase {
 
@@ -22,7 +24,7 @@ public class PaginationTest extends VertxNubesTestBase {
         client().get("/pagination/notPaginated", response -> {
             assertEquals(204, response.statusCode());
             async.complete();
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     public void notPaginatedButUsingPagination(TestContext context) {
@@ -30,7 +32,7 @@ public class PaginationTest extends VertxNubesTestBase {
         client().get("/pagination/notPaginatedButUsingPagination", response -> {
             assertEquals(500, response.statusCode());
             async.complete();
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     public void paginatedMethodWithSingleObject(TestContext context) {
@@ -39,7 +41,7 @@ public class PaginationTest extends VertxNubesTestBase {
             assertEquals(200, response.statusCode());
             assertNull(response.headers().get("Link"));
             async.complete();
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     @Test
@@ -63,7 +65,7 @@ public class PaginationTest extends VertxNubesTestBase {
                 assertEquals("My name is dog number " + (perPage * (page - 1)) + " I wish I have a real name :'( ", dog.getString("name"));
                 async.complete();
             });
-        }).putHeader("Accept", "application/json").end();
+        }).putHeader(ACCEPT, "application/json").end();
     }
 
     /**

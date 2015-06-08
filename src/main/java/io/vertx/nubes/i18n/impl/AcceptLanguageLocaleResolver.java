@@ -7,11 +7,13 @@ import java.util.Locale.LanguageRange;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.i18n.LocaleResolver;
 
+import static io.vertx.core.http.HttpHeaders.*;
+
 public class AcceptLanguageLocaleResolver implements LocaleResolver {
 
     @Override
     public Locale resolve(RoutingContext context, List<Locale> availableLocales) {
-        String accept = context.request().getHeader("Accept-Language");
+        String accept = context.request().getHeader(ACCEPT_LANGUAGE.toString());
         if (accept == null) {
             return null;
         }

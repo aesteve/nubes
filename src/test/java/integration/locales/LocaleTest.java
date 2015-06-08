@@ -10,6 +10,8 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
 
+import static io.vertx.core.http.HttpHeaders.*;
+
 @RunWith(VertxUnitRunner.class)
 public class LocaleTest extends VertxNubesTestBase {
 
@@ -22,7 +24,7 @@ public class LocaleTest extends VertxNubesTestBase {
                 assertEquals("fr", buffer.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("Accept-Language", "fr, en;q=0.8, en-us;q=0.7").end();
+        }).putHeader(ACCEPT_LANGUAGE, "fr, en;q=0.8, en-us;q=0.7").end();
     }
 
     @Test
@@ -34,7 +36,7 @@ public class LocaleTest extends VertxNubesTestBase {
                 assertEquals("fr", buffer.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("Accept-Language", "fr-ca, en;q=0.8, en-us;q=0.7").end();
+        }).putHeader(ACCEPT_LANGUAGE, "fr-ca, en;q=0.8, en-us;q=0.7").end();
     }
 
     @Test
@@ -46,7 +48,7 @@ public class LocaleTest extends VertxNubesTestBase {
                 assertEquals("ja", buffer.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("Accept-Language", "de, ja-JP-u-ca-japanese;q=0.8, en;q=0.7, en-us;q=0.6").end();
+        }).putHeader(ACCEPT_LANGUAGE, "de, ja-JP-u-ca-japanese;q=0.8, en;q=0.7, en-us;q=0.6").end();
     }
 
     @Test
@@ -58,7 +60,7 @@ public class LocaleTest extends VertxNubesTestBase {
                 assertEquals("en", buffer.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("Accept-Language", "de, en;q=0.6").end();
+        }).putHeader(ACCEPT_LANGUAGE, "de, en;q=0.6").end();
     }
 
     @Test
@@ -70,7 +72,7 @@ public class LocaleTest extends VertxNubesTestBase {
                 assertEquals("de", buffer.toString("UTF-8"));
                 async.complete();
             });
-        }).putHeader("Accept-Language", "it, cz;q=0.6").end();
+        }).putHeader(ACCEPT_LANGUAGE, "it, cz;q=0.6").end();
     }
 
 }

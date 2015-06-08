@@ -4,7 +4,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.Utils;
 import io.vertx.nubes.annotations.mixins.ContentType;
 import io.vertx.nubes.handlers.AnnotationProcessor;
-
+import static io.vertx.core.http.HttpHeaders.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 
     @Override
     public void preHandle(RoutingContext context) {
-        String accept = context.request().getHeader("accept");
+        String accept = context.request().getHeader(ACCEPT.toString());
         List<String> contentTypes = context.get("content-types");
         if (accept == null) {
             context.fail(406);
@@ -37,7 +37,7 @@ public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 
     @Override
     public void postHandle(RoutingContext context) {
-        context.response().putHeader("Content-Type", (String) context.get("best-content-type"));
+        context.response().putHeader(CONTENT_TYPE, (String) context.get("best-content-type"));
         context.next();
     }
 
