@@ -9,8 +9,15 @@ public class ClientRedirectProcessor implements AnnotationProcessor<ClientRedire
 
     private final static String LOCATION_DATA = "client-redirect-location";
 
+    private ClientRedirect annotation;
+
+    public ClientRedirectProcessor(ClientRedirect annotation) {
+        this.annotation = annotation;
+    }
+
     @Override
     public void preHandle(RoutingContext context) {
+        context.put(LOCATION_DATA, annotation.value());
         context.next();
     }
 
@@ -20,11 +27,6 @@ public class ClientRedirectProcessor implements AnnotationProcessor<ClientRedire
         String location = context.get(LOCATION_DATA);
         response.putHeader("Location", location);
         response.end();
-    }
-
-    @Override
-    public void init(RoutingContext context, ClientRedirect annotation) {
-        context.put(LOCATION_DATA, annotation.value());
     }
 
     @Override

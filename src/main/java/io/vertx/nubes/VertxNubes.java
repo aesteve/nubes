@@ -23,17 +23,13 @@ import io.vertx.nubes.context.PaginationContext;
 import io.vertx.nubes.context.RateLimit;
 import io.vertx.nubes.exceptions.MissingConfigurationException;
 import io.vertx.nubes.fixtures.FixtureLoader;
-import io.vertx.nubes.handlers.AnnotationProcessor;
 import io.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import io.vertx.nubes.handlers.Processor;
-import io.vertx.nubes.handlers.impl.ClientRedirectProcessor;
-import io.vertx.nubes.handlers.impl.ContentTypeProcessor;
 import io.vertx.nubes.handlers.impl.DefaultErrorHandler;
 import io.vertx.nubes.handlers.impl.LocaleHandler;
 import io.vertx.nubes.handlers.impl.PaginationProcessor;
 import io.vertx.nubes.handlers.impl.PayloadTypeProcessor;
 import io.vertx.nubes.handlers.impl.RateLimitationHandler;
-import io.vertx.nubes.handlers.impl.ViewProcessor;
 import io.vertx.nubes.i18n.LocaleResolver;
 import io.vertx.nubes.i18n.LocaleResolverRegistry;
 import io.vertx.nubes.i18n.impl.AcceptLanguageLocaleResolver;
@@ -44,6 +40,10 @@ import io.vertx.nubes.reflections.RouteDiscovery;
 import io.vertx.nubes.reflections.adapters.ParameterAdapter;
 import io.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import io.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
+import io.vertx.nubes.reflections.factories.AnnotationProcessorFactory;
+import io.vertx.nubes.reflections.factories.impl.ClientRedirectProcessorFactory;
+import io.vertx.nubes.reflections.factories.impl.ContentTypeProcessorFactory;
+import io.vertx.nubes.reflections.factories.impl.ViewProcessorFactory;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.ParamInjector;
@@ -109,9 +109,9 @@ public class VertxNubes {
         registerAnnotationHandler(PUT.class, bodyHandler);
         registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
         registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
-        registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessor());
-        registerAnnotationProcessor(ContentType.class, new ContentTypeProcessor());
-        registerAnnotationProcessor(View.class, new ViewProcessor(templManager));
+        registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessorFactory());
+        registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
+        registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
         registerMarshaller("application/json", new BoonPayloadMarshaller());
         failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
     }
@@ -234,7 +234,7 @@ public class VertxNubes {
         typeProcessors.put(type, processor);
     }
 
-    public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
+    public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
         apRegistry.registerProcessor(annotation, processor);
     }
 

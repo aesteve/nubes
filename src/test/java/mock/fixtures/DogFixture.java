@@ -19,8 +19,8 @@ public class DogFixture extends Fixture {
     public void startUp(Vertx vertx, Future<Void> future) {
         Dog snoopy = new Dog("Snoopy", "Beagle");
         Dog bill = new Dog("Bill", "Cocker");
-        Dog rantanplan = new Dog("Rantanplan", "German shepherd");
-        Dog milou = new Dog("Milou", "Fox terrier");
+        Dog rantanplan = new Dog("Rantanplan", "German_shepherd");
+        Dog milou = new Dog("Milou", "Fox_terrier");
         Dog idefix = new Dog("Idefix", "Westy");
         Dog pluto = new Dog("Pluto", "Mutt");
         dogs.add(snoopy);

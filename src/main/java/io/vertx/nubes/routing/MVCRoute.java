@@ -5,14 +5,13 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.Blocking;
-import io.vertx.nubes.handlers.AnnotationProcessor;
 import io.vertx.nubes.handlers.Processor;
 import io.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
+import io.vertx.nubes.handlers.impl.ViewProcessor;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.nubes.utils.Filter;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -57,8 +56,8 @@ public class MVCRoute {
     }
 
     public void addProcessorsFirst(Set<Processor> processors) {
-        Set<Processor> oldProcessors = this.processors;
-        this.processors = new LinkedHashSet<Processor>();
+        Set<Processor> oldProcessors = new LinkedHashSet<Processor>(this.processors);
+        this.processors = new LinkedHashSet<Processor>(oldProcessors.size() + processors.size());
         this.processors.addAll(processors);
         this.processors.addAll(oldProcessors);
     }
@@ -91,7 +90,6 @@ public class MVCRoute {
         return httpMethod;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void attachHandlersToRouter(Router router, HttpMethod httpMethod, String path) {
         if (httpMethod == null) {
             httpMethod = this.httpMethod;
@@ -102,17 +100,10 @@ public class MVCRoute {
         final HttpMethod httpMethodFinal = httpMethod;
         final String pathFinal = path;
         processors.forEach(processor -> {
-            router.route(httpMethodFinal, pathFinal).handler(context -> {
-                if (processor instanceof AnnotationProcessor) {
-                    AnnotationProcessor realProcessor = (AnnotationProcessor) processor;
-                    Annotation annotation = mainHandler.getAnnotation(realProcessor.getAnnotationType());
-                    if (annotation == null) {
-                        annotation = instance.getClass().getAnnotation(realProcessor.getAnnotationType());
-                    }
-                    realProcessor.init(context, annotation);
-                }
-                processor.preHandle(context);
-            });
+            if (processor instanceof ViewProcessor) {
+                System.out.println("ViewProcessor attached as handler for : " + pathFinal);
+            }
+            router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
         });
         handlers.forEach(handler -> {
             router.route(httpMethodFinal, pathFinal).handler(handler);

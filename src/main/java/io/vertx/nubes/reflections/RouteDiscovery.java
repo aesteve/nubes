@@ -6,6 +6,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.Config;
 import io.vertx.nubes.annotations.Controller;
+import io.vertx.nubes.annotations.View;
 import io.vertx.nubes.annotations.filters.AfterFilter;
 import io.vertx.nubes.annotations.filters.BeforeFilter;
 import io.vertx.nubes.annotations.routing.Path;
@@ -13,6 +14,7 @@ import io.vertx.nubes.annotations.routing.ServerRedirect;
 import io.vertx.nubes.handlers.AnnotationProcessor;
 import io.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import io.vertx.nubes.handlers.Processor;
+import io.vertx.nubes.handlers.impl.ViewProcessor;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.nubes.routing.HttpMethodFactory;
@@ -124,6 +126,9 @@ public class RouteDiscovery {
                 for (HttpMethod httpMethod : httpMethods) {
                     MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, typedInjectors, annotInjectors);
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
+                        if (methodAnnotation instanceof View) {
+                            System.out.println("found view : " + ((View) methodAnnotation).value());
+                        }
                         Set<Handler<RoutingContext>> handler = annotationHandlers.get(methodAnnotation.annotationType());
                         if (handler != null) {
                             route.attachHandlers(handler);
@@ -131,9 +136,13 @@ public class RouteDiscovery {
                         AnnotationProcessor<?> annProcessor = apRegistry.getProcessor(methodAnnotation);
                         if (annProcessor != null) {
                             route.addProcessor(annProcessor);
+                            if (annProcessor instanceof ViewProcessor) {
+                                System.out.println("view processor for " + path);
+                            }
                         }
                     }
                     if (basePath.contains("redirect")) {
+                        // TODO ???
                     }
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
