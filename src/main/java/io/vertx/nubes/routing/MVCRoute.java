@@ -7,7 +7,6 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.nubes.annotations.Blocking;
 import io.vertx.nubes.handlers.Processor;
 import io.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
-import io.vertx.nubes.handlers.impl.ViewProcessor;
 import io.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import io.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.nubes.utils.Filter;
@@ -100,9 +99,6 @@ public class MVCRoute {
         final HttpMethod httpMethodFinal = httpMethod;
         final String pathFinal = path;
         processors.forEach(processor -> {
-            if (processor instanceof ViewProcessor) {
-                System.out.println("ViewProcessor attached as handler for : " + pathFinal);
-            }
             router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
         });
         handlers.forEach(handler -> {
