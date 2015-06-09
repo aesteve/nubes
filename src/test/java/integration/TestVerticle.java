@@ -22,7 +22,7 @@ public class TestVerticle extends AbstractVerticle {
     public static final int PORT = 8000;
     public static final int TIME_FRAME = 10; // We'll sleep through the whole time-frame for testing throttling
 
-    public static DogService dogService;
+    public static DogService dogService = new DogService();
 
     private VertxNubes mvc;
 
@@ -33,7 +33,6 @@ public class TestVerticle extends AbstractVerticle {
         options.setHost(HOST);
         HttpServer server = vertx.createHttpServer(options);
         mvc = new VertxNubes(vertx, createTestConfig());
-        dogService = new DogService();
         mvc.registerService(dogService); // TODO : discover services
         List<Locale> locales = new ArrayList<Locale>();
         locales.add(Locale.FRENCH);

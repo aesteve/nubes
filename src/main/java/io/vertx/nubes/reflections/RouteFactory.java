@@ -35,7 +35,7 @@ import java.util.TreeSet;
 
 import org.reflections.Reflections;
 
-public class RouteDiscovery {
+public class RouteFactory {
 
     private Router router;
     private Config config;
@@ -48,7 +48,7 @@ public class RouteDiscovery {
     private RouteRegistry routeRegistry;
     private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
 
-    public RouteDiscovery(Router router, Config config, Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers, Map<Class<?>, Processor> typeProcessors, AnnotationProcessorRegistry apRegistry, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors, ServiceRegistry serviceRegistry, Map<Class<?>, Handler<RoutingContext>> paramHandlers) {
+    public RouteFactory(Router router, Config config, Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers, Map<Class<?>, Processor> typeProcessors, AnnotationProcessorRegistry apRegistry, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors, ServiceRegistry serviceRegistry, Map<Class<?>, Handler<RoutingContext>> paramHandlers) {
         this.router = router;
         this.config = config;
         this.annotationHandlers = annotationHandlers;
@@ -92,7 +92,7 @@ public class RouteDiscovery {
             throw new RuntimeException("Could not instanciate controller : ", ie);
         }
         String basePath = "";
-        if (base != null) {
+        if (base.value() != null) {
             basePath = base.value();
         }
         for (Method method : controller.getDeclaredMethods()) {
@@ -140,9 +140,6 @@ public class RouteDiscovery {
                                 System.out.println("view processor for " + path);
                             }
                         }
-                    }
-                    if (basePath.contains("redirect")) {
-                        // TODO ???
                     }
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);

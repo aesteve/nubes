@@ -36,7 +36,7 @@ import io.vertx.nubes.i18n.impl.AcceptLanguageLocaleResolver;
 import io.vertx.nubes.marshallers.Payload;
 import io.vertx.nubes.marshallers.PayloadMarshaller;
 import io.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
-import io.vertx.nubes.reflections.RouteDiscovery;
+import io.vertx.nubes.reflections.RouteFactory;
 import io.vertx.nubes.reflections.adapters.ParameterAdapter;
 import io.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import io.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
@@ -119,7 +119,7 @@ public class VertxNubes {
     public void bootstrap(Future<Router> future, Router paramRouter) {
         router = paramRouter;
         router.route().failureHandler(failureHandler);
-        RouteDiscovery routeDiscovery = new RouteDiscovery(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers);
+        RouteFactory routeDiscovery = new RouteFactory(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers);
         routeDiscovery.createRoutes();
         StaticHandler staticHandler;
         if (config.webroot != null) {

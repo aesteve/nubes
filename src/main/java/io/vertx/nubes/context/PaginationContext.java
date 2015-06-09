@@ -170,9 +170,9 @@ public class PaginationContext {
     public JsonObject toJsonObject() {
         JsonObject json = new JsonObject();
         json.put("current", pageAsked);
-        json.put("next", pageAsked == totalPages ? null : pageAsked + 1);
-        json.put("last", pageAsked == totalPages ? null : totalPages);
-        json.put("prev", pageAsked == 1 ? null : pageAsked - 1);
+        json.put("next", pageAsked.equals(totalPages) ? null : pageAsked + 1);
+        json.put("last", pageAsked.equals(totalPages) ? null : totalPages);
+        json.put("prev", pageAsked.equals(1) ? null : pageAsked - 1);
         json.put("first", pageAsked == 1 ? null : 1);
         json.put("perPage", itemsPerPage);
         json.put("total", totalPages);
