@@ -20,6 +20,8 @@ import mock.domains.Dog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+// TODO : test errors
+
 @RunWith(VertxUnitRunner.class)
 public class JsonApiTest extends VertxNubesTestBase {
 
@@ -37,14 +39,17 @@ public class JsonApiTest extends VertxNubesTestBase {
         Async async = context.async();
         client().get("/json/dog", response -> {
             assertEquals(406, response.statusCode());
-            async.complete();
+            response.bodyHandler(buff -> {
+                assertEquals("Not acceptable", buff.toString("UTF-8"));
+                async.complete();
+            });
         }).putHeader(ACCEPT, "yourmum").end();
     }
 
     @Test
     public void getMap(TestContext context) {
         Async async = context.async();
-        client().get("/json/map", response -> {
+        getJSON("/json/map", response -> {
             assertEquals(200, response.statusCode());
             assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
             response.handler(buffer -> {
@@ -54,14 +59,14 @@ public class JsonApiTest extends VertxNubesTestBase {
                 assertEquals(json.getString("Bill"), "Cocker");
                 async.complete();
             });
-        }).putHeader(ACCEPT, "application/json").end();
+        });
     }
 
     @Test
     @SuppressWarnings("rawtypes")
     public void getArray(TestContext context) {
         Async async = context.async();
-        client().get("/json/array", response -> {
+        getJSON("/json/array", response -> {
             assertEquals(200, response.statusCode());
             assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
             response.handler(buffer -> {
@@ -72,13 +77,13 @@ public class JsonApiTest extends VertxNubesTestBase {
                 assertEquals(list.get(1), "Bill");
                 async.complete();
             });
-        }).putHeader(ACCEPT, "application/json").end();
+        });
     }
 
     @Test
     public void getDomainObject(TestContext context) {
         Async async = context.async();
-        client().get("/json/dog", response -> {
+        getJSON("/json/dog", response -> {
             assertEquals(200, response.statusCode());
             assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
             response.handler(buffer -> {
@@ -88,14 +93,14 @@ public class JsonApiTest extends VertxNubesTestBase {
                 assertEquals(json.getString("breed"), "Beagle");
                 async.complete();
             });
-        }).putHeader(ACCEPT, "application/json").end();
+        });
     }
 
     @Test
     @SuppressWarnings("rawtypes")
     public void getDomainObjects(TestContext context) {
         Async async = context.async();
-        client().get("/json/dogs", response -> {
+        getJSON("/json/dogs", response -> {
             assertEquals(200, response.statusCode());
             assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
             response.handler(buffer -> {
@@ -108,7 +113,7 @@ public class JsonApiTest extends VertxNubesTestBase {
                 assertEquals(((Map) list.get(1)).get("breed"), "Cocker");
                 async.complete();
             });
-        }).putHeader(ACCEPT, "application/json").end();
+        });
     }
 
     @Test
@@ -118,7 +123,7 @@ public class JsonApiTest extends VertxNubesTestBase {
         dogJson.put("name", dog.getName());
         dogJson.put("breed", dog.getBreed());
         Async async = context.async();
-        client().post("/json/postdog", response -> {
+        sendJSON("/json/postdog", dogJson, response -> {
             assertEquals(200, response.statusCode());
             assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
             response.bodyHandler(buffer -> {
@@ -128,7 +133,7 @@ public class JsonApiTest extends VertxNubesTestBase {
                 assertEquals(dog.getBreed(), receivedDog.getString("breed"));
                 async.complete();
             });
-        }).putHeader(ACCEPT, "application/json").end(dogJson.toString());
+        });
     }
 
 }

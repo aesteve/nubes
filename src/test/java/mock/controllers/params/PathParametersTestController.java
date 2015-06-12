@@ -1,13 +1,13 @@
 package mock.controllers.params;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.params.PathParam;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.params.PathParam;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.controllers.AbstractController;
 
 @Controller("/params/path/")
-public class PathParametersTestController extends AbstractController {
+public class PathParametersTestController {
 
     public enum Animal {
         CAT, DOG, LIZARD;
@@ -15,21 +15,21 @@ public class PathParametersTestController extends AbstractController {
 
     @Path("string/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") String parameter) {
-        renderText(context, parameter);
+        context.response().end(parameter);
     }
 
     @Path("enum/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Animal parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 
     @Path("long/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Long parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 
     @Path("int/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Integer parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 }

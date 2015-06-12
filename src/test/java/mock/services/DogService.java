@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.github.aesteve.vertx.nubes.services.Service;
+
 import mock.domains.Dog;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.nubes.services.Service;
 
 public class DogService implements Service {
 

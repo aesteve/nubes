@@ -1,15 +1,15 @@
 package mock.controllers.basepath;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.controllers.AbstractController;
 
 @Controller("/base/")
-public class BasePathController extends AbstractController {
+public class BasePathController {
 
     @Path("test")
     public void shouldReflectCompletePath(RoutingContext context) {
-        renderText(context, "/base/test");
+        context.response().end("/base/test");
     }
 }

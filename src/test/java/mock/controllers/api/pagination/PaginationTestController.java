@@ -1,14 +1,15 @@
 package mock.controllers.api.pagination;
 
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.mixins.ContentType;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.context.PaginationContext;
-import io.vertx.nubes.marshallers.Payload;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.context.PaginationContext;
+import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 import mock.domains.Dog;
 

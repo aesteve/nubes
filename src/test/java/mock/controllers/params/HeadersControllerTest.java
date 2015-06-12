@@ -1,11 +1,12 @@
 package mock.controllers.params;
 
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.params.Header;
-import io.vertx.nubes.annotations.routing.Path;
 
 import java.util.Date;
+
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.params.Header;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
 
 @Controller("/headers/")
 public class HeadersControllerTest {

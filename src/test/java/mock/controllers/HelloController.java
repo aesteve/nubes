@@ -1,18 +1,18 @@
 package mock.controllers;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.routing.GET;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.controllers.AbstractController;
 
 @Controller
-public class HelloController extends AbstractController {
+public class HelloController {
 
     @Path("/hello")
     @GET
     public void sayHello(RoutingContext context) {
-        renderText(context, "Hello world!");
+        context.response().end("Hello world!");
     }
 
 }

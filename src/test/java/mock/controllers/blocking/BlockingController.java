@@ -1,9 +1,10 @@
 package mock.controllers.blocking;
 
+import com.github.aesteve.vertx.nubes.annotations.Blocking;
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Blocking;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.routing.Path;
 
 @Controller("/blocking")
 public class BlockingController {

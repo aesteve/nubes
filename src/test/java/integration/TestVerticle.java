@@ -7,13 +7,15 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.nubes.VertxNubes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import com.github.aesteve.vertx.nubes.VertxNubes;
+
+import mock.domains.Dog;
 import mock.services.DogService;
 
 public class TestVerticle extends AbstractVerticle {
@@ -21,8 +23,9 @@ public class TestVerticle extends AbstractVerticle {
     public static final String HOST = "localhost";
     public static final int PORT = 8000;
     public static final int TIME_FRAME = 10; // We'll sleep through the whole time-frame for testing throttling
+    public static final Dog SNOOPY = new Dog("Snoopy", "Beagle");
 
-    public static DogService dogService = new DogService();
+    public static final DogService dogService = new DogService();
 
     private VertxNubes mvc;
 
@@ -33,7 +36,8 @@ public class TestVerticle extends AbstractVerticle {
         options.setHost(HOST);
         HttpServer server = vertx.createHttpServer(options);
         mvc = new VertxNubes(vertx, createTestConfig());
-        mvc.registerService(dogService); // TODO : discover services
+        mvc.registerService(dogService);
+        mvc.registerService(SNOOPY);
         List<Locale> locales = new ArrayList<Locale>();
         locales.add(Locale.FRENCH);
         locales.add(Locale.US);
@@ -66,6 +70,7 @@ public class TestVerticle extends AbstractVerticle {
         JsonArray controllerPackages = new JsonArray();
         controllerPackages.add("mock.controllers");
         config.put("controller-packages", controllerPackages);
+        config.put("domain-package", "mock.domains");
         JsonArray fixturePackages = new JsonArray();
         fixturePackages.add("mock.fixtures");
         config.put("fixture-packages", fixturePackages);

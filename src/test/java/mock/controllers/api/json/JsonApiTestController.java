@@ -1,17 +1,18 @@
 package mock.controllers.api.json;
 
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.mixins.ContentType;
-import io.vertx.nubes.annotations.params.RequestBody;
-import io.vertx.nubes.annotations.routing.POST;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.marshallers.Payload;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
+import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
+import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 import mock.domains.Dog;
 
@@ -19,11 +20,8 @@ import mock.domains.Dog;
 @ContentType("application/json")
 public class JsonApiTestController {
 
-    private final Dog snoopy = new Dog("Snoopy", "Beagle");
-    private final Dog bill = new Dog("Bill", "Cocker");
-
     @Path("noContent")
-    public void noContext(RoutingContext context) {
+    public void noContent(RoutingContext context) {
         context.next();
     }
 
@@ -47,6 +45,7 @@ public class JsonApiTestController {
 
     @Path("dog")
     public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
+        Dog snoopy = new Dog("Snoopy", "Beagle");
         payload.set(snoopy);
         context.next();
     }
@@ -54,6 +53,8 @@ public class JsonApiTestController {
     @Path("dogs")
     public void sendManyDomainObjects(RoutingContext context, Payload<List<Dog>> payload) {
         List<Dog> dogs = new ArrayList<Dog>(2);
+        Dog snoopy = new Dog("Snoopy", "Beagle");
+        Dog bill = new Dog("Bill", "Cocker");
         dogs.add(snoopy);
         dogs.add(bill);
         payload.set(dogs);
@@ -65,7 +66,6 @@ public class JsonApiTestController {
     public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
         payload.set(dog); // echo back
         context.next();
-
     }
 
 }

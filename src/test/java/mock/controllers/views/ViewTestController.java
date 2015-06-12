@@ -1,15 +1,15 @@
 package mock.controllers.views;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.View;
+import com.github.aesteve.vertx.nubes.annotations.params.Params;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.View;
-import io.vertx.nubes.annotations.params.Params;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.controllers.AbstractController;
 import mock.domains.Dog;
 
 @Controller("/views")
-public class ViewTestController extends AbstractController {
+public class ViewTestController {
 
     @Path("/default")
     @View("index.html")

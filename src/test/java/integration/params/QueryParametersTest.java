@@ -6,7 +6,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.nubes.utils.DateUtils;
 
 import java.util.Date;
 
@@ -14,6 +13,8 @@ import mock.controllers.params.QueryParametersTestController.Animal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.github.aesteve.vertx.nubes.utils.DateUtils;
 
 @RunWith(VertxUnitRunner.class)
 public class QueryParametersTest extends VertxNubesTestBase {

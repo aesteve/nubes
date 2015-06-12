@@ -1,15 +1,15 @@
 package mock.controllers.params;
 
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.params.Param;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.controllers.AbstractController;
 
 import java.util.Date;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.params.Param;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 @Controller("/params/query/")
-public class QueryParametersTestController extends AbstractController {
+public class QueryParametersTestController {
 
     public enum Animal {
         CAT, DOG, LIZARD;
@@ -17,31 +17,31 @@ public class QueryParametersTestController extends AbstractController {
 
     @Path("string")
     public void testParam(RoutingContext context, @Param(value = "parameter", mandatory = true) String parameter) {
-        renderText(context, parameter);
+        context.response().end(parameter);
     }
 
     @Path("date")
     public void testParam(RoutingContext context, @Param("parameter") Date parameter) {
-        renderText(context, Long.toString(parameter.getTime()));
+        context.response().end(Long.toString(parameter.getTime()));
     }
 
     @Path("enum")
     public void testParam(RoutingContext context, @Param("parameter") Animal parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 
     @Path("long")
     public void testParam(RoutingContext context, @Param("parameter") Long parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 
     @Path("int")
     public void testParam(RoutingContext context, @Param("parameter") Integer parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 
     @Path("float")
     public void testParam(RoutingContext context, @Param("parameter") Float parameter) {
-        renderText(context, parameter.toString());
+        context.response().end(parameter.toString());
     }
 }

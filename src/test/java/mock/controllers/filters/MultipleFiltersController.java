@@ -1,10 +1,11 @@
 package mock.controllers.filters;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
+import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.filters.AfterFilter;
-import io.vertx.nubes.annotations.filters.BeforeFilter;
-import io.vertx.nubes.annotations.routing.Path;
 
 @Controller("/filters")
 public class MultipleFiltersController {

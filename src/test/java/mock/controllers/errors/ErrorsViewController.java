@@ -1,10 +1,11 @@
 package mock.controllers.errors;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.View;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.exceptions.BadRequestException;
+
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.nubes.annotations.Controller;
-import io.vertx.nubes.annotations.View;
-import io.vertx.nubes.annotations.routing.Path;
-import io.vertx.nubes.exceptions.BadRequestException;
 
 @Controller("/errors/view")
 public class ErrorsViewController {
