@@ -42,7 +42,7 @@ public class XmlApiTest extends VertxNubesTestBase {
     @Test
     public void getDomainObject(TestContext context) {
         Async async = context.async();
-        getJSON("/xml/dog", response -> {
+        getXML("/xml/dog", response -> {
             assertEquals(200, response.statusCode());
             assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/xml");
             response.handler(buffer -> {
@@ -55,7 +55,7 @@ public class XmlApiTest extends VertxNubesTestBase {
     @Test
     public void postSomeStuff(TestContext context) {
         Async async = context.async();
-        sendJSON("/xml/postdog", dogXML, response -> {
+        sendXML("/xml/postdog", dogXML, response -> {
             assertEquals(200, response.statusCode());
             assertEquals("application/xml", response.getHeader(CONTENT_TYPE.toString()));
             response.bodyHandler(buffer -> {

@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -20,6 +21,7 @@ public class Config {
     public String assetsPath;
     public String tplDir;
     public boolean displayErrors;
+    public Vertx vertx;
 
     /**
      * TODO : check config instead of throwing exceptions
@@ -28,8 +30,9 @@ public class Config {
      * @return config
      */
     @SuppressWarnings("unchecked")
-    public static Config fromJsonObject(JsonObject json) throws MissingConfigurationException {
+    public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
         Config config = new Config();
+        config.vertx = vertx;
         JsonArray controllers = json.getJsonArray("controller-packages");
         if (controllers == null) {
             throw new MissingConfigurationException("controller-packages");

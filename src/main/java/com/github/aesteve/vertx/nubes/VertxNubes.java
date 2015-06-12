@@ -5,6 +5,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -45,6 +47,7 @@ import com.github.aesteve.vertx.nubes.handlers.impl.LocaleHandler;
 import com.github.aesteve.vertx.nubes.handlers.impl.PaginationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.PayloadTypeProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.RateLimitationHandler;
+import com.github.aesteve.vertx.nubes.handlers.impl.UserProcessor;
 import com.github.aesteve.vertx.nubes.i18n.LocaleResolver;
 import com.github.aesteve.vertx.nubes.i18n.LocaleResolverRegistry;
 import com.github.aesteve.vertx.nubes.i18n.impl.AcceptLanguageLocaleResolver;
@@ -88,6 +91,7 @@ public class VertxNubes {
     private Handler<RoutingContext> failureHandler;
     private TemplateEngineManager templManager;
     private LocaleResolverRegistry locResolvers;
+    private AuthProvider authProvider;
 
     /**
      * TODO check config
@@ -96,7 +100,7 @@ public class VertxNubes {
      */
     public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
         this.vertx = vertx;
-        config = Config.fromJsonObject(json);
+        config = Config.fromJsonObject(json, vertx);
         registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
         annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
         paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
@@ -134,6 +138,9 @@ public class VertxNubes {
     }
 
     public void bootstrap(Future<Router> future, Router paramRouter) {
+        if (authProvider != null) {
+            registerTypeProcessor(User.class, new UserProcessor(authProvider));
+        }
         router = paramRouter;
         router.route().failureHandler(failureHandler);
         RouteFactory routeDiscovery = new RouteFactory(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers);

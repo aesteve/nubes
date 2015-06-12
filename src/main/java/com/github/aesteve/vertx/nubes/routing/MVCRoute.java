@@ -1,9 +1,13 @@
 package com.github.aesteve.vertx.nubes.routing;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.handler.SessionHandler;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
@@ -30,8 +34,10 @@ public class MVCRoute {
     private TypedParamInjectorRegistry typedInjectors;
     private AnnotatedParamInjectorRegistry annotatedInjectors;
     private MVCRoute redirectRoute;
+    private boolean usesAuth;
+    private Vertx vertx;
 
-    public MVCRoute(Object instance, String path, HttpMethod method, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotatedInjectors) {
+    public MVCRoute(Object instance, String path, HttpMethod method, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotatedInjectors, boolean usesAuth, Vertx vertx) {
         this.instance = instance;
         this.path = path;
         this.httpMethod = method;
@@ -41,6 +47,8 @@ public class MVCRoute {
         this.processors = new LinkedHashSet<Processor>();
         this.typedInjectors = typedInjectors;
         this.annotatedInjectors = annotatedInjectors;
+        this.usesAuth = usesAuth;
+        this.vertx = vertx;
     }
 
     public void redirectTo(MVCRoute anotherRoute) {
@@ -99,6 +107,10 @@ public class MVCRoute {
         }
         final HttpMethod httpMethodFinal = httpMethod;
         final String pathFinal = path;
+        if (usesAuth) {
+            router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
+            router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+        }
         processors.forEach(processor -> {
             router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
         });

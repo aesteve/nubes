@@ -37,11 +37,11 @@ public class VertxNubesTestBase {
     }
 
     protected void getJSON(String path, Handler<HttpClientResponse> responseHandler) {
-        client().get(path, responseHandler).putHeader(ACCEPT, "application/xml").end();
+        client().get(path, responseHandler).putHeader(ACCEPT, "application/json").end();
     }
 
     protected void sendJSON(String path, Object payload, Handler<HttpClientResponse> responseHandler) {
-        client().post(path, responseHandler).putHeader(ACCEPT, "application/xml").end(payload.toString());
+        client().post(path, responseHandler).putHeader(ACCEPT, "application/json").putHeader(CONTENT_TYPE, "application/json").end(payload.toString());
     }
 
     protected void getXML(String path, Handler<HttpClientResponse> responseHandler) {
@@ -49,7 +49,7 @@ public class VertxNubesTestBase {
     }
 
     protected void sendXML(String path, Object payload, Handler<HttpClientResponse> responseHandler) {
-        client().post(path, responseHandler).putHeader(ACCEPT, "application/xml").end(payload.toString());
+        client().post(path, responseHandler).putHeader(ACCEPT, "application/xml").putHeader(CONTENT_TYPE, "application/xml").end(payload.toString());
     }
 
     private HttpClientOptions options() {

@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.nubes.reflections;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -95,11 +96,16 @@ public class RouteFactory {
         }
         for (Method method : controller.getDeclaredMethods()) {
             if (method.getAnnotation(Path.class) != null) {
+                boolean usesAuth = false;
                 Set<Handler<RoutingContext>> paramsHandlers = new LinkedHashSet<Handler<RoutingContext>>();
                 Class<?>[] parameterClasses = method.getParameterTypes();
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
+
                 for (int i = 0; i < parameterClasses.length; i++) {
                     Class<?> parameterClass = parameterClasses[i];
+                    if (parameterClass.isAssignableFrom(User.class)) {
+                        usesAuth = true;
+                    }
                     Processor typeProcessor = typeProcessors.get(parameterClass);
                     if (typeProcessor != null) {
                         processors.add(typeProcessor);
@@ -122,7 +128,7 @@ public class RouteFactory {
                 Path path = (Path) method.getAnnotation(Path.class);
                 List<HttpMethod> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
                 for (HttpMethod httpMethod : httpMethods) {
-                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, typedInjectors, annotInjectors);
+                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, typedInjectors, annotInjectors, usesAuth, config.vertx);
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
                         Set<Handler<RoutingContext>> handler = annotationHandlers.get(methodAnnotation.annotationType());
                         if (handler != null) {
