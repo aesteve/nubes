@@ -1,10 +1,11 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
+import io.vertx.ext.web.RoutingContext;
+
 import com.github.aesteve.vertx.nubes.annotations.View;
+import com.github.aesteve.vertx.nubes.context.ViewResolver;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
-
-import io.vertx.ext.web.RoutingContext;
 
 public class ViewProcessor implements AnnotationProcessor<View> {
 
@@ -18,7 +19,10 @@ public class ViewProcessor implements AnnotationProcessor<View> {
 
 	@Override
 	public void preHandle(RoutingContext context) {
-		context.put("tplName", annotation.value());
+		String viewName = annotation.value();
+		if (viewName != null) {
+			ViewResolver.resolve(context, annotation.value());
+		}
 		context.next();
 	}
 
