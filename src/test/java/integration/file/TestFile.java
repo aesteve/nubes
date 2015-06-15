@@ -11,7 +11,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 @RunWith(VertxUnitRunner.class)
-public class FileTest extends VertxNubesTestBase {
+public class TestFile extends VertxNubesTestBase {
 
     @Test
     public void getFile(TestContext context) {
