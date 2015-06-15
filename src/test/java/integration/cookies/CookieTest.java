@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -17,7 +18,7 @@ public class CookieTest extends VertxNubesTestBase {
     public void testNoCookieValue(TestContext context) {
         Async async = context.async();
         client().getNow("/cookies/noCookie", response -> {
-            assertNull(response.headers().get("Set-Cookie"));
+            assertNull(response.headers().get(HttpHeaders.SET_COOKIE));
             async.complete();
         });
     }
@@ -26,7 +27,7 @@ public class CookieTest extends VertxNubesTestBase {
     public void testSetCookieValue(TestContext context) {
         Async async = context.async();
         client().getNow("/cookies/setCookie", response -> {
-            assertNotNull(response.headers().get("Set-Cookie"));
+            assertNotNull(response.headers().get(HttpHeaders.SET_COOKIE));
             async.complete();
         });
     }

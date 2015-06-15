@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.utils.async;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
@@ -18,6 +19,11 @@ public class MultipleFutures extends SimpleFuture<Void> {
     }
 
     public MultipleFutures(Future<Void> after) {
+        this();
+        join(after);
+    }
+
+    public MultipleFutures(Handler<AsyncResult<Void>> after) {
         this();
         join(after);
     }
@@ -93,5 +99,9 @@ public class MultipleFutures extends SimpleFuture<Void> {
                 future.fail(res.cause());
             }
         });
+    }
+
+    public void join(Handler<AsyncResult<Void>> handler) {
+        setHandler(handler);
     }
 }

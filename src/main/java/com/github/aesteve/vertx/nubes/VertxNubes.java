@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -77,221 +78,227 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class VertxNubes {
 
-	private Vertx vertx;
-	private Config config;
-	private Router router;
-	private FixtureLoader fixtureLoader;
-	private ParameterAdapterRegistry registry;
-	private AnnotationProcessorRegistry apRegistry;
-	private TypedParamInjectorRegistry typeInjectors;
-	private AnnotatedParamInjectorRegistry annotInjectors;
-	private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
-	private Map<Class<?>, Processor> typeProcessors;
-	private Map<String, PayloadMarshaller> marshallers;
-	private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
-	private ServiceRegistry serviceRegistry;
-	private Handler<RoutingContext> failureHandler;
-	private TemplateEngineManager templManager;
-	private LocaleResolverRegistry locResolvers;
+    private Vertx vertx;
+    private Config config;
+    private Router router;
+    private FixtureLoader fixtureLoader;
+    private ParameterAdapterRegistry registry;
+    private AnnotationProcessorRegistry apRegistry;
+    private TypedParamInjectorRegistry typeInjectors;
+    private AnnotatedParamInjectorRegistry annotInjectors;
+    private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
+    private Map<Class<?>, Processor> typeProcessors;
+    private Map<String, PayloadMarshaller> marshallers;
+    private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
+    private ServiceRegistry serviceRegistry;
+    private Handler<RoutingContext> failureHandler;
+    private TemplateEngineManager templManager;
+    private LocaleResolverRegistry locResolvers;
+    private Map<String, Handler<RoutingContext>> aopHandlerRegistry;
 
-	/**
-	 * TODO check config
-	 * 
-	 * @param vertx
-	 */
-	public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
-		this.vertx = vertx;
-		config = Config.fromJsonObject(json, vertx);
-		registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
-		annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
-		paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
-		typeProcessors = new HashMap<Class<?>, Processor>();
-		apRegistry = new AnnotationProcessorRegistry();
-		marshallers = new HashMap<String, PayloadMarshaller>();
-		typeInjectors = new TypedParamInjectorRegistry();
-		annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
-		serviceRegistry = new ServiceRegistry(vertx);
-		templManager = new TemplateEngineManager(config);
-		CookieHandler cookieHandler = CookieHandler.create();
-		BodyHandler bodyHandler = BodyHandler.create();
-		registerAnnotationHandler(Cookies.class, cookieHandler);
-		registerAnnotationHandler(CookieValue.class, cookieHandler);
-		registerAnnotationHandler(Throttled.class, RateLimitationHandler.create(config));
-		registerAnnotationHandler(GET.class, bodyHandler);
-		registerAnnotationHandler(POST.class, bodyHandler);
-		registerAnnotationHandler(PUT.class, bodyHandler);
-		registerAnnotationHandler(PATCH.class, bodyHandler);
-		registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
-		registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
-		registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessorFactory());
-		registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
-		registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
-		registerAnnotationProcessor(File.class, new FileProcessorFactory());
-		registerMarshaller("application/json", new BoonPayloadMarshaller());
-		if (config.domainPackage != null) {
-			try {
-				registerMarshaller("application/xml", new JAXBPayloadMarshaller(config.domainPackage));
-			} catch (JAXBException je) {
-				throw new RuntimeException(je);
-			}
-		}
-		failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
-	}
+    /**
+     * TODO check config
+     * 
+     * @param vertx
+     */
+    public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
+        this.vertx = vertx;
+        config = Config.fromJsonObject(json, vertx);
+        registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
+        annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
+        paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
+        typeProcessors = new HashMap<Class<?>, Processor>();
+        apRegistry = new AnnotationProcessorRegistry();
+        marshallers = new HashMap<String, PayloadMarshaller>();
+        typeInjectors = new TypedParamInjectorRegistry();
+        annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
+        serviceRegistry = new ServiceRegistry(vertx);
+        templManager = new TemplateEngineManager(config);
+        aopHandlerRegistry = new HashMap<String, Handler<RoutingContext>>();
+        CookieHandler cookieHandler = CookieHandler.create();
+        BodyHandler bodyHandler = BodyHandler.create();
+        registerAnnotationHandler(Cookies.class, cookieHandler);
+        registerAnnotationHandler(CookieValue.class, cookieHandler);
+        registerAnnotationHandler(Throttled.class, RateLimitationHandler.create(config));
+        registerAnnotationHandler(GET.class, bodyHandler);
+        registerAnnotationHandler(POST.class, bodyHandler);
+        registerAnnotationHandler(PUT.class, bodyHandler);
+        registerAnnotationHandler(PATCH.class, bodyHandler);
+        registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
+        registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
+        registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessorFactory());
+        registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
+        registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
+        registerAnnotationProcessor(File.class, new FileProcessorFactory());
+        registerMarshaller("application/json", new BoonPayloadMarshaller());
+        if (config.domainPackage != null) {
+            try {
+                registerMarshaller("application/xml", new JAXBPayloadMarshaller(config.domainPackage));
+            } catch (JAXBException je) {
+                throw new RuntimeException(je);
+            }
+        }
+        failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
+    }
 
-	public void bootstrap(Future<Router> future, Router paramRouter) {
-		router = paramRouter;
-		router.route().failureHandler(failureHandler);
-		if (config.authProvider != null) {
-			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
-		}
-		RouteFactory routeDiscovery = new RouteFactory(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers, new AuthenticationFactory(config));
-		routeDiscovery.createRoutes();
-		StaticHandler staticHandler;
-		if (config.webroot != null) {
-			staticHandler = StaticHandler.create(config.webroot);
-		} else {
-			staticHandler = StaticHandler.create();
-		}
-		router.route(config.assetsPath + "/*").handler(staticHandler);
+    public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
+        router = paramRouter;
+        router.route().failureHandler(failureHandler);
+        if (config.authProvider != null) {
+            registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
+        }
+        RouteFactory routeDiscovery = new RouteFactory(router, config, annotationHandlers, typeProcessors, apRegistry, typeInjectors, annotInjectors, serviceRegistry, paramHandlers, new AuthenticationFactory(config), aopHandlerRegistry);
+        routeDiscovery.createRoutes();
+        StaticHandler staticHandler;
+        if (config.webroot != null) {
+            staticHandler = StaticHandler.create(config.webroot);
+        } else {
+            staticHandler = StaticHandler.create();
+        }
+        router.route(config.assetsPath + "/*").handler(staticHandler);
 
-		// fixtures
-		fixtureLoader = new FixtureLoader(vertx, config, serviceRegistry);
-		Future<Void> fixturesFuture = Future.future();
-		fixturesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				periodicallyCleanHistoryMap();
-				future.complete(router);
-			} else {
-				future.fail(result.cause());
-			}
-		});
+        // fixtures
+        fixtureLoader = new FixtureLoader(vertx, config, serviceRegistry);
+        Future<Void> fixturesFuture = Future.future();
+        fixturesFuture.setHandler(result -> {
+            if (result.succeeded()) {
+                periodicallyCleanHistoryMap();
+                handler.handle(Future.succeededFuture(router));
+            } else {
+                handler.handle(Future.failedFuture(result.cause()));
+            }
+        });
 
-		// services
-		Future<Void> servicesFuture = Future.future();
-		servicesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				fixtureLoader.setUp(fixturesFuture);
-			} else {
-				future.fail(result.cause());
-			}
-		});
+        // services
+        Future<Void> servicesFuture = Future.future();
+        servicesFuture.setHandler(result -> {
+            if (result.succeeded()) {
+                fixtureLoader.setUp(fixturesFuture);
+            } else {
+                handler.handle(Future.failedFuture(result.cause()));
+            }
+        });
 
-		serviceRegistry.startAll(servicesFuture);
-	}
+        serviceRegistry.startAll(servicesFuture);
+    }
 
-	public void bootstrap(Future<Router> future) {
-		bootstrap(future, Router.router(vertx));
-	}
+    public void bootstrap(Handler<AsyncResult<Router>> handler) {
+        bootstrap(handler, Router.router(vertx));
+    }
 
-	public void stop(Future<Void> future) {
-		router.clear();
-		MultipleFutures futures = new MultipleFutures(future);
-		futures.add(fixtureLoader::tearDown);
-		futures.add(serviceRegistry::stopAll);
-		futures.start();
-	}
+    public void stop(Handler<AsyncResult<Void>> handler) {
+        router.clear();
+        MultipleFutures futures = new MultipleFutures(handler);
+        futures.add(fixtureLoader::tearDown);
+        futures.add(serviceRegistry::stopAll);
+        futures.start();
+    }
 
-	public void setAuthProvider(AuthProvider authProvider) {
-		config.authProvider = authProvider;
-	}
+    public void setAuthProvider(AuthProvider authProvider) {
+        config.authProvider = authProvider;
+    }
 
-	public void setAuthMethod(AuthMethod authMethod) {
-		config.authMethod = authMethod;
-	}
+    public void setAuthMethod(AuthMethod authMethod) {
+        config.authMethod = authMethod;
+    }
 
-	public void setAvailableLocales(List<Locale> availableLocales) {
-		if (locResolvers == null) {
-			locResolvers = new LocaleResolverRegistry(availableLocales);
-			locResolvers.addResolver(new AcceptLanguageLocaleResolver());
-			registerTypeParamInjector(Locale.class, new LocaleParamInjector());
-			registerHandler(Locale.class, new LocaleHandler(locResolvers));
-		} else {
-			locResolvers.addLocales(availableLocales);
-		}
-	}
+    public void registerInterceptor(String name, Handler<RoutingContext> handler) {
+        aopHandlerRegistry.put(name, handler);
+    }
 
-	public void setDefaultLocale(Locale defaultLocale) {
-		if (locResolvers == null) {
-			locResolvers = new LocaleResolverRegistry(defaultLocale);
-			locResolvers.addResolver(new AcceptLanguageLocaleResolver());
-			registerTypeParamInjector(Locale.class, new LocaleParamInjector());
-			registerHandler(Locale.class, new LocaleHandler(locResolvers));
-		}
-		locResolvers.setDefaultLocale(defaultLocale);
-	}
+    public void setAvailableLocales(List<Locale> availableLocales) {
+        if (locResolvers == null) {
+            locResolvers = new LocaleResolverRegistry(availableLocales);
+            locResolvers.addResolver(new AcceptLanguageLocaleResolver());
+            registerTypeParamInjector(Locale.class, new LocaleParamInjector());
+            registerHandler(Locale.class, new LocaleHandler(locResolvers));
+        } else {
+            locResolvers.addLocales(availableLocales);
+        }
+    }
 
-	public void addLocaleResolver(LocaleResolver resolver) {
-		if (locResolvers == null) {
-			throw new IllegalArgumentException("Please set a list of available locales first. We can't guess the list of locales you're handling in your application.");
-		}
-		locResolvers.addResolver(resolver);
-	}
+    public void setDefaultLocale(Locale defaultLocale) {
+        if (locResolvers == null) {
+            locResolvers = new LocaleResolverRegistry(defaultLocale);
+            locResolvers.addResolver(new AcceptLanguageLocaleResolver());
+            registerTypeParamInjector(Locale.class, new LocaleParamInjector());
+            registerHandler(Locale.class, new LocaleHandler(locResolvers));
+        }
+        locResolvers.setDefaultLocale(defaultLocale);
+    }
 
-	public void setFailureHandler(Handler<RoutingContext> handler) {
-		failureHandler = handler;
-	}
+    public void addLocaleResolver(LocaleResolver resolver) {
+        if (locResolvers == null) {
+            throw new IllegalArgumentException("Please set a list of available locales first. We can't guess the list of locales you're handling in your application.");
+        }
+        locResolvers.addResolver(resolver);
+    }
 
-	public void registerService(Object service) {
-		serviceRegistry.registerService(service);
-	}
+    public void setFailureHandler(Handler<RoutingContext> handler) {
+        failureHandler = handler;
+    }
 
-	public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
-		paramHandlers.put(parameterClass, handler);
-	}
+    public void registerService(Object service) {
+        serviceRegistry.registerService(service);
+    }
 
-	public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
-		registry.registerAdapter(parameterClass, adapter);
-	}
+    public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
+        paramHandlers.put(parameterClass, handler);
+    }
 
-	public void registerAnnotationHandler(Class<? extends Annotation> annotation, Handler<RoutingContext> handler) {
-		Set<Handler<RoutingContext>> handlers = annotationHandlers.get(annotation);
-		if (handlers == null) {
-			handlers = new LinkedHashSet<Handler<RoutingContext>>();
-		}
-		handlers.add(handler);
-		annotationHandlers.put(annotation, handlers);
-	}
+    public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
+        registry.registerAdapter(parameterClass, adapter);
+    }
 
-	public void registerTypeProcessor(Class<?> type, Processor processor) {
-		typeProcessors.put(type, processor);
-	}
+    public void registerAnnotationHandler(Class<? extends Annotation> annotation, Handler<RoutingContext> handler) {
+        Set<Handler<RoutingContext>> handlers = annotationHandlers.get(annotation);
+        if (handlers == null) {
+            handlers = new LinkedHashSet<Handler<RoutingContext>>();
+        }
+        handlers.add(handler);
+        annotationHandlers.put(annotation, handlers);
+    }
 
-	public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
-		apRegistry.registerProcessor(annotation, processor);
-	}
+    public void registerTypeProcessor(Class<?> type, Processor processor) {
+        typeProcessors.put(type, processor);
+    }
 
-	public void registerMarshaller(String contentType, PayloadMarshaller marshaller) {
-		marshallers.put(contentType, marshaller);
-	}
+    public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
+        apRegistry.registerProcessor(annotation, processor);
+    }
 
-	public <T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
-		typeInjectors.registerInjector(clazz, injector);
-	}
+    public void registerMarshaller(String contentType, PayloadMarshaller marshaller) {
+        marshallers.put(contentType, marshaller);
+    }
 
-	public <T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
-		annotInjectors.registerInjector(clazz, injector);
-	}
+    public <T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
+        typeInjectors.registerInjector(clazz, injector);
+    }
 
-	private void periodicallyCleanHistoryMap() {
-		vertx.setPeriodic(60000, timerId -> {
-			LocalMap<Object, Object> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");
-			if (rateLimitations == null) {
-				return;
-			}
-			List<String> clientIpsToRemove = new ArrayList<String>();
-			RateLimit rateLimit = config.rateLimit;
-			for (Object key : rateLimitations.keySet()) {
-				String clientIp = (String) key;
-				ClientAccesses accesses = (ClientAccesses) rateLimitations.get(clientIp);
-				long keepAfter = config.rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
-				accesses.clearHistory(keepAfter);
-				if (accesses.noAccess()) {
-					clientIpsToRemove.add(clientIp);
-				}
-			}
-			clientIpsToRemove.forEach(clientIp -> {
-				rateLimitations.remove(clientIp);
-			});
-		});
-	}
+    public <T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
+        annotInjectors.registerInjector(clazz, injector);
+    }
+
+    private void periodicallyCleanHistoryMap() {
+        vertx.setPeriodic(60000, timerId -> {
+            LocalMap<Object, Object> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");
+            if (rateLimitations == null) {
+                return;
+            }
+            List<String> clientIpsToRemove = new ArrayList<String>();
+            RateLimit rateLimit = config.rateLimit;
+            for (Object key : rateLimitations.keySet()) {
+                String clientIp = (String) key;
+                ClientAccesses accesses = (ClientAccesses) rateLimitations.get(clientIp);
+                long keepAfter = config.rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
+                accesses.clearHistory(keepAfter);
+                if (accesses.noAccess()) {
+                    clientIpsToRemove.add(clientIp);
+                }
+            }
+            clientIpsToRemove.forEach(clientIp -> {
+                rateLimitations.remove(clientIp);
+            });
+        });
+    }
 }

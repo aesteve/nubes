@@ -14,6 +14,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.google.common.net.HttpHeaders;
+
 import static io.vertx.core.http.HttpHeaders.*;
 
 @RunWith(VertxUnitRunner.class)
@@ -39,7 +41,7 @@ public class PaginationTest extends VertxNubesTestBase {
         Async async = context.async();
         client().get("/pagination/paginationContextAvailable", response -> {
             assertEquals(200, response.statusCode());
-            assertNull(response.headers().get("Link"));
+            assertNull(response.headers().get(HttpHeaders.LINK));
             async.complete();
         }).putHeader(ACCEPT, "application/json").end();
     }
@@ -52,7 +54,7 @@ public class PaginationTest extends VertxNubesTestBase {
         int total = 502;
         client().get("/pagination/sendResults?nbResults=" + total + "&page=" + page + "&perPage=" + perPage, response -> {
             assertEquals(200, response.statusCode());
-            assertNotNull(response.headers().get("Link"));
+            assertNotNull(response.headers().get(HttpHeaders.LINK));
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);

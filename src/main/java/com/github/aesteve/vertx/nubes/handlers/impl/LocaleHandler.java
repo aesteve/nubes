@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Locale;
@@ -21,7 +22,7 @@ public class LocaleHandler implements Handler<RoutingContext> {
         Locale loc = localeResolverRegistry.resolve(context);
         if (loc != null) {
             context.put(LocaleParamInjector.LOCALE_ATTR, loc.toLanguageTag());
-            context.response().headers().add("Content-Language", loc.toLanguageTag());
+            context.response().headers().add(HttpHeaders.CONTENT_LANGUAGE, loc.toLanguageTag());
         }
         context.next();
     }
