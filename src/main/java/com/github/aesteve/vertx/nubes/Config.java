@@ -1,17 +1,28 @@
 package com.github.aesteve.vertx.nubes;
 
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.RoutingContext;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
 import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
+import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
+import com.github.aesteve.vertx.nubes.handlers.Processor;
+import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 
 public class Config {
 
@@ -26,6 +37,16 @@ public class Config {
 	public Vertx vertx;
 	public AuthProvider authProvider;
 	public AuthMethod authMethod;
+
+	public AnnotationProcessorRegistry apRegistry;
+	public Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
+	public Map<Class<?>, Processor> typeProcessors;
+	public TypedParamInjectorRegistry typeInjectors;
+	public AnnotatedParamInjectorRegistry annotInjectors;
+	public ServiceRegistry serviceRegistry;
+	public RouteRegistry routeRegistry;
+	public Map<Class<?>, Handler<RoutingContext>> paramHandlers;
+	public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
 
 	/**
 	 * TODO : check config instead of throwing exceptions
