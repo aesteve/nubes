@@ -5,14 +5,13 @@ import io.vertx.ext.web.RoutingContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.handlers.AbstractMethodInvocationHandler;
-import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 
 public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHandler {
 
-    public DefaultMethodInvocationHandler(Object instance, Method method, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotInjectors) {
-        super(instance, method, typedInjectors, annotInjectors);
+    public DefaultMethodInvocationHandler(Object instance, Method method, Config config) {
+        super(instance, method, config);
     }
 
     @Override

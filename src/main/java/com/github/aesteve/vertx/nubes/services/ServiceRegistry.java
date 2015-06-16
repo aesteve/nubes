@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.aesteve.vertx.nubes.annotations.services.Consumes;
+import com.github.aesteve.vertx.nubes.annotations.services.Consumer;
 import com.github.aesteve.vertx.nubes.annotations.services.PeriodicTask;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 
@@ -106,7 +106,7 @@ public class ServiceRegistry {
                     }
                 });
             }
-            Consumes consumes = method.getAnnotation(Consumes.class);
+            Consumer consumes = method.getAnnotation(Consumer.class);
             if (consumes != null) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {

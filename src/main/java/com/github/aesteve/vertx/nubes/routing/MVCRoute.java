@@ -1,7 +1,6 @@
 package com.github.aesteve.vertx.nubes.routing;
 
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -14,11 +13,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.Blocking;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
-import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.utils.Filter;
 
 public class MVCRoute {
@@ -31,26 +29,28 @@ public class MVCRoute {
     private Method mainHandler;
     private Set<Handler<RoutingContext>> handlers;
     private Set<Processor> processors;
-    private TypedParamInjectorRegistry typedInjectors;
-    private AnnotatedParamInjectorRegistry annotatedInjectors;
     private MVCRoute redirectRoute;
     private Handler<RoutingContext> authHandler;
-    private Vertx vertx;
     private Handler<RoutingContext> preInterceptor;
     private Handler<RoutingContext> postInterceptor;
+    private Config config;
+    private boolean disabled;
 
-    public MVCRoute(Object instance, String path, HttpMethod method, TypedParamInjectorRegistry typedInjectors, AnnotatedParamInjectorRegistry annotatedInjectors, Handler<RoutingContext> authHandler, Vertx vertx) {
+    public MVCRoute(Object instance, String path, HttpMethod method, Config config, Handler<RoutingContext> authHandler, boolean disabled) {
         this.instance = instance;
+        this.config = config;
         this.path = path;
         this.httpMethod = method;
         this.beforeFilters = new TreeSet<Filter>();
         this.afterFilters = new TreeSet<Filter>();
         this.handlers = new LinkedHashSet<Handler<RoutingContext>>();
         this.processors = new LinkedHashSet<Processor>();
-        this.typedInjectors = typedInjectors;
-        this.annotatedInjectors = annotatedInjectors;
         this.authHandler = authHandler;
-        this.vertx = vertx;
+        this.disabled = disabled;
+    }
+
+    public boolean isEnabled() {
+        return !disabled;
     }
 
     public void redirectTo(MVCRoute anotherRoute) {
@@ -119,7 +119,7 @@ public class MVCRoute {
         final String pathFinal = path;
         if (authHandler != null) {
             router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
-            router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+            router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
             router.route(httpMethodFinal, pathFinal).handler(authHandler);
         }
         processors.forEach(processor -> {
@@ -151,7 +151,7 @@ public class MVCRoute {
     }
 
     private void setHandler(Router router, Method method, HttpMethod httpMethod, String path) {
-        Handler<RoutingContext> handler = new DefaultMethodInvocationHandler(instance, method, typedInjectors, annotatedInjectors);
+        Handler<RoutingContext> handler = new DefaultMethodInvocationHandler(instance, method, config);
         if (method.isAnnotationPresent(Blocking.class)) {
             router.route(httpMethod, path).blockingHandler(handler);
         } else {

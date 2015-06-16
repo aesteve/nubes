@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.github.aesteve.vertx.nubes.annotations.services.Consumes;
+import com.github.aesteve.vertx.nubes.annotations.services.Consumer;
 import com.github.aesteve.vertx.nubes.annotations.services.PeriodicTask;
 import com.github.aesteve.vertx.nubes.services.Service;
 
@@ -57,7 +57,7 @@ public class DogService implements Service {
         vertx.eventBus().publish("dogService.periodic", "periodic");
     }
 
-    @Consumes("dogService.echo")
+    @Consumer("dogService.echo")
     public void echoBack(Message<String> message) {
         message.reply(message.body());
     }
