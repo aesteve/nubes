@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
+import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.routing.Path;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
@@ -66,6 +67,11 @@ public class JsonApiTestController {
     public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
         payload.set(dog); // echo back
         context.next();
+    }
+
+    @Path("fail/:statusCode")
+    public void sendStatusCode(RoutingContext context, @Param("statusCode") Integer statusCode) {
+        context.fail(statusCode);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.github.aesteve.vertx.nubes.marshallers;
 
-import com.github.aesteve.vertx.nubes.exceptions.HttpException;
 import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 
 public interface PayloadMarshaller {
@@ -11,5 +10,5 @@ public interface PayloadMarshaller {
 
     public String marshallUnexpectedError(Throwable error, boolean displayDetails);
 
-    public String marshallHttpError(HttpException error, boolean displayDetails);
+    public String marshallHttpStatus(int statusCode, String statusMessage);
 }

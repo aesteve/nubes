@@ -38,7 +38,7 @@ public class PayloadTypeProcessor implements Processor {
             response.setStatusCode(204);
             response.end();
         } else {
-            String contentType = context.get("best-content-type");
+            String contentType = ContentTypeProcessor.getContentType(context);
             if (contentType == null) {
                 context.fail(new IllegalArgumentException("No content-type defined, cannot marshall payload"));
                 return;

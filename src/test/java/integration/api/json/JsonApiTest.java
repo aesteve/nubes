@@ -136,4 +136,58 @@ public class JsonApiTest extends VertxNubesTestBase {
         });
     }
 
+    @Test
+    public void test400(TestContext context) {
+        testError(400, "Bad request", context.async());
+    }
+
+    @Test
+    public void test401(TestContext context) {
+        testError(401, "Unauthorized", context.async());
+    }
+
+    @Test
+    public void test403(TestContext context) {
+        testError(403, "Forbidden", context.async());
+    }
+
+    @Test
+    public void test404(TestContext context) {
+        testError(404, "Not found", context.async());
+    }
+
+    @Test
+    public void test406(TestContext context) {
+        testError(406, "Not acceptable", context.async());
+    }
+
+    @Test
+    public void test420(TestContext context) {
+        testError(420, "Rate limitation exceeded", context.async());
+    }
+
+    @Test
+    public void test500(TestContext context) {
+        testError(500, "Internal server error", context.async());
+    }
+
+    @Test
+    public void test503(TestContext context) {
+        testError(503, "Service temporarily unavailable", context.async());
+    }
+
+    private void testError(Integer statusCode, String expectedMessage, Async async) {
+        getJSON("/json/fail/" + statusCode, response -> {
+            assertEquals(statusCode.intValue(), response.statusCode());
+            response.bodyHandler(buff -> {
+                JsonObject json = new JsonObject(buff.toString());
+                JsonObject error = json.getJsonObject("error");
+                assertEquals(statusCode, error.getInteger("code"));
+                assertEquals(expectedMessage, error.getString("message"));
+                async.complete();
+            });
+        });
+
+    }
+
 }

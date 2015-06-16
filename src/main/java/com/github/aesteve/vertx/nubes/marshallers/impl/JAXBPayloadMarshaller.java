@@ -15,7 +15,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.github.aesteve.vertx.nubes.exceptions.HttpException;
 import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
@@ -64,19 +63,21 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
     }
 
     @Override
-    public String marshallHttpError(HttpException error, boolean displayDetails) {
-        return marshallError(error.getStatusCode(), null, error.getStatusMessage());
+    public String marshallHttpStatus(int statusCode, String errorMessage) {
+        return marshallError(statusCode, null, errorMessage);
     }
 
     private String marshallError(int status, Throwable error, String message) {
         if (message == null && error != null) {
             message = StackTracePrinter.asLineString(null, error).toString();
         }
-        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+        sb.append("<error>\n");
         sb.append("\t<code>500</code>\n");
         sb.append("\t<message>\n<![CDATA[");
         sb.append(message);
-        sb.append("]]>\n</message>");
+        sb.append("]]>\n\t</message>\n");
+        sb.append("</error>");
         return sb.toString();
     }
 }

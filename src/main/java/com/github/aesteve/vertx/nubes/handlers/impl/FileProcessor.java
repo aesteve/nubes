@@ -1,9 +1,10 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
-import com.github.aesteve.vertx.nubes.annotations.File;
-import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
-
 import io.vertx.ext.web.RoutingContext;
+
+import com.github.aesteve.vertx.nubes.annotations.File;
+import com.github.aesteve.vertx.nubes.context.FileResolver;
+import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public class FileProcessor implements AnnotationProcessor<File> {
 
@@ -15,12 +16,16 @@ public class FileProcessor implements AnnotationProcessor<File> {
 
     @Override
     public void preHandle(RoutingContext context) {
+        String fileName = annotation.value();
+        if (fileName != null) {
+            FileResolver.resolve(context, annotation.value());
+        }
         context.next();
     }
 
     @Override
     public void postHandle(RoutingContext context) {
-        context.response().sendFile(annotation.value());
+        context.response().sendFile(FileResolver.getFileName(context));
     }
 
     @Override

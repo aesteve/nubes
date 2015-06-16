@@ -5,7 +5,6 @@ import io.vertx.ext.web.RoutingContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.github.aesteve.vertx.nubes.exceptions.BadRequestException;
 import com.github.aesteve.vertx.nubes.handlers.AbstractMethodInvocationHandler;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
@@ -27,8 +26,8 @@ public class DefaultMethodInvocationHandler extends AbstractMethodInvocationHand
         Object[] parameters = null;
         try {
             parameters = getParameters(routingContext);
-        } catch (BadRequestException bre) {
-            routingContext.fail(bre);
+        } catch (Exception e) {
+            routingContext.fail(400);
             return;
         }
         try {

@@ -24,4 +24,15 @@ public class TestFile extends VertxNubesTestBase {
         });
     }
 
+    @Test
+    public void getFileDynamic(TestContext context) {
+        Async async = context.async();
+        client().getNow("/file/dynamic", response -> {
+            response.bodyHandler(buff -> {
+                assertEquals("This is another text file", buff.toString("UTF-8"));
+                async.complete();
+            });
+        });
+    }
+
 }

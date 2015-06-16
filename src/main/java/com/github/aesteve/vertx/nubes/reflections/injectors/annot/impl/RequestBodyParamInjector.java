@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
+import com.github.aesteve.vertx.nubes.handlers.impl.ContentTypeProcessor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 
@@ -23,7 +24,7 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 
     @Override
     public Object resolve(RoutingContext context, RequestBody annotation, Class<?> resultClass) {
-        String contentType = context.get("best-content-type");
+        String contentType = ContentTypeProcessor.getContentType(context);
         if (contentType == null) {
             log.error("No suitable Content-Type found, request body can't be read");
             return null;

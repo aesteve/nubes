@@ -13,6 +13,8 @@ import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 
+    public final static String BEST_CONTENT_TYPE = "nubes-best-content-type";
+
     private ContentType annotation;
 
     public ContentTypeProcessor(ContentType annotation) {
@@ -32,7 +34,7 @@ public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
             return contentTypes.contains(type);
         }).findFirst();
         if (bestType.isPresent()) {
-            context.put("best-content-type", bestType.get());
+            ContentTypeProcessor.setContentType(context, bestType.get());
             context.next();
         } else {
             context.fail(406);
@@ -41,13 +43,21 @@ public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
 
     @Override
     public void postHandle(RoutingContext context) {
-        context.response().putHeader(CONTENT_TYPE, (String) context.get("best-content-type"));
+        context.response().putHeader(CONTENT_TYPE, ContentTypeProcessor.getContentType(context));
         context.next();
     }
 
     @Override
     public Class<? extends ContentType> getAnnotationType() {
         return ContentType.class;
+    }
+
+    public static String getContentType(RoutingContext context) {
+        return context.get(BEST_CONTENT_TYPE);
+    }
+
+    public static void setContentType(RoutingContext context, String contentType) {
+        context.put(BEST_CONTENT_TYPE, contentType);
     }
 
 }

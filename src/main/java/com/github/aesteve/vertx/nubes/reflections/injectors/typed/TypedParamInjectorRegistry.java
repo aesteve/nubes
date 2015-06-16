@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.typed;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.EventBusParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.PaginationContextParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.PayloadParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.RoutingContextParamInjector;
@@ -24,6 +26,7 @@ public class TypedParamInjectorRegistry {
         registerInjector(RoutingContext.class, new RoutingContextParamInjector());
         registerInjector(Payload.class, new PayloadParamInjector());
         registerInjector(PaginationContext.class, new PaginationContextParamInjector());
+        registerInjector(EventBus.class, new EventBusParamInjector());
     }
 
     public <T> void registerInjector(Class<? extends T> clazz, ParamInjector<T> injector) {

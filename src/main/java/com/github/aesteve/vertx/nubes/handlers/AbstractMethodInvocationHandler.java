@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.aesteve.vertx.nubes.exceptions.BadRequestException;
+import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
@@ -31,7 +31,7 @@ public abstract class AbstractMethodInvocationHandler implements Handler<Routing
     @Override
     abstract public void handle(RoutingContext routingContext);
 
-    protected Object[] getParameters(RoutingContext routingContext) throws BadRequestException {
+    protected Object[] getParameters(RoutingContext routingContext) {
         List<Object> parameters = new ArrayList<Object>();
         Class<?>[] parameterClasses = method.getParameterTypes();
         Annotation[][] parametersAnnotations = method.getParameterAnnotations();
@@ -43,13 +43,17 @@ public abstract class AbstractMethodInvocationHandler implements Handler<Routing
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass) throws BadRequestException {
+    protected Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass) {
         if (annotations.length == 0) { // rely on type
             ParamInjector<?> injector = typedInjectors.getInjector(parameterClass);
             if (injector == null) {
                 return null;
             }
-            return injector.resolve(context);
+            try {
+                return injector.resolve(context);
+            } catch (Exception e) {
+                DefaultErrorHandler.badRequest(context, "Invalid parameter for : " + parameterClass);
+            }
         }
         if (annotations.length > 1) {
             throw new IllegalArgumentException("Every parameter should only have ONE annotation");
@@ -57,7 +61,11 @@ public abstract class AbstractMethodInvocationHandler implements Handler<Routing
         Annotation annotation = annotations[0]; // rely on annotation
         AnnotatedParamInjector injector = (AnnotatedParamInjector) annotInjectors.getInjector(annotation.annotationType());
         if (injector != null) {
-            return injector.resolve(context, annotation, parameterClass);
+            try {
+                return injector.resolve(context, annotation, parameterClass);
+            } catch (Exception e) {
+                DefaultErrorHandler.badRequest(context, "Invalid parameter value for : " + parameterClass);
+            }
         }
         return null;
     }

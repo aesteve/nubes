@@ -7,7 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.aesteve.vertx.nubes.exceptions.BadRequestException;
+import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 
 /**
  * Reflects the pagination state for a RoutingContext (request parameters)
@@ -55,7 +55,7 @@ public class PaginationContext {
      * @return
      * @throws BadRequestException
      */
-    public static PaginationContext fromContext(RoutingContext context) throws BadRequestException {
+    public static PaginationContext fromContext(RoutingContext context) {
         HttpServerRequest request = context.request();
         String pageStr = request.getParam(PaginationContext.CURRENT_PAGE_QUERY_PARAM);
         String perPageStr = request.getParam(PaginationContext.PER_PAGE_QUERY_PARAM);
@@ -69,10 +69,10 @@ public class PaginationContext {
                 perPage = Integer.parseInt(perPageStr);
             }
         } catch (NumberFormatException e) {
-            throw new BadRequestException("Invalid pagination parameters : expecting integers");
+            DefaultErrorHandler.badRequest(context, "Invalid pagination parameters : expecting integers");
         }
         if (perPage != null && perPage > PaginationContext.MAX_PER_PAGE) {
-            throw new BadRequestException("Invalid " + PaginationContext.PER_PAGE_QUERY_PARAM + " parameter, max is " + PaginationContext.MAX_PER_PAGE);
+            DefaultErrorHandler.badRequest(context, "Invalid " + PaginationContext.PER_PAGE_QUERY_PARAM + " parameter, max is " + PaginationContext.MAX_PER_PAGE);
         }
         return new PaginationContext(page, perPage);
     }

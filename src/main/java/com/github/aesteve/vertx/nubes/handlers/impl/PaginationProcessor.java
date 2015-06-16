@@ -1,13 +1,12 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
-import com.github.aesteve.vertx.nubes.context.PaginationContext;
-import com.github.aesteve.vertx.nubes.exceptions.HttpException;
-import com.github.aesteve.vertx.nubes.handlers.Processor;
-import com.google.common.net.HttpHeaders;
-
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
+
+import com.github.aesteve.vertx.nubes.context.PaginationContext;
+import com.github.aesteve.vertx.nubes.handlers.Processor;
+import com.google.common.net.HttpHeaders;
 
 public class PaginationProcessor implements Processor {
 
@@ -15,13 +14,8 @@ public class PaginationProcessor implements Processor {
 
     @Override
     public void preHandle(RoutingContext context) {
-        try {
-            context.data().put(PaginationContext.DATA_ATTR, PaginationContext.fromContext(context));
-            context.next();
-        } catch (HttpException he) {
-            context.response().setStatusCode(he.getStatusCode());
-            context.response().end();
-        }
+        context.data().put(PaginationContext.DATA_ATTR, PaginationContext.fromContext(context));
+        context.next();
     }
 
     @Override
