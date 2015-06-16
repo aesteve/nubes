@@ -4,19 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.github.aesteve.vertx.nubes.annotations.services.Consumes;
+import com.github.aesteve.vertx.nubes.annotations.services.PeriodicTask;
 import com.github.aesteve.vertx.nubes.services.Service;
 
 import mock.domains.Dog;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
 
 public class DogService implements Service {
 
     private static final Random rand = new Random();
     private List<Dog> dogs; // in a real use case it would be the database for example
+    private Vertx vertx;
 
     @Override
     public void init(Vertx vertx) {
+        this.vertx = vertx;
     }
 
     @Override
@@ -45,6 +50,16 @@ public class DogService implements Service {
 
     public int size() {
         return dogs.size();
+    }
+
+    @PeriodicTask(300)
+    public void sendPeriodic() {
+        vertx.eventBus().publish("dogService.periodic", "periodic");
+    }
+
+    @Consumes("dogService.echo")
+    public void echoBack(Message<String> message) {
+        message.reply(message.body());
     }
 
 }

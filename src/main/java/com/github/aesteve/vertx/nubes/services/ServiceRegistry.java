@@ -2,23 +2,35 @@ package com.github.aesteve.vertx.nubes.services;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import com.github.aesteve.vertx.nubes.annotations.services.Consumes;
+import com.github.aesteve.vertx.nubes.annotations.services.PeriodicTask;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 
 public class ServiceRegistry {
 
+    private final static Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
+
     private Map<Class<?>, Object> services;
+    private Set<Long> timerIds;
 
     private Vertx vertx;
 
     public ServiceRegistry(Vertx vertx) {
         this.vertx = vertx;
         services = new HashMap<Class<?>, Object>();
+        timerIds = new HashSet<Long>();
     }
 
     public void registerService(Object service) {
@@ -52,6 +64,7 @@ public class ServiceRegistry {
             if (obj instanceof Service) {
                 Service service = (Service) obj;
                 service.init(vertx);
+                introspectService(service);
                 futures.add(service::start);
             }
         });
@@ -63,6 +76,9 @@ public class ServiceRegistry {
             future.complete();
             return;
         }
+        timerIds.forEach(timerId -> {
+            vertx.cancelTimer(timerId);
+        });
         MultipleFutures futures = new MultipleFutures(future);
         services().forEach(obj -> {
             if (obj instanceof Service) {
@@ -71,5 +87,45 @@ public class ServiceRegistry {
             }
         });
         futures.start();
+    }
+
+    private void introspectService(Service service) {
+        for (Method method : service.getClass().getMethods()) {
+            PeriodicTask periodicTask = method.getAnnotation(PeriodicTask.class);
+            if (periodicTask != null) {
+                if (method.getParameterTypes().length > 0) {
+                    log.error("Periodic tasks should not have parameters");
+                    return;
+                }
+                vertx.setPeriodic(periodicTask.value(), timerId -> {
+                    timerIds.add(timerId);
+                    try {
+                        method.invoke(service);
+                    } catch (Exception e) {
+                        log.error("Error while running periodic task", e);
+                    }
+                });
+            }
+            Consumes consumes = method.getAnnotation(Consumes.class);
+            if (consumes != null) {
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
+                    log.error("Cannot register consumer on method : " + getFullName(service, method));
+                    log.error("Method should only declare one parameter of io.vertx.core.eventbus.Message type.");
+                    return;
+                }
+                vertx.eventBus().consumer(consumes.value(), message -> {
+                    try {
+                        method.invoke(service, message);
+                    } catch (Exception e) {
+                        log.error("Exception happened during message handling on method : " + getFullName(service, method), e);
+                    }
+                });
+            }
+        }
+    }
+
+    private String getFullName(Service service, Method method) {
+        return service.getClass().getName() + "." + method.getName();
     }
 }

@@ -1,0 +1,26 @@
+package mock.controllers.shared;
+
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.web.RoutingContext;
+
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.params.LocalMapValue;
+import com.github.aesteve.vertx.nubes.annotations.params.Param;
+import com.github.aesteve.vertx.nubes.annotations.params.VertxLocalMap;
+import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+
+@Controller("/shared/local")
+public class TestLocalMap {
+
+    @Path("/staticValue")
+    public void getLocalValue(RoutingContext context, @LocalMapValue(mapName = "test-map", key = "key") String value) {
+        context.response().putHeader("X-Map-Value", value);
+        context.response().end();
+    }
+
+    @Path("/dynamicValue")
+    public void getDynamicValue(RoutingContext context, @VertxLocalMap("test-map") LocalMap<String, String> map, @Param("key") String key) {
+        context.response().putHeader("X-Map-Value", map.get(key));
+        context.response().end();
+    }
+}
