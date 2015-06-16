@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 public class LocaleParamInjector implements ParamInjector<Locale> {
 
-    public final static String LOCALE_ATTR = "user-locale";
+    public final static String LOCALE_ATTR = "nubes-user-locale";
 
     @Override
     public Locale resolve(RoutingContext context) {

@@ -26,6 +26,10 @@ public class LocaleResolverRegistry {
         availableLocales.addAll(locales);
     }
 
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
@@ -36,6 +40,10 @@ public class LocaleResolverRegistry {
 
     public void removeResolver(LocaleResolver resolver) {
         this.resolvers.remove(resolver);
+    }
+
+    public List<Locale> getAvailableLocales() {
+        return availableLocales;
     }
 
     public Locale resolve(RoutingContext context) {

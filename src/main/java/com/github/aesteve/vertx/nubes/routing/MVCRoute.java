@@ -117,6 +117,9 @@ public class MVCRoute {
         }
         final HttpMethod httpMethodFinal = httpMethod;
         final String pathFinal = path;
+        config.globalHandlers.forEach(handler -> {
+            router.route(httpMethodFinal, pathFinal).handler(handler);
+        });
         if (authHandler != null) {
             router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
             router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));

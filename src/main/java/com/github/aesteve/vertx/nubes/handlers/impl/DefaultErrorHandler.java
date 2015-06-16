@@ -50,6 +50,9 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
     public void handle(RoutingContext context) {
         Throwable cause = context.failure();
         HttpServerResponse response = context.response();
+        if (cause != null) {
+            log.error("Error caught by default error handler", cause);
+        }
         PayloadMarshaller marshaller = marshallers.get(ContentTypeProcessor.getContentType(context));
         if (cause != null) {
             response.setStatusCode(500);
