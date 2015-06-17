@@ -33,7 +33,6 @@ public class HeadersParametersTest extends VertxNubesTestBase {
                 async.complete();
             });
         }).putHeader("X-Date", DateUtils.INSTANCE.formatIso8601(now)).end();
-        ;
     }
 
     @Test
