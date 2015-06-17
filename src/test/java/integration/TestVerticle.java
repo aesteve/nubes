@@ -36,6 +36,9 @@ public class TestVerticle extends AbstractVerticle {
     public static final String HEADER_DATE_BEFORE = "X-Date-Before";
     public static final String HEADER_DATE_AFTER = "X-Date-After";
 
+    public static final String DOG_SERVICE_NAME = "dogService";
+    public static final String SNOOPY_SERVICE_NAME = "snoopy";
+
     private VertxNubes mvc;
 
     @Override
@@ -45,8 +48,8 @@ public class TestVerticle extends AbstractVerticle {
         options.setHost(HOST);
         HttpServer server = vertx.createHttpServer(options);
         mvc = new VertxNubes(vertx, createTestConfig());
-        mvc.registerService(dogService);
-        mvc.registerService(SNOOPY);
+        mvc.registerService(DOG_SERVICE_NAME, dogService);
+        mvc.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
         List<Locale> locales = new ArrayList<Locale>();
         locales.add(Locale.FRENCH);
         locales.add(Locale.US);

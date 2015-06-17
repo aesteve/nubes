@@ -235,8 +235,8 @@ public class VertxNubes {
         failureHandler = handler;
     }
 
-    public void registerService(Object service) {
-        config.serviceRegistry.registerService(service);
+    public void registerService(String name, Object service) {
+        config.serviceRegistry.registerService(name, service);
     }
 
     public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {

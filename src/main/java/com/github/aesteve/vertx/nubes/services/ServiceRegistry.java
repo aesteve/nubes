@@ -22,28 +22,31 @@ public class ServiceRegistry {
 
     private final static Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
 
-    private Map<Class<?>, Object> services;
+    private Map<String, Object> services;
     private Set<Long> timerIds;
 
     private Vertx vertx;
 
     public ServiceRegistry(Vertx vertx) {
         this.vertx = vertx;
-        services = new HashMap<Class<?>, Object>();
+        services = new HashMap<String, Object>();
         timerIds = new HashSet<Long>();
     }
 
-    public void registerService(Object service) {
-        services.put(service.getClass(), service);
+    public void registerService(String name, Object service) {
+        services.put(name, service);
     }
 
-    public Object get(Class<?> serviceClass) {
-        return services.get(serviceClass);
+    public Object get(String name) {
+        return services.get(name);
     }
 
     public Object get(Field field) {
-        Class<?> clazz = field.getType();
-        return get(clazz);
+        com.github.aesteve.vertx.nubes.annotations.services.Service annot = field.getAnnotation(com.github.aesteve.vertx.nubes.annotations.services.Service.class);
+        if (annot != null) {
+            return get(annot.value());
+        }
+        return null;
     }
 
     public Collection<Object> services() {

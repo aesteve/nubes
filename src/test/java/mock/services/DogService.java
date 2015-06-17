@@ -44,6 +44,10 @@ public class DogService implements Service {
         return dogs.get(rand.nextInt(dogs.size()));
     }
 
+    public Dog getDog(int i) {
+        return dogs.get(i);
+    }
+
     public boolean isEmpty() {
         return dogs.isEmpty();
     }

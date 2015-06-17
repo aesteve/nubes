@@ -1,7 +1,9 @@
 package mock.fixtures;
 
+import com.github.aesteve.vertx.nubes.annotations.services.Service;
 import com.github.aesteve.vertx.nubes.fixtures.Fixture;
 
+import integration.TestVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import mock.domains.Dog;
@@ -9,6 +11,7 @@ import mock.services.DogService;
 
 public class DogFixture extends Fixture {
 
+    @Service(TestVerticle.DOG_SERVICE_NAME)
     private DogService dogs;
 
     @Override
