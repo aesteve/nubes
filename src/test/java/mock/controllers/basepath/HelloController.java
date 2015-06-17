@@ -1,4 +1,4 @@
-package mock.controllers;
+package mock.controllers.basepath;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.Path;

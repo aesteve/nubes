@@ -56,6 +56,10 @@ public class DogService implements Service {
         return dogs.size();
     }
 
+    public void clear() {
+        dogs.clear();
+    }
+
     @PeriodicTask(300)
     public void sendPeriodic() {
         vertx.eventBus().publish("dogService.periodic", "periodic");

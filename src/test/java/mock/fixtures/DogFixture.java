@@ -38,6 +38,7 @@ public class DogFixture extends Fixture {
 
     @Override
     public void tearDown(Vertx vertx, Future<Void> future) {
+        dogs.clear();
         future.complete();
     }
 
