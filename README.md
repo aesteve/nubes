@@ -1,16 +1,22 @@
-# vertx-nubes
-## Provides an annotation layer (jersey-like) on top of vertx-apex
+# Vert.x Nubes
+
+## Provides an annotation layer (jersey-like) on top of vertx-web
 
 
-It's a work in progress. If you're interested on what the actual objectives are, and how they could be achieved, please take a look at [the specifications](https://github.com/aesteve/vertx-mvc-specifications)
+It's a work in progress. 
+
+If you're interested on what the actual objectives are, and how they could be achieved, please take a look at [the specifications](https://github.com/aesteve/vertx-mvc-specifications)
 
 Feel free to comment and/or submit ideas in the specifications project.
 
+The main idea is to provide a different way to declare your routes than you'd do in a standard vertx-web project by providing a set of hopefully useful annotations / utilities on top of vertx-web.
+
+The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... 
+
+Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of utilities at your disposal.
 
 
-# For the impatient, here's how it works :
-
-## ViewController
+## For the impatient, here's a basic example :
 
 ### The controller : 
 
@@ -24,7 +30,7 @@ public class PeanutsPages {
     DOG, GIRL, BOY, BIRD;
   }
   
-  @Path("/character")
+  @GET("/character")
   @View("character.hbs")
   public void getCharacter(RoutingContext context, @Param("type") CharacterType type) {
     switch(type) {
@@ -53,13 +59,14 @@ public class PeanutsPages {
 </html>
 ```
 
+
 `GET "/peanuts/character?type=DOG"` will return the following html view:
 
 `Hello, I'm a Peanuts character, and my name is Snoopy`
 
 
 
-## A JSON api example
+### A JSON api example
 
 ```java
 package com.peanuts.controllers;
@@ -68,7 +75,7 @@ package com.peanuts.controllers;
 @ContentType("application/json")
 public class CharactersController {
   
-  @Path("/character")
+  @GET("/character")
   public void getCharacter(RoutingContext context, @Param("type") CharacterType type, Payload<PeanutsCharacter> payload) {
     switch(type) {
       case DOG: 
@@ -79,8 +86,7 @@ public class CharactersController {
     context.next()
   }
   
-  @Path("/character")
-  @POST
+  @POST("/character")
   public void createCharacter(RoutingContext context, @RequestBody PeanutsCharacter character) {
     yourDatabaseService.save(character, handler -> {
       context.next();  
@@ -134,146 +140,91 @@ Will save our favorite cartoon dog into the database, then return an HTTP 204.
 
 
 
-# How it works
+## How it works
 
-## VertxNubes the nervous system
+### VertxNubes as the entry point
 
-The starting point of every work with the framwork is creatning a `VertxNubes` instance.
+The entry point of every work with the framwork is creatning a `VertxNubes` instance.
 
 You'll notice the constructor takes two arguments : 
 
 * a Vertx instance
 * a JsonObject containing the configuration
 
-Please take a look at [docs/CONFIG.md](the configuration doc) for the configuration options.
+Please take a look at [the configuration documentation](docs/CONFIG.md) for the available, mandatory or not, options.
 
-Once you've created the VertxNubes instance, you need to bootstrap it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Apex routes/handlers and attach it to an Apex router.
+Once you've created the VertxNubes instance, you need to `bootstrap` it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Web routes/handlers and attach it to a vertx-web `Router`.
 
-You can provide your own `Router`, if you want to keep to add custom routes and stuff, you can also let `VertxNubes` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping.
+You can provide your own `Router`, if you want to keep to add custom routes and stuff in the standard vertx way. 
 
-## What is a `@Controller` ?
+You can also let `VertxNubes` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping.
 
-A controller is a Java singleton defining a set of vmethods which will be translated into Apex handlers.
+```java
+VertxNubes nubes = new VertxNubes(vertx, config);
+nubes.bootstrap(res -> {
+  if (res.succeeded()) {
+    Router yourRouter = res.result();
+    System.out.println("Everything's ready");
+  } else {
+    System.err.println("Something went wrong");
+    res.cause().printStackTrace();
+  }
+});
+
+```
+
+You'll find a ton of examples in the tests of the project.
+
+If you take a look at [the mock controllers](src/test/java/mock/controllers), you'll pretty much find everything that's possible to do with Nubes out of the box.
+
+## The Controller layer
+
+### What is a `@Controller` ?
+
+A controller is a Java singleton defining a set of methods which will be translated into vertx-web handlers. (~= express middlewares).
+
 It's important that your controller defines a no-argument constructor, VertxNubes expect that.
 
-In a controller you'll find routes, annotated with `@Path` but also filters of two differents types : `@BeforeFilter` and `@AfterFilter`.
+In a controller you'll find routes, annotated with `@GET`, `@POST`, `@PUT`, but also filters of two differents types : `@BeforeFilter` and `@AfterFilter`.
 
 For each route in your controller, before filters will be executed before your actual route method, and after filters, well... after.
 
-Parameters are automatically injected into every method at runtime. For a complete list of available parameters (by default), see [docs/PARAMETERS.md](the parameters injection documentation).
 
-Every route, filter, or even the controller itself can be annotated with several annotation, which defines either handlers or processors.
+### Annotations
 
-## The RoutingContext
+Nubes provides some default annotations. [Here's the list]().
 
-In every of your method, you have access to the RouginContext. This is important, since you can do pretty much everything you need in your method. Especially, you can do async stuff, and in this case you'll need to act on the RoutingContext the same you would do with Apex by calling either `context.fail(...)` or `context.next()`.
+But you can also define your own annotations, and attach vertx-web handlers to it.
 
-Keep in mind that under the hood, every of your method is mapped as an Apex handler. So you need to write what you would write with Apex.
+In this case, you can register what Nubes calls "Annotation processors" which will be called before, after (or both) your method is invoked.
 
-## Annotations
+Nubes itself registers its own annotations using this API. For example, the `@ContentType({"application/json", "application/xml"})` annotation is bound to a `ContentTypeProcessor` which will : 
 
-### What is an AnnotationHandler
-
-It's a simple Apex Handler<RoutingContext>, mapped by an annotation. This means when VertxNubes discovers a method annotated with this annotation, it will attach the Handler **before** your routing method is called.
-
-### What is an AnnotationProcessor
-
-It's a double Apex handler, with two `handle(RoutingContext)` methods. One will be called before the actual route method is called, one after.
-
-### Let's see it in action : 
-
-`@ContentType("application/json")` is an annotation processor.
-
-Before the route method is called, it will check that the client `Accept` header effectively accepts the `application/json` content type.
-
-After the route mehtod is called, it will try to find a response payload (response body) and marshall it as Json (if it's a Java object). (by default it's using Boon library).
-
-Another thing you can think of as an `AnnotationProcessor` would be ETag handling.
-
-Before the request reaches the routing method, you'd check the ETag header of the request, if by reading it you know the client is up-to-date, you would return an http 304 code. Else, you would invoke the actual routing method.
-
-After your routing method has been called, you would then calculate the Etag for the response body.
-
-The `VertxNubes` class provides an API so that you can register your own annotation handlers / processors. It (itself) uses this API for every default annotation (ContentType, ...).
+- check the `Accept` header of the request, and if it doesn't matches the MIME type you're handling, return a 406 status to the client
+- find the most suitable MIME among the one the client specified in its `Accept` header and the one you specified in the body of the `ContentType` annotation
+- inject this ContentType as a variable in the RoutingContext so that you can benefit from it
+- position the `Content-Type` response header so that you don't have to care about it
 
 
-## Type injection
+[Read the annotations document](docs/ANNOTATIONS.md)
 
-One other feature of `VertxNubes` is the ability to call every method you defined with the right parameter instances, determined at runtime.
+### Parameters
 
-There are two types of parameters you can use : 
+Parameters are automatically injected into every method at runtime, depending on the context of the request (parameters, body, ...).
 
-* Typed parameters
-* Annotated parameters
- 
-### Typed parameters
+For a complete list of available parameters (by default), see [the parameters documentation](docs/PARAMETERS.md).
 
-Basically, the instance is defined by its type and the current RoutingContext. The most basic example is the RoutingContext itself.
+But you can also register your own parameter resolvers by telling nubes : "When you find this type of parameter, resolve it like this".
 
-```java
-@Path("/dogs/mydog")
-public void myDog(RoutingContext context) {
-  log.info("User asked for his dog !");
-  context.next();
-}
-```
+Parameters can be resolved simply by their types (that's how Nubes injects the `RoutingContext` or the `EventBus` parameters if your method asks for it) or by a custom annotation you define.
 
-Another example would be the Vertx instance. If you know about Apex, you know there's a `vertx()` method in the `RoutingContext` object.
-
-So basically, if you define your method this way : 
+[Read the parameters injection documentation](docs/PARAMETERS.MD)
 
 
-```java
-@Path("/dogs/mydog")
-public void myDog(RoutingContext context, Vertx vertx) {
-  vertx.setTimer(3000, timerId -> {
-    log.info("User asked for his dog ! Sorry, I'm a little late to notice...");
-  })
-  context.next();
-}
-```
+## The View Layer
 
-The vertx instance is simply injected by executing : `context.vertx()`. Well, you could have guessed, or even better, you could have done it yourself.
+TODO : explain that template engines are created by the user, and bound to a file extension.
 
-What's more interesting though, is to provide **your own** parameter injector. The `VertxNubes` holds a registry and itself uses the registry for the default types it knows how to handle (RoutingContext, Vertx, Payload, ...).
+## The Service Layer
 
-Simple implement the `ParameterInjector` interface, to provide the way to inject an object given its type and the RoutingContext.
-
-For instance, let's imagine you stored user sessionIds in a `LocalMap` (that's probably not the best way to do it, but it's an example). You can provide your own UserInjector this way :
-
-```java
-public class UserInjector implements ParameterInjector<User> {
-  public User resolve(RoutingContext context, Class<? extends User> clazz) {
-    return User.fromMap(context.sharedData().localMap().get(context.request().getParam("token")));
-  }
-}
-```
-
-Then, before bootstrapping, you would call :
-
-```java
-vertxNubes.registerTypeParamInjector(User.class, new UserInjector());
-```
-
-In your routing methods (or filters) you're now able to write : 
-
-```java
-@Path("dogs/mydogs")
-public void myDog(RoutingContext context, User user) {
-  log.info("User asked for his dog, now I know which dog it is. It's : " + user.getDog());
-  context.next();
-}
-```
-
-You can imagine pretty much everything you need.
-
-
-### Annotated parameters
-
-TODO : write doc, using `@RequestBody` as an example.
-
-
------
-
-
-TODO : explain payload, marshallers and views.
+TODO : explain what services are, and how they're created and injected

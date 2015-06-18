@@ -10,7 +10,6 @@ import com.github.aesteve.vertx.nubes.annotations.params.Header;
 import com.github.aesteve.vertx.nubes.annotations.params.LocalMapValue;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.Params;
-import com.github.aesteve.vertx.nubes.annotations.params.PathParam;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.params.VertxLocalMap;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
@@ -21,7 +20,6 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.LocalMapP
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.LocalMapValueParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.ParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.ParamsInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.PathParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.RequestBodyParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.UserParamInjector;
 
@@ -36,7 +34,6 @@ public class AnnotatedParamInjectorRegistry {
         registerInjector(Header.class, new HeaderParamInjector(adapters));
         registerInjector(Param.class, new ParamInjector(adapters));
         registerInjector(Params.class, new ParamsInjector(adapters));
-        registerInjector(PathParam.class, new PathParamInjector(adapters));
         registerInjector(User.class, new UserParamInjector());
         registerInjector(LocalMapValue.class, new LocalMapValueParamInjector());
         registerInjector(VertxLocalMap.class, new LocalMapParamInjector());
