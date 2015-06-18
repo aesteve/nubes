@@ -4,9 +4,7 @@ import io.vertx.core.http.HttpMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.annotations.routing.http.CONNECT;
@@ -21,30 +19,59 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.TRACE;
 
 public class HttpMethodFactory {
 
-    private static Map<Class<? extends Annotation>, HttpMethod> conversionTable = new HashMap<Class<? extends Annotation>, HttpMethod>();
-    static {
-        conversionTable.put(GET.class, HttpMethod.GET);
-        conversionTable.put(POST.class, HttpMethod.POST);
-        conversionTable.put(PUT.class, HttpMethod.PUT);
-        conversionTable.put(PATCH.class, HttpMethod.PATCH);
-        conversionTable.put(DELETE.class, HttpMethod.DELETE);
-        conversionTable.put(OPTIONS.class, HttpMethod.OPTIONS);
-        conversionTable.put(TRACE.class, HttpMethod.TRACE);
-        conversionTable.put(HEAD.class, HttpMethod.HEAD);
-        conversionTable.put(CONNECT.class, HttpMethod.CONNECT);
-    }
-
-    public static List<HttpMethod> fromAnnotatedMethod(Method method) {
-        List<HttpMethod> methods = new ArrayList<HttpMethod>();
+    public static Map<HttpMethod, String> fromAnnotatedMethod(Method method) {
+        Map<HttpMethod, String> methods = new HashMap<HttpMethod, String>();
         for (Annotation annot : method.getDeclaredAnnotations()) {
-            HttpMethod http = conversionTable.get(annot.annotationType());
-            if (http != null) {
-                methods.add(http);
+            Class<? extends Annotation> annotClass = annot.annotationType();
+            if (annotClass.equals(CONNECT.class)) {
+                CONNECT connect = (CONNECT) annot;
+                methods.put(HttpMethod.CONNECT, connect.value());
+            }
+            if (annotClass.equals(DELETE.class)) {
+                DELETE delete = (DELETE) annot;
+                methods.put(HttpMethod.DELETE, delete.value());
+            }
+            if (annotClass.equals(GET.class)) {
+                GET get = (GET) annot;
+                methods.put(HttpMethod.GET, get.value());
+            }
+            if (annotClass.equals(HEAD.class)) {
+                HEAD head = (HEAD) annot;
+                methods.put(HttpMethod.HEAD, head.value());
+            }
+            if (annotClass.equals(OPTIONS.class)) {
+                OPTIONS options = (OPTIONS) annot;
+                methods.put(HttpMethod.OPTIONS, options.value());
+            }
+            if (annotClass.equals(PATCH.class)) {
+                PATCH patch = (PATCH) annot;
+                methods.put(HttpMethod.PATCH, patch.value());
+            }
+            if (annotClass.equals(POST.class)) {
+                POST post = (POST) annot;
+                methods.put(HttpMethod.POST, post.value());
+            }
+            if (annotClass.equals(PUT.class)) {
+                PUT put = (PUT) annot;
+                methods.put(HttpMethod.PUT, put.value());
+            }
+            if (annotClass.equals(TRACE.class)) {
+                TRACE trace = (TRACE) annot;
+                methods.put(HttpMethod.TRACE, trace.value());
             }
         }
-        if (methods.isEmpty()) {
-            methods.add(HttpMethod.GET); // by default
-        }
         return methods;
+    }
+
+    public static boolean isRouteMethod(Method method) {
+        return method.isAnnotationPresent(CONNECT.class)
+                        || method.isAnnotationPresent(DELETE.class)
+                        || method.isAnnotationPresent(GET.class)
+                        || method.isAnnotationPresent(HEAD.class)
+                        || method.isAnnotationPresent(OPTIONS.class)
+                        || method.isAnnotationPresent(PATCH.class)
+                        || method.isAnnotationPresent(POST.class)
+                        || method.isAnnotationPresent(PUT.class)
+                        || method.isAnnotationPresent(TRACE.class);
     }
 }

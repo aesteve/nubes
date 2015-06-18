@@ -1,5 +1,7 @@
 package integration.api.json;
 
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import integration.TestVerticle;
@@ -9,8 +11,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-
-import static io.vertx.core.http.HttpHeaders.*;
 
 import java.util.List;
 import java.util.Map;

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import integration.VertxNubesTestBase;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -42,6 +43,17 @@ public class MethodsTest extends VertxNubesTestBase {
     public void testPut(TestContext context) {
         Async async = context.async();
         client().put(path, response -> {
+            response.handler(buffer -> {
+                assertEquals("PUT", buffer.toString("UTF-8"));
+                async.complete();
+            });
+        }).end();
+    }
+
+    @Test
+    public void testPatch(TestContext context) {
+        Async async = context.async();
+        client().request(HttpMethod.PATCH, path, response -> {
             response.handler(buffer -> {
                 assertEquals("PUT", buffer.toString("UTF-8"));
                 async.complete();

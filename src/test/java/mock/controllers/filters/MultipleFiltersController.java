@@ -5,7 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
 import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/filters")
 public class MultipleFiltersController {
@@ -29,7 +29,7 @@ public class MultipleFiltersController {
         context.next();
     }
 
-    @Path("/order")
+    @GET("/order")
     public void main(RoutingContext context) {
         context.next();
     }

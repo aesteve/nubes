@@ -1,10 +1,10 @@
 package mock.controllers.params;
 
+import io.vertx.ext.web.RoutingContext;
+
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.PathParam;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
-
-import io.vertx.ext.web.RoutingContext;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/params/path/")
 public class PathParametersTestController {
@@ -13,22 +13,22 @@ public class PathParametersTestController {
         CAT, DOG, LIZARD;
     }
 
-    @Path("string/:parameter")
+    @GET("string/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") String parameter) {
         context.response().end(parameter);
     }
 
-    @Path("enum/:parameter")
+    @GET("enum/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Animal parameter) {
         context.response().end(parameter.toString());
     }
 
-    @Path("long/:parameter")
+    @GET("long/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Long parameter) {
         context.response().end(parameter.toString());
     }
 
-    @Path("int/:parameter")
+    @GET("int/:parameter")
     public void testParam(RoutingContext context, @PathParam("parameter") Integer parameter) {
         context.response().end(parameter.toString());
     }

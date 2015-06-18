@@ -7,26 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mock.domains.Dog;
+
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
-
-import mock.domains.Dog;
 
 @Controller("/json/")
 @ContentType("application/json")
 public class JsonApiTestController {
 
-    @Path("noContent")
+    @GET("noContent")
     public void noContent(RoutingContext context) {
         context.next();
     }
 
-    @Path("map")
+    @GET("map")
     public void sendMap(RoutingContext context, Payload<Map<String, String>> payload) {
         Map<String, String> dogs = new HashMap<String, String>();
         dogs.put("Snoopy", "Beagle");
@@ -35,7 +35,7 @@ public class JsonApiTestController {
         context.next();
     }
 
-    @Path("array")
+    @GET("array")
     public void sendArray(RoutingContext context, Payload<List<String>> payload) {
         List<String> dogs = new ArrayList<String>(2);
         dogs.add("Snoopy");
@@ -44,14 +44,14 @@ public class JsonApiTestController {
         context.next();
     }
 
-    @Path("dog")
+    @GET("dog")
     public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
         Dog snoopy = new Dog("Snoopy", "Beagle");
         payload.set(snoopy);
         context.next();
     }
 
-    @Path("dogs")
+    @GET("dogs")
     public void sendManyDomainObjects(RoutingContext context, Payload<List<Dog>> payload) {
         List<Dog> dogs = new ArrayList<Dog>(2);
         Dog snoopy = new Dog("Snoopy", "Beagle");
@@ -62,14 +62,13 @@ public class JsonApiTestController {
         context.next();
     }
 
-    @Path("postdog")
-    @POST
-    public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
+    @POST("postdog")
+    public void postDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
         payload.set(dog); // echo back
         context.next();
     }
 
-    @Path("fail/:statusCode")
+    @GET("fail/:statusCode")
     public void sendStatusCode(RoutingContext context, @Param("statusCode") Integer statusCode) {
         context.fail(statusCode);
     }

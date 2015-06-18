@@ -6,7 +6,7 @@ import mock.domains.Dog;
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
@@ -14,20 +14,19 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 @ContentType("application/xml")
 public class XmlApiTestController {
 
-    @Path("noContent")
+    @GET("noContent")
     public void noContent(RoutingContext context) {
         context.next();
     }
 
-    @Path("dog")
+    @GET("dog")
     public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
         Dog snoopy = new Dog("Snoopy", "Beagle");
         payload.set(snoopy);
         context.next();
     }
 
-    @Path("postdog")
-    @POST
+    @POST("postdog")
     public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
         payload.set(dog); // echo back
         context.next();

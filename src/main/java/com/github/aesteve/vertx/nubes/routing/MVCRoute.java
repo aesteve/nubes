@@ -4,6 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
@@ -109,6 +110,7 @@ public class MVCRoute {
     }
 
     public void attachHandlersToRouter(Router router, HttpMethod httpMethod, String path) {
+        boolean isRedirect = httpMethod != null && path != null;
         if (httpMethod == null) {
             httpMethod = this.httpMethod;
         }
@@ -117,9 +119,11 @@ public class MVCRoute {
         }
         final HttpMethod httpMethodFinal = httpMethod;
         final String pathFinal = path;
-        config.globalHandlers.forEach(handler -> {
-            router.route(httpMethodFinal, pathFinal).handler(handler);
-        });
+        if (!isRedirect) {
+            config.globalHandlers.forEach(handler -> {
+                router.route(httpMethodFinal, pathFinal).handler(handler);
+            });
+        }
         if (authHandler != null) {
             router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
             router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
@@ -129,7 +133,14 @@ public class MVCRoute {
             router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
         });
         handlers.forEach(handler -> {
-            router.route(httpMethodFinal, pathFinal).handler(handler);
+            if (isRedirect) {
+                if (!(handler instanceof BodyHandler)) { // we can't attach this handler twice
+                    router.route(httpMethodFinal, pathFinal).handler(handler);
+                }
+            } else {
+                router.route(httpMethodFinal, pathFinal).handler(handler);
+            }
+
         });
         beforeFilters.forEach(filter -> {
             setHandler(router, filter.method(), httpMethodFinal, pathFinal);
@@ -144,6 +155,7 @@ public class MVCRoute {
         }
         if (postInterceptor != null) {
             router.route(httpMethodFinal, pathFinal).handler(postInterceptor);
+            // FIXME ?? : return;
         }
         afterFilters.forEach(filter -> {
             setHandler(router, filter.method(), httpMethodFinal, pathFinal);

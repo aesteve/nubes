@@ -6,14 +6,14 @@ import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.filters.After;
 import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
 import com.github.aesteve.vertx.nubes.annotations.filters.Before;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/filters")
 public class AOPFilter {
 
     public static final long EXECUTION_TIME = 100; // ms
 
-    @Path("/aop")
+    @GET("/aop")
     @Before(name = "setDateBefore")
     @After(name = "setDateAfter")
     public void beforeAndAfter(RoutingContext context) {

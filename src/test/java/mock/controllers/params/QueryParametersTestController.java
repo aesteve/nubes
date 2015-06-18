@@ -6,7 +6,7 @@ import java.util.Date;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/params/query/")
 public class QueryParametersTestController {
@@ -15,32 +15,32 @@ public class QueryParametersTestController {
         CAT, DOG, LIZARD;
     }
 
-    @Path("string")
+    @GET("string")
     public void testParam(RoutingContext context, @Param(value = "parameter", mandatory = true) String parameter) {
         context.response().end(parameter);
     }
 
-    @Path("date")
+    @GET("date")
     public void testParam(RoutingContext context, @Param("parameter") Date parameter) {
         context.response().end(Long.toString(parameter.getTime()));
     }
 
-    @Path("enum")
+    @GET("enum")
     public void testParam(RoutingContext context, @Param("parameter") Animal parameter) {
         context.response().end(parameter.toString());
     }
 
-    @Path("long")
+    @GET("long")
     public void testParam(RoutingContext context, @Param("parameter") Long parameter) {
         context.response().end(parameter.toString());
     }
 
-    @Path("int")
+    @GET("int")
     public void testParam(RoutingContext context, @Param("parameter") Integer parameter) {
         context.response().end(parameter.toString());
     }
 
-    @Path("float")
+    @GET("float")
     public void testParam(RoutingContext context, @Param("parameter") Float parameter) {
         context.response().end(parameter.toString());
     }

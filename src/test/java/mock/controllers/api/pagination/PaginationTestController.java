@@ -5,13 +5,13 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import mock.domains.Dog;
+
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
-
-import mock.domains.Dog;
 
 @Controller("/pagination/")
 @ContentType("application/json")
@@ -22,7 +22,7 @@ public class PaginationTestController {
      * 
      * @param context
      */
-    @Path("notPaginated")
+    @GET("notPaginated")
     public void notPaginated(RoutingContext context) {
         context.next();
     }
@@ -33,7 +33,7 @@ public class PaginationTestController {
      * 
      * @param context
      */
-    @Path("notPaginatedButUsingPagination")
+    @GET("notPaginatedButUsingPagination")
     public void notPaginatedButUsingPagination(RoutingContext context, PaginationContext pageContext) {
         context.next();
     }
@@ -44,7 +44,7 @@ public class PaginationTestController {
      * 
      * @param context
      */
-    @Path("paginationContextAvailable")
+    @GET("paginationContextAvailable")
     public void paginationContextAvailable(RoutingContext context, PaginationContext pageContext, Payload<Dog> payload) {
         payload.set(new Dog("Milou", "Fox terrier"));
         context.next();
@@ -54,7 +54,7 @@ public class PaginationTestController {
      * Paginated, sends as many results as specified in "nbResults" query parameter
      * 
      */
-    @Path("sendResults")
+    @GET("sendResults")
     public void sendResults(RoutingContext context, PaginationContext pageContext, Payload<List<Dog>> payload) {
         Integer nbResults = Integer.valueOf(context.request().getParam("nbResults"));
         List<Dog> dogs = new ArrayList<Dog>(nbResults);

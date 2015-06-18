@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,7 +27,6 @@ import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
 import com.github.aesteve.vertx.nubes.annotations.filters.Before;
 import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
 import com.github.aesteve.vertx.nubes.annotations.routing.Disabled;
-import com.github.aesteve.vertx.nubes.annotations.routing.Path;
 import com.github.aesteve.vertx.nubes.annotations.routing.ServerRedirect;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
@@ -83,16 +83,18 @@ public class RouteFactory {
         } catch (InstantiationException | IllegalAccessException ie) {
             throw new RuntimeException("Could not instanciate controller : ", ie);
         }
-        String basePath = "";
+        String trBasePath = "";
         if (base.value() != null) {
-            basePath = base.value();
+            trBasePath = base.value();
         }
+        final String basePath = trBasePath; // java 8...
         for (Method method : controller.getDeclaredMethods()) {
-            if (method.getAnnotation(Path.class) != null) {
-                Auth auth = method.getAnnotation(Auth.class);
-                if (auth == null) {
-                    auth = controller.getAnnotation(Auth.class);
+            if (HttpMethodFactory.isRouteMethod(method)) {
+                Auth trAuth = method.getAnnotation(Auth.class);
+                if (trAuth == null) {
+                    trAuth = controller.getAnnotation(Auth.class);
                 }
+                final Auth auth = trAuth; // java 8...
                 Set<Handler<RoutingContext>> paramsHandlers = new LinkedHashSet<Handler<RoutingContext>>();
                 Class<?>[] parameterClasses = method.getParameterTypes();
                 Annotation[][] parametersAnnotations = method.getParameterAnnotations();
@@ -118,15 +120,15 @@ public class RouteFactory {
                     }
                 }
 
-                Path path = (Path) method.getAnnotation(Path.class);
-                List<HttpMethod> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
-                for (HttpMethod httpMethod : httpMethods) {
+                Map<HttpMethod, String> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
+                System.out.println("httpMethods = " + httpMethods.keySet().toString());
+                httpMethods.forEach((httpMethod, path) -> {
                     Handler<RoutingContext> authHandler = null;
                     if (method.isAnnotationPresent(Auth.class) || controller.isAnnotationPresent(Auth.class)) {
                         authHandler = authFactory.create(auth);
                     }
                     boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
-                    MVCRoute route = new MVCRoute(instance, basePath + path.value(), httpMethod, config, authHandler, disabled);
+                    MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled);
                     for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
                         Set<Handler<RoutingContext>> handler = config.annotationHandlers.get(methodAnnotation.annotationType());
                         if (handler != null) {
@@ -158,13 +160,14 @@ public class RouteFactory {
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
                     route.setMainHandler(method);
+                    System.out.println("Created route : " + route);
                     routes.add(route);
                     routeRegistry.register(controller, method, route);
                     if (method.isAnnotationPresent(ServerRedirect.class)) {
                         ServerRedirect redirect = method.getAnnotation(ServerRedirect.class);
                         routeRegistry.bindRedirect(route, redirect);
                     }
-                }
+                });
             }
         }
         extractFiltersFromController(routes, controller);
