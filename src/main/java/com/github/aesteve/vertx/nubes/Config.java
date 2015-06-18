@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class Config {
     private Config() {
         bundlesByLocale = new HashMap<Locale, ResourceBundle>();
         globalHandlers = new ArrayList<Handler<RoutingContext>>();
+        templateEngines = new HashMap<String, TemplateEngine>();
     }
 
     public List<String> controllerPackages;
@@ -64,6 +66,7 @@ public class Config {
     public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
     public Map<Locale, ResourceBundle> bundlesByLocale;
     public List<Handler<RoutingContext>> globalHandlers;
+    public Map<String, TemplateEngine> templateEngines;
 
     /**
      * TODO : check config instead of throwing exceptions

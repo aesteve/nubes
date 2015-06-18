@@ -108,6 +108,10 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
         HttpServerResponse response = context.response();
         if (tpl != null) {
             context.put("error", cause);
+            if (tpl.endsWith(".html")) {
+                response.sendFile(tpl);
+                return;
+            }
             if (config.displayErrors) {
                 context.put("stackTrace", StackTracePrinter.asHtml(null, cause).toString());
             }

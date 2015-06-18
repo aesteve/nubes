@@ -12,6 +12,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -189,6 +190,10 @@ public class VertxNubes {
         futures.add(fixtureLoader::tearDown);
         futures.add(config.serviceRegistry::stopAll);
         futures.start();
+    }
+
+    public void registerTemplateEngine(String extension, TemplateEngine engine) {
+        config.templateEngines.put(extension, engine);
     }
 
     public void setAuthProvider(AuthProvider authProvider) {

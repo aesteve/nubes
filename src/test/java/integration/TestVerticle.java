@@ -11,8 +11,8 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +21,7 @@ import mock.domains.Dog;
 import mock.services.DogService;
 
 import com.github.aesteve.vertx.nubes.VertxNubes;
+import com.github.aesteve.vertx.nubes.views.impl.PrefixedHandlebarsTemplateEngineImpl;
 
 public class TestVerticle extends AbstractVerticle {
 
@@ -47,7 +48,8 @@ public class TestVerticle extends AbstractVerticle {
         options.setPort(PORT);
         options.setHost(HOST);
         HttpServer server = vertx.createHttpServer(options);
-        mvc = new VertxNubes(vertx, createTestConfig());
+        JsonObject config = createTestConfig();
+        mvc = new VertxNubes(vertx, config);
         mvc.registerService(DOG_SERVICE_NAME, dogService);
         mvc.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
         List<Locale> locales = new ArrayList<Locale>();
@@ -66,6 +68,7 @@ public class TestVerticle extends AbstractVerticle {
             context.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
             context.next();
         });
+        mvc.registerTemplateEngine("hbs", new PrefixedHandlebarsTemplateEngineImpl("web/views/"));
         mvc.bootstrap(res -> {
             if (res.failed()) {
                 startFuture.fail(res.cause());
