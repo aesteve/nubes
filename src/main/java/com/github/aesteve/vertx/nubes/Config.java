@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
 import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
@@ -40,6 +41,7 @@ public class Config {
         bundlesByLocale = new HashMap<Locale, ResourceBundle>();
         globalHandlers = new ArrayList<Handler<RoutingContext>>();
         templateEngines = new HashMap<String, TemplateEngine>();
+        sockJSOptions = new SockJSHandlerOptions();
     }
 
     public List<String> controllerPackages;
@@ -67,6 +69,7 @@ public class Config {
     public Map<Locale, ResourceBundle> bundlesByLocale;
     public List<Handler<RoutingContext>> globalHandlers;
     public Map<String, TemplateEngine> templateEngines;
+    public SockJSHandlerOptions sockJSOptions;
 
     /**
      * TODO : check config instead of throwing exceptions
@@ -105,6 +108,7 @@ public class Config {
         instance.assetsPath = json.getString("static-path", "/assets");
         instance.tplDir = json.getString("views-dir", "web/views");
         instance.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
+        // TODO : read sockJSOptions from config
         return instance;
     }
 

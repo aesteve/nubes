@@ -59,6 +59,7 @@ import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.JAXBPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.RouteFactory;
+import com.github.aesteve.vertx.nubes.reflections.SocketFactory;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapter;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import com.github.aesteve.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
@@ -147,6 +148,8 @@ public class VertxNubes {
         }
         RouteFactory routeDiscovery = new RouteFactory(router, config);
         routeDiscovery.createRoutes();
+        SocketFactory socketFactory = new SocketFactory(router, config);
+        socketFactory.createSocketHandlers();
         StaticHandler staticHandler;
         if (config.webroot != null) {
             staticHandler = StaticHandler.create(config.webroot);
