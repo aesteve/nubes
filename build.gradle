@@ -2,7 +2,11 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'idea'
+	id 'maven'
 }
+
+group='com.github.aesteve'
+version='0.1-SNAPSHOT'
 
 repositories {
 	mavenCentral()
