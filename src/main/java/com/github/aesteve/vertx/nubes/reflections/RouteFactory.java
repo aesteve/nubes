@@ -121,7 +121,6 @@ public class RouteFactory {
                 }
 
                 Map<HttpMethod, String> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
-                System.out.println("httpMethods = " + httpMethods.keySet().toString());
                 httpMethods.forEach((httpMethod, path) -> {
                     Handler<RoutingContext> authHandler = null;
                     if (method.isAnnotationPresent(Auth.class) || controller.isAnnotationPresent(Auth.class)) {
@@ -160,7 +159,6 @@ public class RouteFactory {
                     route.addProcessors(processors);
                     route.attachHandlers(paramsHandlers);
                     route.setMainHandler(method);
-                    System.out.println("Created route : " + route);
                     routes.add(route);
                     routeRegistry.register(controller, method, route);
                     if (method.isAnnotationPresent(ServerRedirect.class)) {
