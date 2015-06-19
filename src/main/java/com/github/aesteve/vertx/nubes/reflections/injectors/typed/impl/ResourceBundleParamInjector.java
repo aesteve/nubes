@@ -10,13 +10,19 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 public class ResourceBundleParamInjector implements ParamInjector<ResourceBundle> {
 
-    @Override
-    public ResourceBundle resolve(RoutingContext context) {
-        String tag = context.get(LocaleParamInjector.LOCALE_ATTR);
-        if (tag == null) {
-            return null;
-        }
-        return Config.instance().getResourceBundle(Locale.forLanguageTag(tag));
-    }
+	private Config config;
+
+	public ResourceBundleParamInjector(Config config) {
+		this.config = config;
+	}
+
+	@Override
+	public ResourceBundle resolve(RoutingContext context) {
+		String tag = context.get(LocaleParamInjector.LOCALE_ATTR);
+		if (tag == null) {
+			return null;
+		}
+		return config.getResourceBundle(Locale.forLanguageTag(tag));
+	}
 
 }

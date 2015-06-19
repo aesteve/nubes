@@ -31,88 +31,82 @@ import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 
 public class Config {
 
-    private static Config instance;
+	private Config() {
+		bundlesByLocale = new HashMap<Locale, ResourceBundle>();
+		globalHandlers = new ArrayList<Handler<RoutingContext>>();
+		templateEngines = new HashMap<String, TemplateEngine>();
+		sockJSOptions = new SockJSHandlerOptions();
+	}
 
-    public static Config instance() {
-        return instance;
-    }
+	public List<String> controllerPackages;
+	public List<String> fixturePackages;
+	public String domainPackage;
+	public RateLimit rateLimit;
+	public String webroot;
+	public String assetsPath;
+	public String tplDir;
+	public boolean displayErrors;
+	public Vertx vertx;
+	public AuthProvider authProvider;
+	public AuthMethod authMethod;
+	public String i18nDir;
 
-    private Config() {
-        bundlesByLocale = new HashMap<Locale, ResourceBundle>();
-        globalHandlers = new ArrayList<Handler<RoutingContext>>();
-        templateEngines = new HashMap<String, TemplateEngine>();
-        sockJSOptions = new SockJSHandlerOptions();
-    }
+	public AnnotationProcessorRegistry apRegistry;
+	public Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
+	public Map<Class<?>, Processor> typeProcessors;
+	public TypedParamInjectorRegistry typeInjectors;
+	public AnnotatedParamInjectorRegistry annotInjectors;
+	public ServiceRegistry serviceRegistry;
+	public RouteRegistry routeRegistry;
+	public Map<Class<?>, Handler<RoutingContext>> paramHandlers;
+	public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
+	public Map<Locale, ResourceBundle> bundlesByLocale;
+	public List<Handler<RoutingContext>> globalHandlers;
+	public Map<String, TemplateEngine> templateEngines;
+	public SockJSHandlerOptions sockJSOptions;
 
-    public List<String> controllerPackages;
-    public List<String> fixturePackages;
-    public String domainPackage;
-    public RateLimit rateLimit;
-    public String webroot;
-    public String assetsPath;
-    public String tplDir;
-    public boolean displayErrors;
-    public Vertx vertx;
-    public AuthProvider authProvider;
-    public AuthMethod authMethod;
-    public String i18nDir;
+	/**
+	 * TODO : check config instead of throwing exceptions
+	 * 
+	 * @param json
+	 * @return config
+	 */
+	@SuppressWarnings("unchecked")
+	public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
+		Config instance = new Config();
+		instance.vertx = vertx;
+		instance.i18nDir = json.getString("i18nDir", "web/i18n/");
+		if (!instance.i18nDir.endsWith("/")) {
+			instance.i18nDir = instance.i18nDir + "/";
+		}
+		JsonArray controllers = json.getJsonArray("controller-packages");
+		if (controllers == null) {
+			throw new MissingConfigurationException("controller-packages");
+		}
+		instance.controllerPackages = controllers.getList();
+		instance.domainPackage = json.getString("domain-package");
+		JsonArray fixtures = json.getJsonArray("fixture-packages");
+		if (fixtures != null) {
+			instance.fixturePackages = fixtures.getList();
+		} else {
+			instance.fixturePackages = new ArrayList<String>();
+		}
+		JsonObject rateLimitJson = json.getJsonObject("throttling");
+		if (rateLimitJson != null) {
+			int count = rateLimitJson.getInteger("count");
+			int value = rateLimitJson.getInteger("time-frame");
+			TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
+			instance.rateLimit = new RateLimit(count, value, timeUnit);
+		}
+		instance.webroot = json.getString("webroot", "web/assets");
+		instance.assetsPath = json.getString("static-path", "/assets");
+		instance.tplDir = json.getString("views-dir", "web/views");
+		instance.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
+		// TODO : read sockJSOptions from config
+		return instance;
+	}
 
-    public AnnotationProcessorRegistry apRegistry;
-    public Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
-    public Map<Class<?>, Processor> typeProcessors;
-    public TypedParamInjectorRegistry typeInjectors;
-    public AnnotatedParamInjectorRegistry annotInjectors;
-    public ServiceRegistry serviceRegistry;
-    public RouteRegistry routeRegistry;
-    public Map<Class<?>, Handler<RoutingContext>> paramHandlers;
-    public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
-    public Map<Locale, ResourceBundle> bundlesByLocale;
-    public List<Handler<RoutingContext>> globalHandlers;
-    public Map<String, TemplateEngine> templateEngines;
-    public SockJSHandlerOptions sockJSOptions;
-
-    /**
-     * TODO : check config instead of throwing exceptions
-     * 
-     * @param json
-     * @return config
-     */
-    @SuppressWarnings("unchecked")
-    public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
-        instance = new Config();
-        instance.vertx = vertx;
-        instance.i18nDir = json.getString("i18nDir", "web/i18n/");
-        if (!instance.i18nDir.endsWith("/")) {
-            instance.i18nDir = instance.i18nDir + "/";
-        }
-        JsonArray controllers = json.getJsonArray("controller-packages");
-        if (controllers == null) {
-            throw new MissingConfigurationException("controller-packages");
-        }
-        instance.controllerPackages = controllers.getList();
-        instance.domainPackage = json.getString("domain-package");
-        JsonArray fixtures = json.getJsonArray("fixture-packages");
-        if (fixtures != null) {
-            instance.fixturePackages = fixtures.getList();
-        } else {
-            instance.fixturePackages = new ArrayList<String>();
-        }
-        JsonObject rateLimitJson = json.getJsonObject("throttling");
-        if (rateLimitJson != null) {
-            int count = rateLimitJson.getInteger("count");
-            int value = rateLimitJson.getInteger("time-frame");
-            TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
-            instance.rateLimit = new RateLimit(count, value, timeUnit);
-        }
-        instance.webroot = json.getString("webroot", "web/assets");
-        instance.assetsPath = json.getString("static-path", "/assets");
-        instance.tplDir = json.getString("views-dir", "web/views");
-        instance.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
-        // TODO : read sockJSOptions from config
-        return instance;
-    }
-
-    public ResourceBundle getResourceBundle(Locale loc) {
-        return bundlesByLocale.get(loc);
-    }
+	public ResourceBundle getResourceBundle(Locale loc) {
+		return bundlesByLocale.get(loc);
+	}
 }
