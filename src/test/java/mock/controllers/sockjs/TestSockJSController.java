@@ -8,8 +8,8 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnOpen;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
-@SockJS("/sockjs/*")
-public class SockJSController {
+@SockJS("/sockjs")
+public class TestSockJSController {
 
     public static boolean opened = false; // very wrong since it's a singleton, but for testing purpose only
 

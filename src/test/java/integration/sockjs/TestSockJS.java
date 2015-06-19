@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import mock.controllers.sockjs.SockJSController;
+import mock.controllers.sockjs.TestSockJSController;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +40,14 @@ public class TestSockJS extends VertxNubesTestBase {
                     Thread.sleep(100);
                 } catch (Exception e) {
                 }
-                assertFalse(SockJSController.opened);
+                assertFalse(TestSockJSController.opened);
                 async.complete();
             });
-            assertTrue(SockJSController.opened);
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+            }
+            assertTrue(TestSockJSController.opened);
             ws.write(msg);
         });
     }

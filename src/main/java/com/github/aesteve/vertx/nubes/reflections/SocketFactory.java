@@ -1,11 +1,12 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
-
 import io.vertx.ext.web.handler.sockjs.SockJSSocket;
 
 import java.lang.reflect.Method;
@@ -86,7 +87,13 @@ public class SocketFactory {
                 });
             });
         });
-        System.out.println("mounting sockJSHandler on path : " + path);
+        if (!path.endsWith("/*")) {
+            if (path.endsWith("/")) {
+                path += "*";
+            } else {
+                path += "/*";
+            }
+        }
         router.route(path).handler(sockJSHandler);
     }
 
@@ -97,12 +104,17 @@ public class SocketFactory {
                 paramInstances.add(socket);
             } else if (parameterClass.isAssignableFrom(Buffer.class)) {
                 paramInstances.add(msg);
+            } else if (parameterClass.equals(EventBus.class)) {
+                paramInstances.add(config.vertx.eventBus());
+            } else if (parameterClass.equals(Vertx.class)) {
+                paramInstances.add(config.vertx);
             }
         }
         try {
             method.invoke(instance, paramInstances.toArray());
         } catch (Exception e) {
             log.error("Error while handling websocket", e);
+            socket.close();
         }
     }
 }
