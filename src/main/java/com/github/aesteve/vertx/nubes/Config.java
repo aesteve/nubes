@@ -38,8 +38,10 @@ public class Config {
 		sockJSOptions = new SockJSHandlerOptions();
 	}
 
+	public JsonObject json;
 	public List<String> controllerPackages;
 	public List<String> fixturePackages;
+	public String verticlePackage;
 	public String domainPackage;
 	public RateLimit rateLimit;
 	public String webroot;
@@ -74,6 +76,7 @@ public class Config {
 	@SuppressWarnings("unchecked")
 	public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
 		Config instance = new Config();
+		instance.json = json;
 		instance.vertx = vertx;
 		instance.i18nDir = json.getString("i18nDir", "web/i18n/");
 		if (!instance.i18nDir.endsWith("/")) {
@@ -83,6 +86,7 @@ public class Config {
 		if (controllers == null) {
 			throw new MissingConfigurationException("controller-packages");
 		}
+		instance.verticlePackage = json.getString("verticle-package");
 		instance.controllerPackages = controllers.getList();
 		instance.domainPackage = json.getString("domain-package");
 		JsonArray fixtures = json.getJsonArray("fixture-packages");

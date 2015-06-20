@@ -2,6 +2,8 @@ package integration;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
@@ -10,20 +12,26 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.ext.unit.TestContext;
+import mock.verticles.AnnotatedVerticle;
 
 import org.junit.After;
 import org.junit.Before;
 
 public class VertxNubesTestBase {
+
+	protected final static int NB_INSTANCES = 4;
+
 	protected Vertx vertx;
 
 	@Before
 	public void setUp(TestContext context) throws Exception {
 		vertx = Vertx.vertx();
 		DeploymentOptions options = new DeploymentOptions();
-		options.setInstances(4);
+		options.setInstances(NB_INSTANCES);
 		vertx.deployVerticle("integration.TestVerticle", options, context.asyncAssertSuccess(handler -> {
 			assertTrue(TestVerticle.dogService.size() > 0);
+			assertEquals(NB_INSTANCES * 1, AnnotatedVerticle.nbInstances.get());
+			assertTrue(AnnotatedVerticle.isStarted.get());
 		}));
 	}
 
@@ -32,6 +40,8 @@ public class VertxNubesTestBase {
 		if (vertx != null) {
 			vertx.close(context.asyncAssertSuccess(handler -> {
 				assertTrue(TestVerticle.dogService.isEmpty());
+				assertFalse(AnnotatedVerticle.isStarted.get());
+				AnnotatedVerticle.nbInstances.set(0);
 			}));
 		}
 	}

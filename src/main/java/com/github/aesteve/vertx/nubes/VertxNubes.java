@@ -1,10 +1,13 @@
 package com.github.aesteve.vertx.nubes;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.Router;
@@ -58,6 +61,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.JAXBPayloadMarshaller;
+import com.github.aesteve.vertx.nubes.reflections.AnnotVerticleFactory;
 import com.github.aesteve.vertx.nubes.reflections.RouteFactory;
 import com.github.aesteve.vertx.nubes.reflections.SocketFactory;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapter;
@@ -80,6 +84,8 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class VertxNubes {
 
+	private static final Logger log = LoggerFactory.getLogger(VertxNubes.class);
+
 	private Vertx vertx;
 	private Config config;
 	private Router router;
@@ -88,6 +94,7 @@ public class VertxNubes {
 	private ParameterAdapterRegistry registry;
 	private Map<String, PayloadMarshaller> marshallers;
 	private LocaleResolverRegistry locResolver;
+	private List<String> deploymentIds;
 
 	/**
 	 * TODO check config
@@ -97,6 +104,7 @@ public class VertxNubes {
 	public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
 		this.vertx = vertx;
 		config = Config.fromJsonObject(json, vertx);
+		deploymentIds = new ArrayList<String>();
 		registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
 		config.annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
 		config.paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
@@ -135,6 +143,60 @@ public class VertxNubes {
 	}
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
+		setUpRouter(paramRouter);
+
+		// fixtures
+		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
+		Future<Void> fixturesFuture = Future.future();
+		fixturesFuture.setHandler(result -> {
+			if (result.succeeded()) {
+				periodicallyCleanHistoryMap();
+				handler.handle(Future.succeededFuture(router));
+			} else {
+				handler.handle(Future.failedFuture(result.cause()));
+			}
+		});
+
+		// verticles
+		MultipleFutures vertFutures = new MultipleFutures();
+		AnnotVerticleFactory vertFactory = new AnnotVerticleFactory(config);
+		Map<String, DeploymentOptions> verticles = vertFactory.scan();
+		vertFutures.setHandler(res -> {
+			if (res.succeeded()) {
+				fixtureLoader.setUp(fixturesFuture);
+			} else {
+				handler.handle(Future.failedFuture(res.cause()));
+			}
+		});
+		verticles.forEach((vertName, options) -> {
+			vertFutures.add(fut -> {
+				deployVerticle(vertName, options, fut);
+			});
+		});
+
+		// services
+		Future<Void> servicesFuture = Future.future();
+		servicesFuture.setHandler(result -> {
+			if (result.succeeded()) {
+				vertFutures.start();
+			} else {
+				handler.handle(Future.failedFuture(result.cause()));
+			}
+		});
+		config.serviceRegistry.startAll(servicesFuture);
+	}
+
+	private void deployVerticle(String vertName, DeploymentOptions options, Future<Void> future) {
+		vertx.deployVerticle(vertName, options, res -> {
+			if (res.succeeded()) {
+				future.complete();
+			} else {
+				future.fail(res.cause());
+			}
+		});
+	}
+
+	private void setUpRouter(Router paramRouter) {
 		router = paramRouter;
 		router.route().failureHandler(failureHandler);
 		if (locResolver != null) {
@@ -157,30 +219,6 @@ public class VertxNubes {
 			staticHandler = StaticHandler.create();
 		}
 		router.route(config.assetsPath + "/*").handler(staticHandler);
-
-		// fixtures
-		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
-		Future<Void> fixturesFuture = Future.future();
-		fixturesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				periodicallyCleanHistoryMap();
-				handler.handle(Future.succeededFuture(router));
-			} else {
-				handler.handle(Future.failedFuture(result.cause()));
-			}
-		});
-
-		// services
-		Future<Void> servicesFuture = Future.future();
-		servicesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				fixtureLoader.setUp(fixturesFuture);
-			} else {
-				handler.handle(Future.failedFuture(result.cause()));
-			}
-		});
-
-		config.serviceRegistry.startAll(servicesFuture);
 	}
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler) {
@@ -192,7 +230,27 @@ public class VertxNubes {
 		MultipleFutures futures = new MultipleFutures(handler);
 		futures.add(fixtureLoader::tearDown);
 		futures.add(config.serviceRegistry::stopAll);
+		futures.add(this::stopDeployments);
 		futures.start();
+	}
+
+	private void stopDeployments(Future<Void> future) {
+		MultipleFutures futures = new MultipleFutures(future);
+		deploymentIds.forEach(deploymentId -> {
+			futures.add(fut -> {
+				undeployVerticle(deploymentId, fut);
+			});
+		});
+		futures.start();
+	}
+
+	private void undeployVerticle(String deploymentId, Future<Void> future) {
+		vertx.undeploy(deploymentId, res -> {
+			if (res.failed()) {
+				log.error("Could not stop verticle", res.cause());
+			}
+			future.complete();
+		});
 	}
 
 	public void registerTemplateEngine(String extension, TemplateEngine engine) {
