@@ -1,25 +1,21 @@
 package integration.params;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import integration.VertxNubesTestBase;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import mock.controllers.params.PathParametersTestController.Animal;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-
-@RunWith(VertxUnitRunner.class)
 public class PathParametersTest extends VertxNubesTestBase {
 
     @Test
     public void testStringParam(TestContext context) {
-    	String myString = "Snoopy";
+        String myString = "Snoopy";
         Async async = context.async();
-        client().getNow("/params/path/string/"+myString, response -> {
+        client().getNow("/params/path/string/" + myString, response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -33,9 +29,9 @@ public class PathParametersTest extends VertxNubesTestBase {
 
     @Test
     public void testLongParam(TestContext context) {
-    	Long myLong = 1234l;
+        Long myLong = 1234l;
         Async async = context.async();
-        client().getNow("/params/path/long/"+myLong, response -> {
+        client().getNow("/params/path/long/" + myLong, response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -46,12 +42,12 @@ public class PathParametersTest extends VertxNubesTestBase {
             });
         });
     }
-    
+
     @Test
     public void testIntParam(TestContext context) {
-    	Integer myInt = 123;
+        Integer myInt = 123;
         Async async = context.async();
-        client().getNow("/params/path/int/"+myInt, response -> {
+        client().getNow("/params/path/int/" + myInt, response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -60,14 +56,14 @@ public class PathParametersTest extends VertxNubesTestBase {
                 assertEquals(myInt.toString(), buff.toString("UTF-8"));
                 async.complete();
             });
-        });    	
+        });
     }
 
     @Test
     public void testEnum(TestContext context) {
-    	Animal animal = Animal.DOG;
+        Animal animal = Animal.DOG;
         Async async = context.async();
-        client().getNow("/params/path/enum/"+animal, response -> {
+        client().getNow("/params/path/enum/" + animal, response -> {
             Buffer buff = Buffer.buffer();
             response.handler(buffer -> {
                 buff.appendBuffer(buffer);
@@ -76,7 +72,7 @@ public class PathParametersTest extends VertxNubesTestBase {
                 assertEquals(animal.toString(), buff.toString("UTF-8"));
                 async.complete();
             });
-        });   
-   } 
+        });
+    }
 
 }

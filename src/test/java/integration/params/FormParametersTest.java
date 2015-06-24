@@ -1,20 +1,16 @@
 package integration.params;
 
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import mock.domains.Dog;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static io.vertx.core.http.HttpHeaders.*;
-
-@RunWith(VertxUnitRunner.class)
 public class FormParametersTest extends VertxNubesTestBase {
 
     @Test

@@ -6,14 +6,11 @@ import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 // TODO : test errors
 
-@RunWith(VertxUnitRunner.class)
 public class XmlApiTest extends VertxNubesTestBase {
 
     private final static String dogXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><dog><breed>Beagle</breed><name>Snoopy</name></dog>";
