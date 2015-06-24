@@ -10,14 +10,13 @@ version='0.1-SNAPSHOT'
 
 repositories {
 	mavenCentral()
-	maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
 	// vertx
-	compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
-	compile 'io.vertx:vertx-web:3.0.0-SNAPSHOT'
-    compile 'io.vertx:vertx-auth-common:3.0.0-SNAPSHOT'
+	compile 'io.vertx:vertx-core:3.0.0'
+	compile 'io.vertx:vertx-web:3.0.0'
+    compile 'io.vertx:vertx-auth-common:3.0.0'
 	
 	// reflection
 	compile 'org.reflections:reflections:0.9.9'
@@ -28,7 +27,7 @@ dependencies {
 	
 	// tests
     testCompile 'com.github.jknack:handlebars:1.3.0'
-	testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'
+	testCompile 'io.vertx:vertx-unit:3.0.0'
 	testCompile 'junit:junit:4.12'
 }
 
