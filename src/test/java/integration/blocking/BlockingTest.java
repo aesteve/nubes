@@ -1,16 +1,13 @@
 package integration.blocking;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import integration.VertxNubesTestBase;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import integration.VertxNubesTestBase;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.unit.Async;
-
-@RunWith(VertxUnitRunner.class)
 public class BlockingTest extends VertxNubesTestBase {
     @Test
     public void testBlocking(TestContext context) {

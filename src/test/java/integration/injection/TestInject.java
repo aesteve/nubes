@@ -1,19 +1,15 @@
 package integration.injection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-
 import mock.domains.Dog;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(VertxUnitRunner.class)
 public class TestInject extends VertxNubesTestBase {
 
     @Test

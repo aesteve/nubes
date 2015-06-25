@@ -1,5 +1,6 @@
 package integration.api.pagination;
 
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -9,16 +10,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.google.common.net.HttpHeaders;
 
-import static io.vertx.core.http.HttpHeaders.*;
-
-@RunWith(VertxUnitRunner.class)
 public class PaginationTest extends VertxNubesTestBase {
 
     public void notPaginatedMethod(TestContext context) {

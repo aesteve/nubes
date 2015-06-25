@@ -1,15 +1,12 @@
 package integration.routes;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(VertxUnitRunner.class)
 public class TestDisabled extends VertxNubesTestBase {
 
     @Test

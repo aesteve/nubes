@@ -4,17 +4,14 @@ import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import mock.controllers.assets.TestAssetsController;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * @README : Be careful : runnin this test from your IDE won't work
  * Since the assets path is set as a relative path ("web/assets/") it can only work when ran from the root of the project
  */
-@RunWith(VertxUnitRunner.class)
 public class AssetsTest extends VertxNubesTestBase {
 
     @Test
