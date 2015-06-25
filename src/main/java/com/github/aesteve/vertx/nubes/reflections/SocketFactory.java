@@ -100,9 +100,9 @@ public class SocketFactory {
 	private void tryToInvoke(Object instance, Method method, SockJSSocket socket, Buffer msg) {
 		List<Object> paramInstances = new ArrayList<>();
 		for (Class<?> parameterClass : method.getParameterTypes()) {
-			if (parameterClass.isAssignableFrom(SockJSSocket.class)) {
+			if (parameterClass.equals(SockJSSocket.class)) {
 				paramInstances.add(socket);
-			} else if (parameterClass.isAssignableFrom(Buffer.class)) {
+			} else if (Buffer.class.isAssignableFrom(parameterClass)) {
 				paramInstances.add(msg);
 			} else if (parameterClass.equals(EventBus.class)) {
 				paramInstances.add(config.vertx.eventBus());
