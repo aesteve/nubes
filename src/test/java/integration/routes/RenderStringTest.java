@@ -1,6 +1,5 @@
 package integration.routes;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -13,9 +12,9 @@ public class RenderStringTest extends VertxNubesTestBase {
 	public void simplePath(TestContext context) {
 		Async async = context.async();
 		client().getNow("/hello", response -> {
-			assertEquals(200, response.statusCode());
-			response.handler(buffer -> {
-				assertEquals(buffer.toString("UTF-8"), "Hello world!");
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buffer -> {
+				context.assertEquals(buffer.toString("UTF-8"), "Hello world!");
 				async.complete();
 			});
 		});
@@ -25,9 +24,9 @@ public class RenderStringTest extends VertxNubesTestBase {
 	public void nestedPath(TestContext context) {
 		Async async = context.async();
 		client().getNow("/base/test", response -> {
-			assertEquals(200, response.statusCode());
-			response.handler(buffer -> {
-				assertEquals(buffer.toString("UTF-8"), "/base/test");
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buffer -> {
+				context.assertEquals(buffer.toString("UTF-8"), "/base/test");
 				async.complete();
 			});
 		});

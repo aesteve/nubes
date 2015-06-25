@@ -1,7 +1,6 @@
 package integration.params;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
@@ -25,7 +24,7 @@ public class FormParametersTest extends VertxNubesTestBase {
 				buff.appendBuffer(buffer);
 			});
 			response.endHandler(handler -> {
-				assertEquals(myString, buff.toString("UTF-8"));
+				context.assertEquals(myString, buff.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);
@@ -44,7 +43,7 @@ public class FormParametersTest extends VertxNubesTestBase {
 				buff.appendBuffer(buffer);
 			});
 			response.endHandler(handler -> {
-				assertEquals(dog.toString(), buff.toString("UTF-8"));
+				context.assertEquals(dog.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);

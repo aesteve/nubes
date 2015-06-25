@@ -1,6 +1,5 @@
 package integration.shared;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -14,7 +13,7 @@ public class TestLocalMap extends VertxNubesTestBase {
 		String testValue = "test";
 		vertx.sharedData().getLocalMap("test-map").put("key", testValue);
 		client().getNow("/shared/local/staticValue", response -> {
-			assertEquals(testValue, response.getHeader("X-Map-Value"));
+			context.assertEquals(testValue, response.getHeader("X-Map-Value"));
 			async.complete();
 		});
 	}
@@ -26,7 +25,7 @@ public class TestLocalMap extends VertxNubesTestBase {
 		String key = "somekey";
 		vertx.sharedData().getLocalMap("test-map").put(key, testValue);
 		client().getNow("/shared/local/dynamicValue?key=" + key, response -> {
-			assertEquals(testValue, response.getHeader("X-Map-Value"));
+			context.assertEquals(testValue, response.getHeader("X-Map-Value"));
 			async.complete();
 		});
 	}

@@ -1,6 +1,5 @@
 package integration.injection;
 
-import static org.junit.Assert.assertEquals;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonObject;
@@ -20,7 +19,7 @@ public class TestInject extends VertxNubesTestBase {
 		getJSON("/inject/service?idx=" + i, response -> {
 			response.bodyHandler(buff -> {
 				JsonObject json = new JsonObject(buff.toString());
-				assertEquals(dog.getName(), json.getString("name"));
+				context.assertEquals(dog.getName(), json.getString("name"));
 				async.complete();
 			});
 		});
@@ -33,7 +32,7 @@ public class TestInject extends VertxNubesTestBase {
 		getJSON("/inject/class", response -> {
 			response.bodyHandler(buff -> {
 				JsonObject json = new JsonObject(buff.toString());
-				assertEquals(snoop.getName(), json.getString("name"));
+				context.assertEquals(snoop.getName(), json.getString("name"));
 				async.complete();
 			});
 		});

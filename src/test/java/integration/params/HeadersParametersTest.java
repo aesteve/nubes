@@ -1,6 +1,5 @@
 package integration.params;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -24,9 +23,9 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 		Async async = context.async();
 		Date now = new Date();
 		client().get("/headers/facultative", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals(Long.toString(now.getTime()), buffer.toString("UTF-8"));
+				context.assertEquals(Long.toString(now.getTime()), buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader("X-Date", DateUtils.INSTANCE.formatIso8601(now)).end();
@@ -36,9 +35,9 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 	public void nonMandatoryParamAbsent(TestContext context) {
 		Async async = context.async();
 		client().get("/headers/facultative", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("null", buffer.toString("UTF-8"));
+				context.assertEquals("null", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).end();
@@ -48,7 +47,7 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 	public void mandatoryParamAbsent(TestContext context) {
 		Async async = context.async();
 		client().get("/headers/mandatory", response -> {
-			assertEquals(400, response.statusCode());
+			context.assertEquals(400, response.statusCode());
 			async.complete();
 		}).end();
 	}

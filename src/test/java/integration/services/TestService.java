@@ -1,6 +1,5 @@
 package integration.services;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.core.eventbus.Message;
 import io.vertx.ext.unit.Async;
@@ -14,7 +13,7 @@ public class TestService extends VertxNubesTestBase {
 	public void testPeriodic(TestContext context) {
 		Async async = context.async();
 		vertx.eventBus().consumer("dogService.periodic", message -> {
-			assertEquals("periodic", message.body());
+			context.assertEquals("periodic", message.body());
 			async.complete();
 		});
 	}
@@ -25,7 +24,7 @@ public class TestService extends VertxNubesTestBase {
 		String msg = "test";
 		vertx.eventBus().send("dogService.echo", msg, res -> {
 			Message<Object> reply = res.result();
-			assertEquals(msg, reply.body());
+			context.assertEquals(msg, reply.body());
 			async.complete();
 		});
 

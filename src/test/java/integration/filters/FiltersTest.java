@@ -1,8 +1,5 @@
 package integration.filters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
@@ -17,7 +14,7 @@ public class FiltersTest extends VertxNubesTestBase {
 		Async async = context.async();
 		client().getNow("/filters/order", response -> {
 			response.bodyHandler(buffer -> {
-				assertEquals("before1;before2;before3;after1;after2;after3;", buffer.toString("UTF-8"));
+				context.assertEquals("before1;before2;before3;after1;after2;after3;", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -29,11 +26,11 @@ public class FiltersTest extends VertxNubesTestBase {
 		client().getNow("/filters/aop", response -> {
 			String before = response.getHeader(TestVerticle.HEADER_DATE_BEFORE);
 			String after = response.getHeader(TestVerticle.HEADER_DATE_AFTER);
-			assertNotNull("Header before should've been set", before);
-			assertNotNull("Header after should've been set", after);
+			context.assertNotNull("Header before should've been set", before);
+			context.assertNotNull("Header after should've been set", after);
 			long timeBefore = Long.parseLong(before);
 			long timeAfter = Long.parseLong(after);
-			assertTrue("@After should be executed after @Before", timeAfter >= timeBefore);
+			context.assertTrue(timeAfter >= timeBefore, "@After should be executed after @Before");
 			async.complete();
 		});
 	}

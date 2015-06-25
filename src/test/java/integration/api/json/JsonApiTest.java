@@ -2,8 +2,6 @@ package integration.api.json;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonArray;
@@ -24,7 +22,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void noContentType(TestContext context) {
 		Async async = context.async();
 		client().getNow("/json/dog", response -> {
-			assertEquals(406, response.statusCode());
+			context.assertEquals(406, response.statusCode());
 			async.complete();
 		});
 	}
@@ -33,9 +31,9 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void wrongContentType(TestContext context) {
 		Async async = context.async();
 		client().get("/json/dog", response -> {
-			assertEquals(406, response.statusCode());
+			context.assertEquals(406, response.statusCode());
 			response.bodyHandler(buff -> {
-				assertEquals("Not acceptable", buff.toString("UTF-8"));
+				context.assertEquals("Not acceptable", buff.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT, "yourmum").end();
@@ -45,13 +43,13 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void getMap(TestContext context) {
 		Async async = context.async();
 		getJSON("/json/map", response -> {
-			assertEquals(200, response.statusCode());
-			assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
 			response.handler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
-				assertNotNull(json);
-				assertEquals(json.getString("Snoopy"), "Beagle");
-				assertEquals(json.getString("Bill"), "Cocker");
+				context.assertNotNull(json);
+				context.assertEquals(json.getString("Snoopy"), "Beagle");
+				context.assertEquals(json.getString("Bill"), "Cocker");
 				async.complete();
 			});
 		});
@@ -62,14 +60,14 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void getArray(TestContext context) {
 		Async async = context.async();
 		getJSON("/json/array", response -> {
-			assertEquals(200, response.statusCode());
-			assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
 			response.handler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
-				assertNotNull(json);
+				context.assertNotNull(json);
 				List list = json.getList();
-				assertEquals(list.get(0), "Snoopy");
-				assertEquals(list.get(1), "Bill");
+				context.assertEquals(list.get(0), "Snoopy");
+				context.assertEquals(list.get(1), "Bill");
 				async.complete();
 			});
 		});
@@ -79,13 +77,13 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void getDomainObject(TestContext context) {
 		Async async = context.async();
 		getJSON("/json/dog", response -> {
-			assertEquals(200, response.statusCode());
-			assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
 			response.handler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
-				assertNotNull(json);
-				assertEquals(json.getString("name"), "Snoopy");
-				assertEquals(json.getString("breed"), "Beagle");
+				context.assertNotNull(json);
+				context.assertEquals(json.getString("name"), "Snoopy");
+				context.assertEquals(json.getString("breed"), "Beagle");
 				async.complete();
 			});
 		});
@@ -96,16 +94,16 @@ public class JsonApiTest extends VertxNubesTestBase {
 	public void getDomainObjects(TestContext context) {
 		Async async = context.async();
 		getJSON("/json/dogs", response -> {
-			assertEquals(200, response.statusCode());
-			assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
 			response.handler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
-				assertNotNull(json);
+				context.assertNotNull(json);
 				List list = json.getList();
-				assertEquals(((Map) list.get(0)).get("name"), "Snoopy");
-				assertEquals(((Map) list.get(0)).get("breed"), "Beagle");
-				assertEquals(((Map) list.get(1)).get("name"), "Bill");
-				assertEquals(((Map) list.get(1)).get("breed"), "Cocker");
+				context.assertEquals(((Map) list.get(0)).get("name"), "Snoopy");
+				context.assertEquals(((Map) list.get(0)).get("breed"), "Beagle");
+				context.assertEquals(((Map) list.get(1)).get("name"), "Bill");
+				context.assertEquals(((Map) list.get(1)).get("breed"), "Cocker");
 				async.complete();
 			});
 		});
@@ -119,13 +117,13 @@ public class JsonApiTest extends VertxNubesTestBase {
 		dogJson.put("breed", dog.getBreed());
 		Async async = context.async();
 		sendJSON("/json/postdog", dogJson, response -> {
-			assertEquals(200, response.statusCode());
-			assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
 			response.bodyHandler(buffer -> {
 				String json = buffer.toString("UTF-8");
 				JsonObject receivedDog = new JsonObject(json);
-				assertEquals(dog.getName(), receivedDog.getString("name"));
-				assertEquals(dog.getBreed(), receivedDog.getString("breed"));
+				context.assertEquals(dog.getName(), receivedDog.getString("name"));
+				context.assertEquals(dog.getBreed(), receivedDog.getString("breed"));
 				async.complete();
 			});
 		});
@@ -133,52 +131,53 @@ public class JsonApiTest extends VertxNubesTestBase {
 
 	@Test
 	public void test400(TestContext context) {
-		testError(400, "Bad request", context.async());
+		testError(context, 400, "Bad request");
 	}
 
 	@Test
 	public void test401(TestContext context) {
-		testError(401, "Unauthorized", context.async());
+		testError(context, 401, "Unauthorized");
 	}
 
 	@Test
 	public void test403(TestContext context) {
-		testError(403, "Forbidden", context.async());
+		testError(context, 403, "Forbidden");
 	}
 
 	@Test
 	public void test404(TestContext context) {
-		testError(404, "Not found", context.async());
+		testError(context, 404, "Not found");
 	}
 
 	@Test
 	public void test406(TestContext context) {
-		testError(406, "Not acceptable", context.async());
+		testError(context, 406, "Not acceptable");
 	}
 
 	@Test
 	public void test420(TestContext context) {
-		testError(420, "Rate limitation exceeded", context.async());
+		testError(context, 420, "Rate limitation exceeded");
 	}
 
 	@Test
 	public void test500(TestContext context) {
-		testError(500, "Internal server error", context.async());
+		testError(context, 500, "Internal server error");
 	}
 
 	@Test
 	public void test503(TestContext context) {
-		testError(503, "Service temporarily unavailable", context.async());
+		testError(context, 503, "Service temporarily unavailable");
 	}
 
-	private void testError(Integer statusCode, String expectedMessage, Async async) {
+	private void testError(TestContext context, Integer statusCode, String expectedMessage) {
+		Async async = context.async();
 		getJSON("/json/fail/" + statusCode, response -> {
-			assertEquals(statusCode.intValue(), response.statusCode());
+			context.assertEquals(statusCode.intValue(), response.statusCode());
 			response.bodyHandler(buff -> {
 				JsonObject json = new JsonObject(buff.toString());
 				JsonObject error = json.getJsonObject("error");
-				assertEquals(statusCode, error.getInteger("code"));
-				assertEquals(expectedMessage, error.getString("message"));
+				context.assertEquals(statusCode, error.getInteger("code"));
+				context.assertEquals(expectedMessage, error.getString("message"));
 				async.complete();
 			});
 		});

@@ -1,6 +1,5 @@
 package integration.file;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -14,7 +13,7 @@ public class TestFile extends VertxNubesTestBase {
 		Async async = context.async();
 		client().getNow("/file/txt", response -> {
 			response.bodyHandler(buff -> {
-				assertEquals("This is a text file", buff.toString("UTF-8"));
+				context.assertEquals("This is a text file", buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -25,7 +24,7 @@ public class TestFile extends VertxNubesTestBase {
 		Async async = context.async();
 		client().getNow("/file/dynamic", response -> {
 			response.bodyHandler(buff -> {
-				assertEquals("This is another text file", buff.toString("UTF-8"));
+				context.assertEquals("This is another text file", buff.toString("UTF-8"));
 				async.complete();
 			});
 		});

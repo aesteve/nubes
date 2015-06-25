@@ -1,6 +1,5 @@
 package integration.auth;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
@@ -14,7 +13,7 @@ public class AuthTest extends VertxNubesTestBase {
 	public void test401(TestContext context) {
 		Async async = context.async();
 		client().getNow("/private/user", response -> {
-			assertEquals(401, response.statusCode());
+			context.assertEquals(401, response.statusCode());
 			async.complete();
 		});
 	}
@@ -23,7 +22,7 @@ public class AuthTest extends VertxNubesTestBase {
 	public void testAuthorized(TestContext context) {
 		Async async = context.async();
 		client().get("/private/user", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			async.complete();
 		}).putHeader(HttpHeaders.AUTHORIZATION, getOKBearer()).end();
 	}
@@ -32,7 +31,7 @@ public class AuthTest extends VertxNubesTestBase {
 	public void testForbidden(TestContext context) {
 		Async async = context.async();
 		client().get("/private/admin", response -> {
-			assertEquals(403, response.statusCode());
+			context.assertEquals(403, response.statusCode());
 			async.complete();
 		}).putHeader(HttpHeaders.AUTHORIZATION, getWrongBearer()).end();
 	}

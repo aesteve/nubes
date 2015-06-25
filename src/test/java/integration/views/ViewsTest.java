@@ -1,7 +1,5 @@
 package integration.views;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
@@ -18,12 +16,12 @@ public class ViewsTest extends VertxNubesTestBase {
 	public void testSimpleHtml(TestContext context) {
 		Async async = context.async();
 		client().getNow("/views/default", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				String html = buffer.toString("UTF-8");
-				assertTrue(html.indexOf("<html>") == 0);
-				assertTrue(html.indexOf("</html>") > -1);
-				assertTrue(html.indexOf("Australia") > -1);
+				context.assertTrue(html.indexOf("<html>") == 0);
+				context.assertTrue(html.indexOf("</html>") > -1);
+				context.assertTrue(html.indexOf("Australia") > -1);
 				async.complete();
 			});
 		});
@@ -34,10 +32,10 @@ public class ViewsTest extends VertxNubesTestBase {
 		Dog dog = TestVerticle.dogService.someDog();
 		Async async = context.async();
 		client().getNow("/views/handlebars?name=" + dog.getName() + "&breed=" + dog.getBreed(), response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				String result = buffer.toString("UTF-8");
-				assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
+				context.assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
 				async.complete();
 			});
 		});
@@ -48,10 +46,10 @@ public class ViewsTest extends VertxNubesTestBase {
 		Dog dog = TestVerticle.dogService.someDog();
 		Async async = context.async();
 		client().getNow("/views/dynamic?name=" + dog.getName() + "&breed=" + dog.getBreed(), response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				String result = buffer.toString("UTF-8");
-				assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
+				context.assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
 				async.complete();
 			});
 		});
@@ -64,10 +62,10 @@ public class ViewsTest extends VertxNubesTestBase {
 		Dog dog = TestVerticle.dogService.someDog();
 		Async async = context.async();
 		client().getNow("/views/mvel?name=" + dog.getName() + "&breed=" + dog.getBreed(), response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				String result = buffer.toString("UTF-8");
-				assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
+				context.assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
 				async.complete();
 			});
 		});

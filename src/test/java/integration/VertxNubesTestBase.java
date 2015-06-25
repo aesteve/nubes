@@ -2,9 +2,6 @@ package integration;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -22,7 +19,7 @@ import org.junit.runner.RunWith;
 @RunWith(VertxUnitRunner.class)
 public abstract class VertxNubesTestBase {
 
-	protected final static int NB_INSTANCES = 4;
+	protected final static int NB_INSTANCES = 4; // to make sure it works well in a multiple-instance environment
 
 	protected Vertx vertx;
 
@@ -32,9 +29,9 @@ public abstract class VertxNubesTestBase {
 		DeploymentOptions options = new DeploymentOptions();
 		options.setInstances(NB_INSTANCES);
 		vertx.deployVerticle("integration.TestVerticle", options, context.asyncAssertSuccess(handler -> {
-			assertTrue(TestVerticle.dogService.size() > 0);
-			assertEquals(NB_INSTANCES * 1, AnnotatedVerticle.nbInstances.get());
-			assertTrue(AnnotatedVerticle.isStarted.get());
+			context.assertTrue(TestVerticle.dogService.size() > 0);
+			context.assertEquals(NB_INSTANCES * 1, AnnotatedVerticle.nbInstances.get());
+			context.assertTrue(AnnotatedVerticle.isStarted.get());
 		}));
 	}
 
@@ -42,8 +39,8 @@ public abstract class VertxNubesTestBase {
 	public void tearDown(TestContext context) throws Exception {
 		if (vertx != null) {
 			vertx.close(context.asyncAssertSuccess(handler -> {
-				assertTrue(TestVerticle.dogService.isEmpty());
-				assertFalse(AnnotatedVerticle.isStarted.get());
+				context.assertTrue(TestVerticle.dogService.isEmpty());
+				context.assertFalse(AnnotatedVerticle.isStarted.get());
 				AnnotatedVerticle.nbInstances.set(0);
 			}));
 		}

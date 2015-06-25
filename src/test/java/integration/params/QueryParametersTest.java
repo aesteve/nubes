@@ -1,8 +1,6 @@
 package integration.params;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
@@ -20,7 +18,7 @@ public class QueryParametersTest extends VertxNubesTestBase {
 	public void mandatoryParam(TestContext context) {
 		Async async = context.async();
 		client().getNow("/params/query/string", response -> {
-			assertEquals(400, response.statusCode());
+			context.assertEquals(400, response.statusCode());
 			async.complete();
 		});
 	}
@@ -30,12 +28,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		String myString = "Snoopy";
 		Async async = context.async();
 		client().getNow("/params/query/string?parameter=" + myString, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myString, buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myString, buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -46,12 +40,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		Integer myInt = 123;
 		Async async = context.async();
 		client().getNow("/params/query/int?parameter=" + myInt, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myInt.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myInt.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -62,12 +52,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		Long myInt = 1234l;
 		Async async = context.async();
 		client().getNow("/params/query/long?parameter=" + myInt, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myInt.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myInt.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -78,12 +64,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		Float myFloat = 123.45f;
 		Async async = context.async();
 		client().getNow("/params/query/float?parameter=" + myFloat, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myFloat.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myFloat.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -94,12 +76,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		Animal animal = Animal.CAT;
 		Async async = context.async();
 		client().getNow("/params/query/enum?parameter=" + animal, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(animal.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(animal.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -111,12 +89,8 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		String iso = DateUtils.INSTANCE.formatIso8601(date);
 		Async async = context.async();
 		client().getNow("/params/query/date?parameter=" + iso, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(Long.toString(date.getTime()), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(Long.toString(date.getTime()), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});

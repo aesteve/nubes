@@ -1,7 +1,6 @@
 package integration.api.throttling;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -14,7 +13,7 @@ public class ThrottlingTest extends VertxNubesTestBase {
 	public void singleRequest(TestContext context) {
 		Async async = context.async();
 		client().get("/throttling/dog", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			async.complete();
 		}).putHeader(ACCEPT, "application/json").end();
 	}
@@ -23,9 +22,9 @@ public class ThrottlingTest extends VertxNubesTestBase {
 	public void twoRequests(TestContext context) {
 		Async async = context.async();
 		client().get("/throttling/dog", firstResponse -> {
-			assertEquals(200, firstResponse.statusCode());
+			context.assertEquals(200, firstResponse.statusCode());
 			client().get("/throttling/dog", secondResponse -> {
-				assertEquals(200, secondResponse.statusCode());
+				context.assertEquals(200, secondResponse.statusCode());
 				async.complete();
 			}).putHeader(ACCEPT, "application/json").end();
 		}).putHeader(ACCEPT, "application/json").end();
@@ -35,11 +34,11 @@ public class ThrottlingTest extends VertxNubesTestBase {
 	public void threeRequests(TestContext context) {
 		Async async = context.async();
 		client().get("/throttling/dog", firstResponse -> {
-			assertEquals(200, firstResponse.statusCode());
+			context.assertEquals(200, firstResponse.statusCode());
 			client().get("/throttling/dog", secondResponse -> {
-				assertEquals(200, secondResponse.statusCode());
+				context.assertEquals(200, secondResponse.statusCode());
 				client().get("/throttling/dog", thirdResponse -> {
-					assertEquals(420, thirdResponse.statusCode());
+					context.assertEquals(420, thirdResponse.statusCode());
 					async.complete();
 				}).putHeader(ACCEPT, "application/json").end();
 			}).putHeader(ACCEPT, "application/json").end();
@@ -53,11 +52,11 @@ public class ThrottlingTest extends VertxNubesTestBase {
 	public void testAndWait(TestContext context) {
 		Async async = context.async();
 		client().get("/throttling/dog", firstResponse -> {
-			assertEquals(200, firstResponse.statusCode());
+			context.assertEquals(200, firstResponse.statusCode());
 			client().get("/throttling/dog", secondResponse -> {
-				assertEquals(200, secondResponse.statusCode());
+				context.assertEquals(200, secondResponse.statusCode());
 				client().get("/throttling/dog", thirdResponse -> {
-					assertEquals(420, thirdResponse.statusCode());
+					context.assertEquals(420, thirdResponse.statusCode());
 					vertx.executeBlocking(future -> {
 						try {
 							Thread.sleep(10000);
@@ -66,7 +65,7 @@ public class ThrottlingTest extends VertxNubesTestBase {
 						}
 					}, res -> {
 						client().get("/throttling/dog", fourthResponse -> {
-							assertEquals(200, fourthResponse.statusCode());
+							context.assertEquals(200, fourthResponse.statusCode());
 							async.complete();
 						}).putHeader(ACCEPT, "application/json").end();
 					});
@@ -79,11 +78,11 @@ public class ThrottlingTest extends VertxNubesTestBase {
 	public void publicRequests(TestContext context) {
 		Async async = context.async();
 		client().get("/throttling/notThrottled", firstResponse -> {
-			assertEquals(200, firstResponse.statusCode());
+			context.assertEquals(200, firstResponse.statusCode());
 			client().get("/throttling/notThrottled", secondResponse -> {
-				assertEquals(200, secondResponse.statusCode());
+				context.assertEquals(200, secondResponse.statusCode());
 				client().get("/throttling/dog", thirdResponse -> {
-					assertEquals(200, thirdResponse.statusCode());
+					context.assertEquals(200, thirdResponse.statusCode());
 					async.complete();
 				}).putHeader(ACCEPT, "application/json").end();
 			}).putHeader(ACCEPT, "application/json").end();

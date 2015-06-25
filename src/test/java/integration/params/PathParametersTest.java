@@ -1,8 +1,6 @@
 package integration.params;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import mock.controllers.params.PathParametersTestController.Animal;
@@ -16,12 +14,8 @@ public class PathParametersTest extends VertxNubesTestBase {
 		String myString = "Snoopy";
 		Async async = context.async();
 		client().getNow("/params/path/string/" + myString, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myString, buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myString, buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -32,12 +26,8 @@ public class PathParametersTest extends VertxNubesTestBase {
 		Long myLong = 1234l;
 		Async async = context.async();
 		client().getNow("/params/path/long/" + myLong, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myLong.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myLong.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -48,12 +38,8 @@ public class PathParametersTest extends VertxNubesTestBase {
 		Integer myInt = 123;
 		Async async = context.async();
 		client().getNow("/params/path/int/" + myInt, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(myInt.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(myInt.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});
@@ -64,12 +50,8 @@ public class PathParametersTest extends VertxNubesTestBase {
 		Animal animal = Animal.DOG;
 		Async async = context.async();
 		client().getNow("/params/path/enum/" + animal, response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
-				assertEquals(animal.toString(), buff.toString("UTF-8"));
+			response.bodyHandler(buff -> {
+				context.assertEquals(animal.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
 		});

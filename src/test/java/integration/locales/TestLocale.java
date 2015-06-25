@@ -1,7 +1,6 @@
 package integration.locales;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT_LANGUAGE;
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -14,9 +13,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void perfectMatch(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/echo", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("fr", buffer.toString("UTF-8"));
+				context.assertEquals("fr", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "fr, en;q=0.8, en-us;q=0.7").end();
@@ -26,9 +25,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void specificMatch(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/echo", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("fr", buffer.toString("UTF-8"));
+				context.assertEquals("fr", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "fr-ca, en;q=0.8, en-us;q=0.7").end();
@@ -38,9 +37,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void anotherMatch(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/echo", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("ja", buffer.toString("UTF-8"));
+				context.assertEquals("ja", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "de, ja-JP-u-ca-japanese;q=0.8, en;q=0.7, en-us;q=0.6").end();
@@ -50,9 +49,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void theLastOne(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/echo", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("en", buffer.toString("UTF-8"));
+				context.assertEquals("en", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "de, en;q=0.6").end();
@@ -62,9 +61,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void theDefaultOne(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/echo", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("de", buffer.toString("UTF-8"));
+				context.assertEquals("de", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "it, cz;q=0.6").end();
@@ -74,9 +73,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void greetMeInFrench(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/greet", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("Bonjour", buffer.toString("UTF-8"));
+				context.assertEquals("Bonjour", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "fr-ca, en;q=0.8, en-us;q=0.7").end();
@@ -86,9 +85,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void greetMeInDefault(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/greet", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("Hallo", buffer.toString("UTF-8"));
+				context.assertEquals("Hallo", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).end();
@@ -98,9 +97,9 @@ public class TestLocale extends VertxNubesTestBase {
 	public void greetMeInDefault2(TestContext context) {
 		Async async = context.async();
 		client().get("/locales/greet", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
-				assertEquals("Hallo", buffer.toString("UTF-8"));
+				context.assertEquals("Hallo", buffer.toString("UTF-8"));
 				async.complete();
 			});
 		}).putHeader(ACCEPT_LANGUAGE, "it, cz;q=0.6").end();

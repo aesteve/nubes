@@ -1,6 +1,5 @@
 package integration.routes;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -13,7 +12,7 @@ public class TestDisabled extends VertxNubesTestBase {
 	public void testEnabled(TestContext context) {
 		Async async = context.async();
 		client().getNow("/enabledController/enabledRoute", response -> {
-			assertEquals(200, response.statusCode());
+			context.assertEquals(200, response.statusCode());
 			async.complete();
 		});
 	}
@@ -22,7 +21,7 @@ public class TestDisabled extends VertxNubesTestBase {
 	public void testDisabled(TestContext context) {
 		Async async = context.async();
 		client().getNow("/enabledController/disabledRoute", response -> {
-			assertEquals(404, response.statusCode());
+			context.assertEquals(404, response.statusCode());
 			async.complete();
 		});
 	}
@@ -31,7 +30,7 @@ public class TestDisabled extends VertxNubesTestBase {
 	public void testDisabledCtrl(TestContext context) {
 		Async async = context.async();
 		client().getNow("/disabledController/route", response -> {
-			assertEquals(404, response.statusCode());
+			context.assertEquals(404, response.statusCode());
 			async.complete();
 		});
 	}
