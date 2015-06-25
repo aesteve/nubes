@@ -30,8 +30,8 @@ public class TestVerticle extends AbstractVerticle {
 	public static final String HOST = "localhost";
 	public static final int PORT = 8000;
 	public static final int TIME_FRAME = 10; // We'll sleep through the whole
-												// time-frame for testing
-												// throttling
+	                                         // time-frame for testing
+	                                         // throttling
 	public static final Dog SNOOPY = new Dog("Snoopy", "Beagle");
 	public static final DogService dogService = new DogService();
 	public static final String HEADER_DATE_BEFORE = "X-Date-Before";

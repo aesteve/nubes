@@ -52,18 +52,18 @@ public class FixtureLoader {
 		MultipleFutures futures = new MultipleFutures(startFuture);
 		fixtures.forEach(fixture -> {
 			switch (methodName) {
-			case "startUp":
-				futures.add(future -> {
-					fixture.startUp(vertx, future);
-				});
-				break;
-			case "tearDown":
-				futures.add(future -> {
-					fixture.tearDown(vertx, future);
-				});
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown method : " + methodName);
+				case "startUp":
+					futures.add(future -> {
+						fixture.startUp(vertx, future);
+					});
+					break;
+				case "tearDown":
+					futures.add(future -> {
+						fixture.tearDown(vertx, future);
+					});
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown method : " + methodName);
 			}
 		});
 		futures.start();

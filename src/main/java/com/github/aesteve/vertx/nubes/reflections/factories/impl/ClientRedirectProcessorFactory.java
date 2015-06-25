@@ -7,9 +7,9 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class ClientRedirectProcessorFactory implements AnnotationProcessorFactory<ClientRedirect> {
 
-    @Override
-    public AnnotationProcessor<ClientRedirect> create(ClientRedirect annotation) {
-        return new ClientRedirectProcessor(annotation);
-    }
+	@Override
+	public AnnotationProcessor<ClientRedirect> create(ClientRedirect annotation) {
+		return new ClientRedirectProcessor(annotation);
+	}
 
 }

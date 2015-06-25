@@ -11,20 +11,20 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.LocalePar
 
 public class LocaleHandler implements Handler<RoutingContext> {
 
-    private final LocaleResolverRegistry localeResolverRegistry;
+	private final LocaleResolverRegistry localeResolverRegistry;
 
-    public LocaleHandler(LocaleResolverRegistry localeResolverRegistry) {
-        this.localeResolverRegistry = localeResolverRegistry;
-    }
+	public LocaleHandler(LocaleResolverRegistry localeResolverRegistry) {
+		this.localeResolverRegistry = localeResolverRegistry;
+	}
 
-    @Override
-    public void handle(RoutingContext context) {
-        Locale loc = localeResolverRegistry.resolve(context);
-        if (loc != null) {
-            context.put(LocaleParamInjector.LOCALE_ATTR, loc.toLanguageTag());
-            context.response().headers().add(HttpHeaders.CONTENT_LANGUAGE, loc.toLanguageTag());
-        }
-        context.next();
-    }
+	@Override
+	public void handle(RoutingContext context) {
+		Locale loc = localeResolverRegistry.resolve(context);
+		if (loc != null) {
+			context.put(LocaleParamInjector.LOCALE_ATTR, loc.toLanguageTag());
+			context.response().headers().add(HttpHeaders.CONTENT_LANGUAGE, loc.toLanguageTag());
+		}
+		context.next();
+	}
 
 }

@@ -12,15 +12,15 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 @Controller("/shared/local")
 public class TestLocalMap {
 
-    @GET("/staticValue")
-    public void getLocalValue(RoutingContext context, @LocalMapValue(mapName = "test-map", key = "key") String value) {
-        context.response().putHeader("X-Map-Value", value);
-        context.response().end();
-    }
+	@GET("/staticValue")
+	public void getLocalValue(RoutingContext context, @LocalMapValue(mapName = "test-map", key = "key") String value) {
+		context.response().putHeader("X-Map-Value", value);
+		context.response().end();
+	}
 
-    @GET("/dynamicValue")
-    public void getDynamicValue(RoutingContext context, @VertxLocalMap("test-map") LocalMap<String, String> map, @Param("key") String key) {
-        context.response().putHeader("X-Map-Value", map.get(key));
-        context.response().end();
-    }
+	@GET("/dynamicValue")
+	public void getDynamicValue(RoutingContext context, @VertxLocalMap("test-map") LocalMap<String, String> map, @Param("key") String key) {
+		context.response().putHeader("X-Map-Value", map.get(key));
+		context.response().end();
+	}
 }

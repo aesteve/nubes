@@ -10,46 +10,46 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 @Controller("/filters")
 public class MultipleFiltersController {
 
-    @BeforeFilter(2)
-    public void before1(RoutingContext context) {
-        context.response().write("before2;");
-        context.next();
-    }
+	@BeforeFilter(2)
+	public void before1(RoutingContext context) {
+		context.response().write("before2;");
+		context.next();
+	}
 
-    @BeforeFilter(3)
-    public void before3(RoutingContext context) {
-        context.response().write("before3;");
-        context.next();
-    }
+	@BeforeFilter(3)
+	public void before3(RoutingContext context) {
+		context.response().write("before3;");
+		context.next();
+	}
 
-    @BeforeFilter(1)
-    public void before2(RoutingContext context) {
-        context.response().setChunked(true);
-        context.response().write("before1;");
-        context.next();
-    }
+	@BeforeFilter(1)
+	public void before2(RoutingContext context) {
+		context.response().setChunked(true);
+		context.response().write("before1;");
+		context.next();
+	}
 
-    @GET("/order")
-    public void main(RoutingContext context) {
-        context.next();
-    }
+	@GET("/order")
+	public void main(RoutingContext context) {
+		context.next();
+	}
 
-    @AfterFilter(2)
-    public void after2(RoutingContext context) {
-        context.response().write("after2;");
-        context.next();
-    }
+	@AfterFilter(2)
+	public void after2(RoutingContext context) {
+		context.response().write("after2;");
+		context.next();
+	}
 
-    @AfterFilter(3)
-    public void after3(RoutingContext context) {
-        context.response().write("after3;");
-        context.response().end();
-    }
+	@AfterFilter(3)
+	public void after3(RoutingContext context) {
+		context.response().write("after3;");
+		context.response().end();
+	}
 
-    @AfterFilter(1)
-    public void after1(RoutingContext context) {
-        context.response().write("after1;");
-        context.next();
-    }
+	@AfterFilter(1)
+	public void after1(RoutingContext context) {
+		context.response().write("after1;");
+		context.next();
+	}
 
 }

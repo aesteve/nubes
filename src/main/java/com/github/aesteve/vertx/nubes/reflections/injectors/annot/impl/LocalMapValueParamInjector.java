@@ -8,11 +8,11 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 
 public class LocalMapValueParamInjector implements AnnotatedParamInjector<LocalMapValue> {
 
-    @Override
-    public Object resolve(RoutingContext context, LocalMapValue annotation, Class<?> resultClass) {
-        SharedData sd = context.vertx().sharedData();
-        io.vertx.core.shareddata.LocalMap<Object, Object> map = sd.getLocalMap(annotation.mapName());
-        return map.get(annotation.key());
-    }
+	@Override
+	public Object resolve(RoutingContext context, LocalMapValue annotation, Class<?> resultClass) {
+		SharedData sd = context.vertx().sharedData();
+		io.vertx.core.shareddata.LocalMap<Object, Object> map = sd.getLocalMap(annotation.mapName());
+		return map.get(annotation.key());
+	}
 
 }

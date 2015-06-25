@@ -14,22 +14,22 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 @ContentType("application/xml")
 public class XmlApiTestController {
 
-    @GET("noContent")
-    public void noContent(RoutingContext context) {
-        context.next();
-    }
+	@GET("noContent")
+	public void noContent(RoutingContext context) {
+		context.next();
+	}
 
-    @GET("dog")
-    public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
-        Dog snoopy = new Dog("Snoopy", "Beagle");
-        payload.set(snoopy);
-        context.next();
-    }
+	@GET("dog")
+	public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
+		Dog snoopy = new Dog("Snoopy", "Beagle");
+		payload.set(snoopy);
+		context.next();
+	}
 
-    @POST("postdog")
-    public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
-        payload.set(dog); // echo back
-        context.next();
-    }
+	@POST("postdog")
+	public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
+		payload.set(dog); // echo back
+		context.next();
+	}
 
 }

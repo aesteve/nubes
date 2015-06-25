@@ -10,8 +10,8 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 @Disabled
 public class DisabledController {
 
-    @GET("/route")
-    public void disabledRoute(RoutingContext context) {
-        throw new RuntimeException("I'm disabled, I should never be called");
-    }
+	@GET("/route")
+	public void disabledRoute(RoutingContext context) {
+		throw new RuntimeException("I'm disabled, I should never be called");
+	}
 }

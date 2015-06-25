@@ -8,15 +8,15 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class ViewProcessorFactory implements AnnotationProcessorFactory<View> {
 
-    private TemplateEngineManager tplEngineMgr;
+	private TemplateEngineManager tplEngineMgr;
 
-    public ViewProcessorFactory(TemplateEngineManager tplEngineMgr) {
-        this.tplEngineMgr = tplEngineMgr;
-    }
+	public ViewProcessorFactory(TemplateEngineManager tplEngineMgr) {
+		this.tplEngineMgr = tplEngineMgr;
+	}
 
-    @Override
-    public AnnotationProcessor<View> create(View annotation) {
-        return new ViewProcessor(tplEngineMgr, annotation);
-    }
+	@Override
+	public AnnotationProcessor<View> create(View annotation) {
+		return new ViewProcessor(tplEngineMgr, annotation);
+	}
 
 }

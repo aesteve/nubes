@@ -7,9 +7,9 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class ContentTypeProcessorFactory implements AnnotationProcessorFactory<ContentType> {
 
-    @Override
-    public AnnotationProcessor<ContentType> create(ContentType annotation) {
-        return new ContentTypeProcessor(annotation);
-    }
+	@Override
+	public AnnotationProcessor<ContentType> create(ContentType annotation) {
+		return new ContentTypeProcessor(annotation);
+	}
 
 }

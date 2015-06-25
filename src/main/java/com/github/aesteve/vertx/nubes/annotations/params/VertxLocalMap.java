@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface VertxLocalMap {
 
-    String value();
+	String value();
 
 }

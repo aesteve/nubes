@@ -8,29 +8,29 @@ import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public class FileProcessor implements AnnotationProcessor<File> {
 
-    private File annotation;
+	private File annotation;
 
-    public FileProcessor(File annotation) {
-        this.annotation = annotation;
-    }
+	public FileProcessor(File annotation) {
+		this.annotation = annotation;
+	}
 
-    @Override
-    public void preHandle(RoutingContext context) {
-        String fileName = annotation.value();
-        if (fileName != null) {
-            FileResolver.resolve(context, annotation.value());
-        }
-        context.next();
-    }
+	@Override
+	public void preHandle(RoutingContext context) {
+		String fileName = annotation.value();
+		if (fileName != null) {
+			FileResolver.resolve(context, annotation.value());
+		}
+		context.next();
+	}
 
-    @Override
-    public void postHandle(RoutingContext context) {
-        context.response().sendFile(FileResolver.getFileName(context));
-    }
+	@Override
+	public void postHandle(RoutingContext context) {
+		context.response().sendFile(FileResolver.getFileName(context));
+	}
 
-    @Override
-    public Class<? extends File> getAnnotationType() {
-        return File.class;
-    }
+	@Override
+	public Class<? extends File> getAnnotationType() {
+		return File.class;
+	}
 
 }

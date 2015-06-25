@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Locale;
 
 public interface LocaleResolver {
-    public Locale resolve(RoutingContext context, List<Locale> availableLocales);
+	public Locale resolve(RoutingContext context, List<Locale> availableLocales);
 }

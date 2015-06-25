@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface CookieValue {
 	String value();
+
 	boolean mandatory() default false;
 }

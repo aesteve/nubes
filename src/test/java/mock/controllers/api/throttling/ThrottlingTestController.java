@@ -13,16 +13,16 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 @ContentType("application/json")
 public class ThrottlingTestController {
 
-    @GET("notThrottled")
-    public void sendPublicDog(RoutingContext context, Payload<Dog> payload) {
-        payload.set(new Dog("Pluto", "Mutt"));
-        context.next();
-    }
+	@GET("notThrottled")
+	public void sendPublicDog(RoutingContext context, Payload<Dog> payload) {
+		payload.set(new Dog("Pluto", "Mutt"));
+		context.next();
+	}
 
-    @GET("dog")
-    @Throttled
-    public void sendDog(RoutingContext context, Payload<Dog> payload) {
-        payload.set(new Dog("Idefix", "Westy"));
-        context.next();
-    }
+	@GET("dog")
+	@Throttled
+	public void sendDog(RoutingContext context, Payload<Dog> payload) {
+		payload.set(new Dog("Idefix", "Westy"));
+		context.next();
+	}
 }

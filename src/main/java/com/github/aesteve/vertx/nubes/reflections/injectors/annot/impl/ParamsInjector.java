@@ -9,20 +9,20 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 
 public class ParamsInjector implements AnnotatedParamInjector<Params> {
 
-    private ParameterAdapterRegistry adapters;
+	private ParameterAdapterRegistry adapters;
 
-    public ParamsInjector(ParameterAdapterRegistry adapters) {
-        this.adapters = adapters;
-    }
+	public ParamsInjector(ParameterAdapterRegistry adapters) {
+		this.adapters = adapters;
+	}
 
-    @Override
-    public Object resolve(RoutingContext context, Params annotation, Class<?> resultClass) {
-        try {
-            return adapters.adaptParams(context.request().params(), resultClass);
-        } catch (Exception e) {
-            DefaultErrorHandler.badRequest(context, "Some request parameter (or form parameter) has a wrong value");
-            return null;
-        }
-    }
+	@Override
+	public Object resolve(RoutingContext context, Params annotation, Class<?> resultClass) {
+		try {
+			return adapters.adaptParams(context.request().params(), resultClass);
+		} catch (Exception e) {
+			DefaultErrorHandler.badRequest(context, "Some request parameter (or form parameter) has a wrong value");
+			return null;
+		}
+	}
 
 }

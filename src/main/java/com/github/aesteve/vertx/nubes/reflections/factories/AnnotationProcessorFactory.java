@@ -5,5 +5,5 @@ import java.lang.annotation.Annotation;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public interface AnnotationProcessorFactory<T extends Annotation> {
-    public AnnotationProcessor<T> create(T annotation);
+	public AnnotationProcessor<T> create(T annotation);
 }

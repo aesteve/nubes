@@ -10,38 +10,38 @@ import org.junit.Test;
 
 public class AuthTest extends VertxNubesTestBase {
 
-    @Test
-    public void test401(TestContext context) {
-        Async async = context.async();
-        client().getNow("/private/user", response -> {
-            assertEquals(401, response.statusCode());
-            async.complete();
-        });
-    }
+	@Test
+	public void test401(TestContext context) {
+		Async async = context.async();
+		client().getNow("/private/user", response -> {
+			assertEquals(401, response.statusCode());
+			async.complete();
+		});
+	}
 
-    @Test
-    public void testAuthorized(TestContext context) {
-        Async async = context.async();
-        client().get("/private/user", response -> {
-            assertEquals(200, response.statusCode());
-            async.complete();
-        }).putHeader(HttpHeaders.AUTHORIZATION, getOKBearer()).end();
-    }
+	@Test
+	public void testAuthorized(TestContext context) {
+		Async async = context.async();
+		client().get("/private/user", response -> {
+			assertEquals(200, response.statusCode());
+			async.complete();
+		}).putHeader(HttpHeaders.AUTHORIZATION, getOKBearer()).end();
+	}
 
-    @Test
-    public void testForbidden(TestContext context) {
-        Async async = context.async();
-        client().get("/private/admin", response -> {
-            assertEquals(403, response.statusCode());
-            async.complete();
-        }).putHeader(HttpHeaders.AUTHORIZATION, getWrongBearer()).end();
-    }
+	@Test
+	public void testForbidden(TestContext context) {
+		Async async = context.async();
+		client().get("/private/admin", response -> {
+			assertEquals(403, response.statusCode());
+			async.complete();
+		}).putHeader(HttpHeaders.AUTHORIZATION, getWrongBearer()).end();
+	}
 
-    private String getOKBearer() {
-        return "Basic dGltOnNhdXNhZ2Vz";
-    }
+	private String getOKBearer() {
+		return "Basic dGltOnNhdXNhZ2Vz";
+	}
 
-    private String getWrongBearer() {
-        return "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==";
-    }
+	private String getWrongBearer() {
+		return "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==";
+	}
 }

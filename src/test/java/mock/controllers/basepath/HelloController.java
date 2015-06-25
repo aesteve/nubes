@@ -8,9 +8,9 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 @Controller
 public class HelloController {
 
-    @GET("/hello")
-    public void sayHello(RoutingContext context) {
-        context.response().end("Hello world!");
-    }
+	@GET("/hello")
+	public void sayHello(RoutingContext context) {
+		context.response().end("Hello world!");
+	}
 
 }

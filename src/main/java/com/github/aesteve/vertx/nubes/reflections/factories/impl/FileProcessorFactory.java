@@ -7,9 +7,9 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class FileProcessorFactory implements AnnotationProcessorFactory<File> {
 
-    @Override
-    public AnnotationProcessor<File> create(File annotation) {
-        return new FileProcessor(annotation);
-    }
+	@Override
+	public AnnotationProcessor<File> create(File annotation) {
+		return new FileProcessor(annotation);
+	}
 
 }

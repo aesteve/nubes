@@ -1,14 +1,14 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl;
 
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
-
 import io.vertx.ext.web.RoutingContext;
+
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 public class RoutingContextParamInjector implements ParamInjector<RoutingContext> {
 
-    @Override
-    public RoutingContext resolve(RoutingContext context) {
-        return context;
-    }
+	@Override
+	public RoutingContext resolve(RoutingContext context) {
+		return context;
+	}
 
 }

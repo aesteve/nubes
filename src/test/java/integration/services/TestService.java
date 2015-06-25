@@ -10,24 +10,24 @@ import org.junit.Test;
 
 public class TestService extends VertxNubesTestBase {
 
-    @Test
-    public void testPeriodic(TestContext context) {
-        Async async = context.async();
-        vertx.eventBus().consumer("dogService.periodic", message -> {
-            assertEquals("periodic", message.body());
-            async.complete();
-        });
-    }
+	@Test
+	public void testPeriodic(TestContext context) {
+		Async async = context.async();
+		vertx.eventBus().consumer("dogService.periodic", message -> {
+			assertEquals("periodic", message.body());
+			async.complete();
+		});
+	}
 
-    @Test
-    public void testEventBus(TestContext context) {
-        Async async = context.async();
-        String msg = "test";
-        vertx.eventBus().send("dogService.echo", msg, res -> {
-            Message<Object> reply = res.result();
-            assertEquals(msg, reply.body());
-            async.complete();
-        });
+	@Test
+	public void testEventBus(TestContext context) {
+		Async async = context.async();
+		String msg = "test";
+		vertx.eventBus().send("dogService.echo", msg, res -> {
+			Message<Object> reply = res.result();
+			assertEquals(msg, reply.body());
+			async.complete();
+		});
 
-    }
+	}
 }

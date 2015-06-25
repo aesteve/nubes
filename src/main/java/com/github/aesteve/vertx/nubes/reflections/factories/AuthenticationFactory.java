@@ -25,10 +25,10 @@ public class AuthenticationFactory {
 			authMethod = auth.method();
 		}
 		switch (authMethod) {
-		case BASIC:
-			return BasicAuthHandler.create(config.authProvider);
-		default:
-			throw new UnsupportedOperationException();
+			case BASIC:
+				return BasicAuthHandler.create(config.authProvider);
+			default:
+				throw new UnsupportedOperationException();
 		}
 	}
 }

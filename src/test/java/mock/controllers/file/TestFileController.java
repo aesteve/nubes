@@ -10,17 +10,17 @@ import com.github.aesteve.vertx.nubes.context.FileResolver;
 @Controller("/file")
 public class TestFileController {
 
-    @GET("/txt")
-    @File("someFile.txt")
-    public void getTxtFile(RoutingContext context) {
-        context.next();
-    }
+	@GET("/txt")
+	@File("someFile.txt")
+	public void getTxtFile(RoutingContext context) {
+		context.next();
+	}
 
-    @GET("/dynamic")
-    @File
-    public void getDynamicTxtFile(RoutingContext context) {
-        FileResolver.resolve(context, "someOtherFile.txt");
-        context.next();
-    }
+	@GET("/dynamic")
+	@File
+	public void getDynamicTxtFile(RoutingContext context) {
+		FileResolver.resolve(context, "someOtherFile.txt");
+		context.next();
+	}
 
 }

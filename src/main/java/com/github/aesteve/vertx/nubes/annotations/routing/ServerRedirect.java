@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ServerRedirect {
 	Class<?> controller();
+
 	String action();
 }

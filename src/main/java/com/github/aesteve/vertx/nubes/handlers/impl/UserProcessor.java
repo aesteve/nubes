@@ -8,20 +8,20 @@ import com.github.aesteve.vertx.nubes.handlers.Processor;
 
 public class UserProcessor implements Processor {
 
-    private UserSessionHandler handler;
+	private UserSessionHandler handler;
 
-    public UserProcessor(AuthProvider provider) {
-        handler = UserSessionHandler.create(provider);
-    }
+	public UserProcessor(AuthProvider provider) {
+		handler = UserSessionHandler.create(provider);
+	}
 
-    @Override
-    public void preHandle(RoutingContext context) {
-        handler.handle(context);
-    }
+	@Override
+	public void preHandle(RoutingContext context) {
+		handler.handle(context);
+	}
 
-    @Override
-    public void postHandle(RoutingContext context) {
-        context.next();
-    }
+	@Override
+	public void postHandle(RoutingContext context) {
+		context.next();
+	}
 
 }
