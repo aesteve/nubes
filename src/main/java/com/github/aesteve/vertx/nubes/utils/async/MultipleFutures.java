@@ -15,7 +15,7 @@ public class MultipleFutures extends SimpleFuture<Void> {
 	private static final Logger log = LoggerFactory.getLogger(MultipleFutures.class);
 
 	public MultipleFutures() {
-		consumers = new HashMap<Handler<Future<Void>>, Future<Void>>();
+		consumers = new HashMap<>();
 	}
 
 	public MultipleFutures(Future<Void> after) {

@@ -25,27 +25,27 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.UserParam
 
 public class AnnotatedParamInjectorRegistry {
 
-    private Map<Class<?>, AnnotatedParamInjector<?>> map;
+	private Map<Class<?>, AnnotatedParamInjector<?>> map;
 
-    public AnnotatedParamInjectorRegistry(Map<String, PayloadMarshaller> marshallers, ParameterAdapterRegistry adapters) {
-        map = new HashMap<Class<?>, AnnotatedParamInjector<?>>();
-        registerInjector(RequestBody.class, new RequestBodyParamInjector(marshallers));
-        registerInjector(CookieValue.class, new CookieParamInjector());
-        registerInjector(Header.class, new HeaderParamInjector(adapters));
-        registerInjector(Param.class, new ParamInjector(adapters));
-        registerInjector(Params.class, new ParamsInjector(adapters));
-        registerInjector(User.class, new UserParamInjector());
-        registerInjector(LocalMapValue.class, new LocalMapValueParamInjector());
-        registerInjector(VertxLocalMap.class, new LocalMapParamInjector());
-    }
+	public AnnotatedParamInjectorRegistry(Map<String, PayloadMarshaller> marshallers, ParameterAdapterRegistry adapters) {
+		map = new HashMap<>();
+		registerInjector(RequestBody.class, new RequestBodyParamInjector(marshallers));
+		registerInjector(CookieValue.class, new CookieParamInjector());
+		registerInjector(Header.class, new HeaderParamInjector(adapters));
+		registerInjector(Param.class, new ParamInjector(adapters));
+		registerInjector(Params.class, new ParamsInjector(adapters));
+		registerInjector(User.class, new UserParamInjector());
+		registerInjector(LocalMapValue.class, new LocalMapValueParamInjector());
+		registerInjector(VertxLocalMap.class, new LocalMapParamInjector());
+	}
 
-    public <T extends Annotation> void registerInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
-        map.put(clazz, injector);
-    }
+	public <T extends Annotation> void registerInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
+		map.put(clazz, injector);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <T extends Annotation> AnnotatedParamInjector<T> getInjector(Class<? extends T> clazz) {
-        return (AnnotatedParamInjector<T>) map.get(clazz);
-    }
+	@SuppressWarnings("unchecked")
+	public <T extends Annotation> AnnotatedParamInjector<T> getInjector(Class<? extends T> clazz) {
+		return (AnnotatedParamInjector<T>) map.get(clazz);
+	}
 
 }

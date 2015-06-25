@@ -104,17 +104,17 @@ public class VertxNubes {
 	public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
 		this.vertx = vertx;
 		config = Config.fromJsonObject(json, vertx);
-		deploymentIds = new ArrayList<String>();
+		deploymentIds = new ArrayList<>();
 		registry = new ParameterAdapterRegistry(new DefaultParameterAdapter());
-		config.annotationHandlers = new HashMap<Class<? extends Annotation>, Set<Handler<RoutingContext>>>();
-		config.paramHandlers = new HashMap<Class<?>, Handler<RoutingContext>>();
-		config.typeProcessors = new HashMap<Class<?>, Processor>();
+		config.annotationHandlers = new HashMap<>();
+		config.paramHandlers = new HashMap<>();
+		config.typeProcessors = new HashMap<>();
 		config.apRegistry = new AnnotationProcessorRegistry();
-		marshallers = new HashMap<String, PayloadMarshaller>();
+		marshallers = new HashMap<>();
 		config.typeInjectors = new TypedParamInjectorRegistry(config);
 		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
 		config.serviceRegistry = new ServiceRegistry(vertx);
-		config.aopHandlerRegistry = new HashMap<String, Handler<RoutingContext>>();
+		config.aopHandlerRegistry = new HashMap<>();
 		CookieHandler cookieHandler = CookieHandler.create();
 		BodyHandler bodyHandler = BodyHandler.create();
 		registerAnnotationHandler(Cookies.class, cookieHandler);
@@ -354,7 +354,7 @@ public class VertxNubes {
 			if (rateLimitations == null) {
 				return;
 			}
-			List<String> clientIpsToRemove = new ArrayList<String>();
+			List<String> clientIpsToRemove = new ArrayList<>();
 			RateLimit rateLimit = config.rateLimit;
 			for (Object key : rateLimitations.keySet()) {
 				String clientIp = (String) key;

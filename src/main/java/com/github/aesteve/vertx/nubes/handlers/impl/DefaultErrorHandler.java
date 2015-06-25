@@ -31,8 +31,8 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		this.config = config;
 		this.templManager = templManager;
 		this.marshallers = marshallers;
-		errorTemplates = new HashMap<Integer, String>();
-		errorMessages = new HashMap<Integer, String>();
+		errorTemplates = new HashMap<>();
+		errorMessages = new HashMap<>();
 		addDefaultErrorPages();
 		addDefaultErrorMessages();
 	}

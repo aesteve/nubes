@@ -24,7 +24,7 @@ public class TypedParamInjectorRegistry {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TypedParamInjectorRegistry(Config config) {
-		map = new HashMap<Class<?>, ParamInjector<?>>();
+		map = new HashMap<>();
 		registerInjector(Vertx.class, new VertxParamInjector());
 		registerInjector(RoutingContext.class, new RoutingContextParamInjector());
 		registerInjector(Payload.class, new PayloadParamInjector());

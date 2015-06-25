@@ -32,9 +32,9 @@ import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 public class Config {
 
 	private Config() {
-		bundlesByLocale = new HashMap<Locale, ResourceBundle>();
-		globalHandlers = new ArrayList<Handler<RoutingContext>>();
-		templateEngines = new HashMap<String, TemplateEngine>();
+		bundlesByLocale = new HashMap<>();
+		globalHandlers = new ArrayList<>();
+		templateEngines = new HashMap<>();
 		sockJSOptions = new SockJSHandlerOptions();
 	}
 
@@ -93,7 +93,7 @@ public class Config {
 		if (fixtures != null) {
 			instance.fixturePackages = fixtures.getList();
 		} else {
-			instance.fixturePackages = new ArrayList<String>();
+			instance.fixturePackages = new ArrayList<>();
 		}
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
 		if (rateLimitJson != null) {
