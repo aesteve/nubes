@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
+import static io.vertx.core.http.HttpHeaders.LOCATION;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
@@ -26,7 +27,7 @@ public class ClientRedirectProcessor implements AnnotationProcessor<ClientRedire
 	public void postHandle(RoutingContext context) {
 		HttpServerResponse response = context.response();
 		String location = context.get(LOCATION_DATA);
-		response.putHeader("Location", location);
+		response.putHeader(LOCATION, location);
 		response.end();
 	}
 

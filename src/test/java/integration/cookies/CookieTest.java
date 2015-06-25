@@ -1,11 +1,12 @@
 package integration.cookies;
 
+import static io.vertx.core.http.HttpHeaders.COOKIE;
+import static io.vertx.core.http.HttpHeaders.SET_COOKIE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
@@ -16,7 +17,7 @@ public class CookieTest extends VertxNubesTestBase {
 	public void testNoCookieValue(TestContext context) {
 		Async async = context.async();
 		client().getNow("/cookies/noCookie", response -> {
-			assertNull(response.headers().get(HttpHeaders.SET_COOKIE));
+			assertNull(response.headers().get(SET_COOKIE));
 			async.complete();
 		});
 	}
@@ -25,7 +26,7 @@ public class CookieTest extends VertxNubesTestBase {
 	public void testSetCookieValue(TestContext context) {
 		Async async = context.async();
 		client().getNow("/cookies/setCookie", response -> {
-			assertNotNull(response.headers().get(HttpHeaders.SET_COOKIE));
+			assertNotNull(response.headers().get(SET_COOKIE));
 			async.complete();
 		});
 	}
@@ -44,6 +45,6 @@ public class CookieTest extends VertxNubesTestBase {
 				assertEquals(value, buff.toString("UTF-8"));
 				async.complete();
 			});
-		}).putHeader("Cookie", key + "=" + value).end();
+		}).putHeader(COOKIE, key + "=" + value).end();
 	}
 }
