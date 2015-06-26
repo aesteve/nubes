@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +22,6 @@ import mock.domains.Dog;
 import mock.services.DogService;
 
 import com.github.aesteve.vertx.nubes.VertxNubes;
-import com.github.aesteve.vertx.nubes.views.impl.PrefixedHandlebarsTemplateEngineImpl;
 
 public class TestVerticle extends AbstractVerticle {
 
@@ -30,8 +30,8 @@ public class TestVerticle extends AbstractVerticle {
 	public static final String HOST = "localhost";
 	public static final int PORT = 8000;
 	public static final int TIME_FRAME = 10; // We'll sleep through the whole
-												// time-frame for testing
-												// throttling
+	                                         // time-frame for testing
+	                                         // throttling
 	public static final Dog SNOOPY = new Dog("Snoopy", "Beagle");
 	public static final DogService dogService = new DogService();
 	public static final String HEADER_DATE_BEFORE = "X-Date-Before";
@@ -68,7 +68,7 @@ public class TestVerticle extends AbstractVerticle {
 			context.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
 			context.next();
 		});
-		mvc.registerTemplateEngine("hbs", new PrefixedHandlebarsTemplateEngineImpl("web/views/"));
+		mvc.registerTemplateEngine("hbs", HandlebarsTemplateEngine.create());
 		mvc.bootstrap(res -> {
 			if (res.failed()) {
 				startFuture.fail(res.cause());

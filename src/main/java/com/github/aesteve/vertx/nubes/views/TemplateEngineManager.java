@@ -24,7 +24,7 @@ public class TemplateEngineManager implements TemplateHandler {
 
 	@Override
 	public void handle(RoutingContext context) {
-		String tplName = ViewResolver.getViewName(context);
+		String tplName = normalize(config.tplDir) + ViewResolver.getViewName(context);
 		TemplateEngine engine = fromViewName(tplName);
 		engine.render(context, tplName, res -> {
 			if (res.succeeded()) {
@@ -33,5 +33,12 @@ public class TemplateEngineManager implements TemplateHandler {
 				context.fail(res.cause());
 			}
 		});
+	}
+
+	private String normalize(String dir) {
+		if (!dir.endsWith("/")) {
+			dir += "/";
+		}
+		return dir;
 	}
 }
