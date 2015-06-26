@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
@@ -29,13 +30,20 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 			log.error("No suitable Content-Type found, request body can't be read");
 			return null;
 		}
+		String body = context.getBodyAsString();
+		if (resultClass.equals(String.class)) {
+			return body;
+		}
+		if (contentType.equals("application/json") && resultClass.equals(JsonObject.class)) {
+			return new JsonObject(body);
+		}
 		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (marshaller == null) {
 			log.error("No marshaller found for Content-Type : " + contentType + ", request body can't be read");
 			return null;
 		}
 		try {
-			return marshaller.unmarshallPayload(context.getBodyAsString(), resultClass);
+			return marshaller.unmarshallPayload(body, resultClass);
 		} catch (MarshallingException me) {
 			context.fail(me);
 			return null;
