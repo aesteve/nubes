@@ -21,12 +21,19 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T unmarshallPayload(String body, Class<T> clazz) {
+		if (clazz.equals(JsonObject.class)) {
+			return (T) new JsonObject(body);
+		}
 		return mapper.fromJson(body, clazz);
 	}
 
 	@Override
 	public String marshallPayload(Object payload) {
+		if (payload instanceof JsonObject) {
+			return payload.toString();
+		}
 		return serializer.serialize(payload).toString();
 	}
 
