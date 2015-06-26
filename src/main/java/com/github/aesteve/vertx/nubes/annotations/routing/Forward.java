@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target(ElementType.METHOD)
-public @interface ServerRedirect {
+public @interface Forward {
 	Class<?> controller();
 
 	String action();

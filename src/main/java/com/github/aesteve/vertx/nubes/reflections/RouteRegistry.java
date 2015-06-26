@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.aesteve.vertx.nubes.annotations.routing.ServerRedirect;
+import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
 
 /**
@@ -28,7 +28,7 @@ public class RouteRegistry {
 		}
 	}
 
-	public void bindRedirect(MVCRoute route, ServerRedirect redirect) {
+	public void bindRedirect(MVCRoute route, Forward redirect) {
 		MVCRoute redirectRoute = get(redirect);
 		if (redirectRoute != null) {
 			route.redirectTo(redirectRoute);
@@ -49,7 +49,7 @@ public class RouteRegistry {
 		return discovered.get(buildKey(controller, handler)) != null;
 	}
 
-	public MVCRoute get(ServerRedirect annotation) {
+	public MVCRoute get(Forward annotation) {
 		return discovered.get(buildKey(annotation));
 	}
 
@@ -61,7 +61,7 @@ public class RouteRegistry {
 		return buildKey(controller, handler.getName());
 	}
 
-	private String buildKey(ServerRedirect annotation) {
+	private String buildKey(Forward annotation) {
 		return buildKey(annotation.controller(), annotation.action());
 	}
 }

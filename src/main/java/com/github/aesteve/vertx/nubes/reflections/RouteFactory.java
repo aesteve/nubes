@@ -27,7 +27,7 @@ import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
 import com.github.aesteve.vertx.nubes.annotations.filters.Before;
 import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
 import com.github.aesteve.vertx.nubes.annotations.routing.Disabled;
-import com.github.aesteve.vertx.nubes.annotations.routing.ServerRedirect;
+import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.reflections.factories.AuthenticationFactory;
@@ -161,8 +161,8 @@ public class RouteFactory {
 					route.setMainHandler(method);
 					routes.add(route);
 					routeRegistry.register(controller, method, route);
-					if (method.isAnnotationPresent(ServerRedirect.class)) {
-						ServerRedirect redirect = method.getAnnotation(ServerRedirect.class);
+					if (method.isAnnotationPresent(Forward.class)) {
+						Forward redirect = method.getAnnotation(Forward.class);
 						routeRegistry.bindRedirect(route, redirect);
 					}
 				});

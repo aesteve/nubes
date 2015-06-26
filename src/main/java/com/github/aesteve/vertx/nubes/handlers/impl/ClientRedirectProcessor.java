@@ -4,16 +4,16 @@ import static io.vertx.core.http.HttpHeaders.LOCATION;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-import com.github.aesteve.vertx.nubes.annotations.routing.ClientRedirect;
+import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
-public class ClientRedirectProcessor implements AnnotationProcessor<ClientRedirect> {
+public class ClientRedirectProcessor implements AnnotationProcessor<Redirect> {
 
 	private final static String LOCATION_DATA = "client-redirect-location";
 
-	private ClientRedirect annotation;
+	private Redirect annotation;
 
-	public ClientRedirectProcessor(ClientRedirect annotation) {
+	public ClientRedirectProcessor(Redirect annotation) {
 		this.annotation = annotation;
 	}
 
@@ -27,13 +27,14 @@ public class ClientRedirectProcessor implements AnnotationProcessor<ClientRedire
 	public void postHandle(RoutingContext context) {
 		HttpServerResponse response = context.response();
 		String location = context.get(LOCATION_DATA);
+		response.setStatusCode(annotation.code());
 		response.putHeader(LOCATION, location);
 		response.end();
 	}
 
 	@Override
-	public Class<? extends ClientRedirect> getAnnotationType() {
-		return ClientRedirect.class;
+	public Class<? extends Redirect> getAnnotationType() {
+		return Redirect.class;
 	}
 
 }

@@ -36,7 +36,7 @@ import com.github.aesteve.vertx.nubes.annotations.cookies.CookieValue;
 import com.github.aesteve.vertx.nubes.annotations.cookies.Cookies;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.mixins.Throttled;
-import com.github.aesteve.vertx.nubes.annotations.routing.ClientRedirect;
+import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.PATCH;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
@@ -126,7 +126,7 @@ public class VertxNubes {
 		registerAnnotationHandler(PATCH.class, bodyHandler);
 		registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
 		registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
-		registerAnnotationProcessor(ClientRedirect.class, new ClientRedirectProcessorFactory());
+		registerAnnotationProcessor(Redirect.class, new ClientRedirectProcessorFactory());
 		registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
 		TemplateEngineManager templManager = new TemplateEngineManager(config);
 		registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
