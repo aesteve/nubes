@@ -19,11 +19,5 @@ public @interface Verticle {
 
 	boolean multiThreaded() default false;
 
-	boolean redeploy() default false;
-
-	long redeployGracePeriod() default -1;
-
-	long redeployScanPeriod() default -1;
-
 	boolean worker() default false;
 }

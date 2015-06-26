@@ -53,13 +53,6 @@ public class AnnotVerticleFactory {
 		if (!"".equals(annot.isolationGroup())) {
 			options.setIsolationGroup(annot.isolationGroup());
 		}
-		if (annot.redeployGracePeriod() > 0) {
-			options.setRedeployGracePeriod(annot.redeployGracePeriod());
-		}
-		if (annot.redeployScanPeriod() > 0) {
-			options.setRedeployScanPeriod(annot.redeployScanPeriod());
-		}
-		options.setRedeploy(annot.redeploy());
 		options.setHa(annot.ha());
 		options.setMultiThreaded(annot.multiThreaded());
 		options.setWorker(annot.worker());
