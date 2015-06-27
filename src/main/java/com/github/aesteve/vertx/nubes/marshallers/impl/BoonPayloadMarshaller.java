@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.marshallers.impl;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import org.boon.json.JsonFactory;
@@ -25,6 +26,8 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
 	public <T> T unmarshallPayload(String body, Class<T> clazz) {
 		if (clazz.equals(JsonObject.class)) {
 			return (T) new JsonObject(body);
+		} else if (clazz.equals(JsonArray.class)) {
+			return (T) new JsonArray(body);
 		}
 		return mapper.fromJson(body, clazz);
 	}
@@ -32,6 +35,8 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
 	@Override
 	public String marshallPayload(Object payload) {
 		if (payload instanceof JsonObject) {
+			return payload.toString();
+		} else if (payload instanceof JsonArray) {
 			return payload.toString();
 		}
 		return serializer.serialize(payload).toString();

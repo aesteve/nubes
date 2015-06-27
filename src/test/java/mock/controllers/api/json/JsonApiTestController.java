@@ -1,5 +1,6 @@
 package mock.controllers.api.json;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
@@ -32,6 +33,16 @@ public class JsonApiTestController {
 		JsonObject json = new JsonObject();
 		json.put("Bill", "Cocker");
 		payload.set(json);
+		context.next();
+	}
+
+	@GET("jsonarray")
+	public void sendJsonArray(RoutingContext context, Payload<JsonArray> payload) {
+		JsonObject json = new JsonObject();
+		json.put("Bill", "Cocker");
+		List<JsonObject> list = new ArrayList<>(1);
+		list.add(json);
+		payload.set(new JsonArray(list));
 		context.next();
 	}
 
