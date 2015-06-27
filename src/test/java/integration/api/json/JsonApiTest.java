@@ -40,12 +40,28 @@ public class JsonApiTest extends VertxNubesTestBase {
 	}
 
 	@Test
+	public void getJsonObject(TestContext context) {
+		Async async = context.async();
+		getJSON("/json/jsonobject", response -> {
+			context.assertEquals(200, response.statusCode());
+			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			response.bodyHandler(buffer -> {
+				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
+				context.assertNotNull(json);
+				context.assertEquals(json.getString("Bill"), "Cocker");
+				async.complete();
+			});
+
+		});
+	}
+
+	@Test
 	public void getMap(TestContext context) {
 		Async async = context.async();
 		getJSON("/json/map", response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
-			response.handler(buffer -> {
+			response.bodyHandler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
 				context.assertEquals(json.getString("Snoopy"), "Beagle");
@@ -62,7 +78,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		getJSON("/json/array", response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
-			response.handler(buffer -> {
+			response.bodyHandler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
 				List list = json.getList();
@@ -79,7 +95,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		getJSON("/json/dog", response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
-			response.handler(buffer -> {
+			response.bodyHandler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
 				context.assertEquals(json.getString("name"), "Snoopy");
@@ -96,7 +112,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		getJSON("/json/dogs", response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
-			response.handler(buffer -> {
+			response.bodyHandler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
 				List list = json.getList();
