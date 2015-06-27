@@ -22,12 +22,11 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnOpen;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
-public class SocketFactory {
+public class SocketFactory extends AbstractInjectionFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
 
 	private Router router;
-	private Config config;
 
 	public SocketFactory(Router router, Config config) {
 		this.router = router;
@@ -54,6 +53,7 @@ public class SocketFactory {
 		Object ctrlInstance = null;
 		try {
 			ctrlInstance = controller.newInstance();
+			injectServicesIntoController(ctrlInstance);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instanciate socket controller : " + controller.getName(), e);
 		}

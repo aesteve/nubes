@@ -8,7 +8,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -35,12 +34,11 @@ import com.github.aesteve.vertx.nubes.routing.HttpMethodFactory;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
 import com.github.aesteve.vertx.nubes.utils.Filter;
 
-public class RouteFactory {
+public class RouteFactory extends AbstractInjectionFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(RouteFactory.class);
 
 	private Router router;
-	private Config config;
 	private RouteRegistry routeRegistry;
 	private AuthenticationFactory authFactory;
 
@@ -196,16 +194,6 @@ public class RouteFactory {
 		}
 		if (controller.getSuperclass() != null && !controller.getSuperclass().equals(Object.class)) {
 			extractFiltersFromController(routes, controller.getSuperclass());
-		}
-	}
-
-	private void injectServicesIntoController(Object instance) throws IllegalAccessException {
-		for (Field field : instance.getClass().getDeclaredFields()) {
-			Object service = config.serviceRegistry.get(field);
-			if (service != null) {
-				field.setAccessible(true);
-				field.set(instance, config.serviceRegistry.get(field));
-			}
 		}
 	}
 }

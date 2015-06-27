@@ -2,6 +2,7 @@ package integration.injection;
 
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -35,6 +36,19 @@ public class TestInject extends VertxNubesTestBase {
 				context.assertEquals(snoop.getName(), json.getString("name"));
 				async.complete();
 			});
+		});
+	}
+
+	@Test
+	public void testInjectSocket(TestContext context) {
+		Async async = context.async();
+		Dog snoop = TestVerticle.SNOOPY;
+		client().websocket("/injectedSocket/websocket", sock -> {
+			sock.handler(buff -> {
+				context.assertEquals(snoop.getName(), buff.toString("UTF-8"));
+				async.complete();
+			});
+			sock.write(Buffer.buffer("something"));
 		});
 	}
 
