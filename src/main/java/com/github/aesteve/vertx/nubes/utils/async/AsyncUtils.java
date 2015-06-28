@@ -10,6 +10,12 @@ public class AsyncUtils {
 	
 	private static final Logger log = LoggerFactory.getLogger(AsyncUtils.class);
 	
+	public static<T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
+		return (res -> {
+			fut.complete();
+		});
+	}
+	
 	public static<T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {
 		return (res -> {
 			if (res.failed()) {
@@ -20,12 +26,6 @@ public class AsyncUtils {
 		});
 	}
 	
-	public static<T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
-		return (res -> {
-			fut.complete();
-		});
-	}
-	
 	public static<T> Handler<AsyncResult<T>> ignoreResult(Future<Void> future) {
 		return (res -> {
 			if (res.failed()) {
@@ -33,6 +33,16 @@ public class AsyncUtils {
 			} else {
 				future.complete();
 			}
+		});
+	}
+	
+	public static<T> Handler<AsyncResult<T>> onSuccessOnly(Future<Void> future, Handler<T> handler) {
+		return (res -> {
+			if (res.failed()) {
+				future.fail(res.cause());
+				return;
+			}
+			handler.handle(res.result());
 		});
 	}
 
