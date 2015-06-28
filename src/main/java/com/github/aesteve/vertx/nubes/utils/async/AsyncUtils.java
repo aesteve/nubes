@@ -35,6 +35,16 @@ public class AsyncUtils {
 			}
 		});
 	}
+
+	public static<T> Handler<AsyncResult<T>> onSuccessOnly(NoArgHandler block) {
+		return (res -> {
+			if (res.failed()) {
+				log.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
+				return;
+			}
+			block.handle();
+		});
+	}
 	
 	public static<T> Handler<AsyncResult<T>> onSuccessOnly(Handler<T> handler) {
 		return (res -> {
