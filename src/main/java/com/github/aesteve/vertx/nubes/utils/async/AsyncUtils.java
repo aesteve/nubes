@@ -7,10 +7,28 @@ import io.vertx.core.Handler;
 public class AsyncUtils {
 	
 	public static<T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {
-		return new CompleteOrFail<>(fut);
+		return (res -> {
+			if (res.failed()) {
+				fut.fail(res.cause());
+			} else {
+				fut.complete(res.result());
+			}
+		});
 	}
 	
 	public static<T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
-		return new CompleteFinally<>(fut);
+		return (res -> {
+			fut.complete();
+		});
+	}
+	
+	public static<T> Handler<AsyncResult<T>> ignoreResult(Future<Void> future) {
+		return (res -> {
+			if (res.failed()) {
+				future.fail(res.cause()); 
+			} else {
+				future.complete();
+			}
+		});
 	}
 }
