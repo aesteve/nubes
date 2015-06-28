@@ -1,5 +1,15 @@
 package integration;
 
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import com.github.aesteve.vertx.nubes.VertxNubes;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
@@ -10,18 +20,9 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import mock.auth.MockAuthProvider;
 import mock.domains.Dog;
 import mock.services.DogService;
-
-import com.github.aesteve.vertx.nubes.VertxNubes;
 
 public class TestVerticle extends AbstractVerticle {
 
@@ -72,25 +73,19 @@ public class TestVerticle extends AbstractVerticle {
 		mvc.bootstrap(res -> {
 			if (res.failed()) {
 				startFuture.fail(res.cause());
-			} else {
-				Router router = res.result();
-				server.requestHandler(router::accept);
-				server.listen();
-				log.info("Server listening on port : " + PORT);
-				startFuture.complete();
-			}
+				return;
+			} 
+			Router router = res.result();
+			server.requestHandler(router::accept);
+			server.listen();
+			log.info("Server listening on port : " + PORT);
+			startFuture.complete();
 		});
 	}
 
 	@Override
 	public void stop(Future<Void> stopFuture) throws Exception {
-		mvc.stop(res -> {
-			if (res.succeeded()) {
-				stopFuture.complete();
-			} else {
-				stopFuture.fail(res.cause());
-			}
-		});
+		mvc.stop(completeOrFail(stopFuture));
 	}
 
 	private JsonObject createTestConfig() {

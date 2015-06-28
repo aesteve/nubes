@@ -1,21 +1,6 @@
 package com.github.aesteve.vertx.nubes;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.templ.TemplateEngine;
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -82,9 +67,22 @@ import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-public class VertxNubes {
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
-	private static final Logger log = LoggerFactory.getLogger(VertxNubes.class);
+public class VertxNubes {
 
 	private Vertx vertx;
 	private Config config;
@@ -168,7 +166,7 @@ public class VertxNubes {
 		});
 
 		// verticles
-		MultipleFutures vertFutures = new MultipleFutures();
+		MultipleFutures<String> vertFutures = new MultipleFutures<>();
 		AnnotVerticleFactory vertFactory = new AnnotVerticleFactory(config);
 		Map<String, DeploymentOptions> verticles = vertFactory.scan();
 		vertFutures.setHandler(res -> {
@@ -186,14 +184,8 @@ public class VertxNubes {
 		vertFutures.start();
 	}
 
-	private void deployVerticle(String vertName, DeploymentOptions options, Future<Void> future) {
-		vertx.deployVerticle(vertName, options, res -> {
-			if (res.succeeded()) {
-				future.complete();
-			} else {
-				future.fail(res.cause());
-			}
-		});
+	private void deployVerticle(String vertName, DeploymentOptions options, Future<String> future) {
+		vertx.deployVerticle(vertName, options, completeOrFail(future));
 	}
 
 	private void setUpRouter(Router paramRouter) {
@@ -227,7 +219,7 @@ public class VertxNubes {
 
 	public void stop(Handler<AsyncResult<Void>> handler) {
 		router.clear();
-		MultipleFutures futures = new MultipleFutures(handler);
+		MultipleFutures<Void> futures = new MultipleFutures<>(handler);
 		futures.add(fixtureLoader::tearDown);
 		futures.add(config.serviceRegistry::stopAll);
 		futures.add(this::stopDeployments);
@@ -235,7 +227,7 @@ public class VertxNubes {
 	}
 
 	private void stopDeployments(Future<Void> future) {
-		MultipleFutures futures = new MultipleFutures(future);
+		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		deploymentIds.forEach(deploymentId -> {
 			futures.add(fut -> {
 				undeployVerticle(deploymentId, fut);
@@ -245,12 +237,7 @@ public class VertxNubes {
 	}
 
 	private void undeployVerticle(String deploymentId, Future<Void> future) {
-		vertx.undeploy(deploymentId, res -> {
-			if (res.failed()) {
-				log.error("Could not stop verticle", res.cause());
-			}
-			future.complete();
-		});
+		vertx.undeploy(deploymentId, completeFinally(future));
 	}
 
 	public void registerTemplateEngine(String extension, TemplateEngine engine) {

@@ -62,7 +62,7 @@ public class ServiceRegistry {
 			future.complete();
 			return;
 		}
-		MultipleFutures futures = new MultipleFutures(future);
+		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		services().forEach(obj -> {
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
@@ -82,7 +82,7 @@ public class ServiceRegistry {
 		timerIds.forEach(timerId -> {
 			vertx.cancelTimer(timerId);
 		});
-		MultipleFutures futures = new MultipleFutures(future);
+		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		services().forEach(obj -> {
 			if (obj instanceof Service) {
 				Service service = (Service) obj;

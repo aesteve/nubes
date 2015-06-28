@@ -1,35 +1,37 @@
 package com.github.aesteve.vertx.nubes.utils.async;
 
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+public class MultipleFutures<T> extends SimpleFuture<T> {
 
-public class MultipleFutures extends SimpleFuture<Void> {
-
-	private final Map<Handler<Future<Void>>, Future<Void>> consumers;
+	private final Map<Handler<Future<T>>, Future<T>> consumers;
 	private static final Logger log = LoggerFactory.getLogger(MultipleFutures.class);
 
 	public MultipleFutures() {
 		consumers = new HashMap<>();
 	}
 
-	public MultipleFutures(Future<Void> after) {
+	public MultipleFutures(Future<T> after) {
 		this();
 		join(after);
 	}
 
-	public MultipleFutures(Handler<AsyncResult<Void>> after) {
+	public MultipleFutures(Handler<AsyncResult<T>> after) {
 		this();
 		join(after);
 	}
 
-	public void add(Handler<Future<Void>> handler) {
-		Future<Void> future = Future.future();
+	public void add(Handler<Future<T>> handler) {
+		Future<T> future = Future.future();
 		future.setHandler(futureHandler -> {
 			checkCallHandler();
 		});
@@ -47,7 +49,7 @@ public class MultipleFutures extends SimpleFuture<Void> {
 	}
 
 	@Override
-	public Void result() {
+	public T result() {
 		return null;
 	}
 
@@ -94,17 +96,11 @@ public class MultipleFutures extends SimpleFuture<Void> {
 		});
 	}
 
-	public void join(Future<Void> future) {
-		setHandler(res -> {
-			if (res.succeeded()) {
-				future.complete();
-			} else {
-				future.fail(res.cause());
-			}
-		});
+	public void join(Future<T> future) {
+		setHandler(completeOrFail(future));
 	}
 
-	public void join(Handler<AsyncResult<Void>> handler) {
+	public void join(Handler<AsyncResult<T>> handler) {
 		setHandler(handler);
 	}
 }

@@ -49,7 +49,7 @@ public class FixtureLoader {
 			startFuture.complete();
 			return;
 		}
-		MultipleFutures futures = new MultipleFutures(startFuture);
+		MultipleFutures<Void> futures = new MultipleFutures<>(startFuture);
 		fixtures.forEach(fixture -> {
 			switch (methodName) {
 				case "startUp":
