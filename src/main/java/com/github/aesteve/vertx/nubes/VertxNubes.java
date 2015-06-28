@@ -156,6 +156,16 @@ public class VertxNubes {
 				handler.handle(Future.failedFuture(result.cause()));
 			}
 		});
+		
+		// services
+		Future<Void> servicesFuture = Future.future();
+		servicesFuture.setHandler(result -> {
+			if (result.succeeded()) {
+				fixtureLoader.setUp(fixturesFuture);;
+			} else {
+				handler.handle(Future.failedFuture(result.cause()));
+			}
+		});
 
 		// verticles
 		MultipleFutures vertFutures = new MultipleFutures();
@@ -163,7 +173,7 @@ public class VertxNubes {
 		Map<String, DeploymentOptions> verticles = vertFactory.scan();
 		vertFutures.setHandler(res -> {
 			if (res.succeeded()) {
-				fixtureLoader.setUp(fixturesFuture);
+				config.serviceRegistry.startAll(servicesFuture);
 			} else {
 				handler.handle(Future.failedFuture(res.cause()));
 			}
@@ -173,17 +183,7 @@ public class VertxNubes {
 				deployVerticle(vertName, options, fut);
 			});
 		});
-
-		// services
-		Future<Void> servicesFuture = Future.future();
-		servicesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				vertFutures.start();
-			} else {
-				handler.handle(Future.failedFuture(result.cause()));
-			}
-		});
-		config.serviceRegistry.startAll(servicesFuture);
+		vertFutures.start();
 	}
 
 	private void deployVerticle(String vertName, DeploymentOptions options, Future<Void> future) {
