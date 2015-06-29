@@ -34,7 +34,7 @@ import com.github.aesteve.vertx.nubes.routing.HttpMethodFactory;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
 import com.github.aesteve.vertx.nubes.utils.Filter;
 
-public class RouteFactory extends AbstractInjectionFactory {
+public class RouteFactory extends AbstractInjectionFactory implements HandlerFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(RouteFactory.class);
 
@@ -49,7 +49,7 @@ public class RouteFactory extends AbstractInjectionFactory {
 		this.authFactory = new AuthenticationFactory(config);
 	}
 
-	public void createRoutes() {
+	public void createHandlers() {
 		List<MVCRoute> routes = extractRoutesFromControllers();
 		routes.stream().filter(route -> {
 			return route.isEnabled();

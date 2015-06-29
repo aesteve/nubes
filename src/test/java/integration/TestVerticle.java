@@ -1,15 +1,7 @@
 package integration;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import com.github.aesteve.vertx.nubes.VertxNubes;
-
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.onSuccessOnly;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
@@ -18,11 +10,19 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import mock.auth.MockAuthProvider;
 import mock.domains.Dog;
 import mock.services.DogService;
+
+import com.github.aesteve.vertx.nubes.VertxNubes;
 
 public class TestVerticle extends AbstractVerticle {
 
@@ -31,8 +31,8 @@ public class TestVerticle extends AbstractVerticle {
 	public static final String HOST = "localhost";
 	public static final int PORT = 8000;
 	public static final int TIME_FRAME = 10; // We'll sleep through the whole
-	                                         // time-frame for testing
-	                                         // throttling
+												// time-frame for testing
+												// throttling
 	public static final Dog SNOOPY = new Dog("Snoopy", "Beagle");
 	public static final DogService dogService = new DogService();
 	public static final String HEADER_DATE_BEFORE = "X-Date-Before";
@@ -70,17 +70,12 @@ public class TestVerticle extends AbstractVerticle {
 			context.next();
 		});
 		mvc.registerTemplateEngine("hbs", HandlebarsTemplateEngine.create());
-		mvc.bootstrap(res -> {
-			if (res.failed()) {
-				startFuture.fail(res.cause());
-				return;
-			} 
-			Router router = res.result();
+		mvc.bootstrap(onSuccessOnly(startFuture, router -> {
 			server.requestHandler(router::accept);
 			server.listen();
 			log.info("Server listening on port : " + PORT);
 			startFuture.complete();
-		});
+		}));
 	}
 
 	@Override

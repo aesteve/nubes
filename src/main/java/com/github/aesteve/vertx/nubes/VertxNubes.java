@@ -47,6 +47,7 @@ import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.JAXBPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.AnnotVerticleFactory;
+import com.github.aesteve.vertx.nubes.reflections.EventBusBridgeFactory;
 import com.github.aesteve.vertx.nubes.reflections.RouteFactory;
 import com.github.aesteve.vertx.nubes.reflections.SocketFactory;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapter;
@@ -154,12 +155,13 @@ public class VertxNubes {
 				handler.handle(Future.failedFuture(result.cause()));
 			}
 		});
-		
+
 		// services
 		Future<Void> servicesFuture = Future.future();
 		servicesFuture.setHandler(result -> {
 			if (result.succeeded()) {
-				fixtureLoader.setUp(fixturesFuture);;
+				fixtureLoader.setUp(fixturesFuture);
+				;
 			} else {
 				handler.handle(Future.failedFuture(result.cause()));
 			}
@@ -201,9 +203,11 @@ public class VertxNubes {
 			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
 		}
 		RouteFactory routeDiscovery = new RouteFactory(router, config);
-		routeDiscovery.createRoutes();
+		routeDiscovery.createHandlers();
 		SocketFactory socketFactory = new SocketFactory(router, config);
-		socketFactory.createSocketHandlers();
+		socketFactory.createHandlers();
+		EventBusBridgeFactory ebBridgeFactory = new EventBusBridgeFactory(router, config);
+		ebBridgeFactory.createHandlers();
 		StaticHandler staticHandler;
 		if (config.webroot != null) {
 			staticHandler = StaticHandler.create(config.webroot);

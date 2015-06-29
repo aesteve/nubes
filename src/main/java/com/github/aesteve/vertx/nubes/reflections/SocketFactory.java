@@ -22,7 +22,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnOpen;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
-public class SocketFactory extends AbstractInjectionFactory {
+public class SocketFactory extends AbstractInjectionFactory implements HandlerFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
 
@@ -33,7 +33,7 @@ public class SocketFactory extends AbstractInjectionFactory {
 		this.config = config;
 	}
 
-	public void createSocketHandlers() {
+	public void createHandlers() {
 		config.controllerPackages.forEach(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(SockJS.class);
