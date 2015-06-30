@@ -1,6 +1,11 @@
 package integration.sockjs;
 
-import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.*;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.PUBLISH;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.RECEIVE;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.REGISTER;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.SEND;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.SOCKET_CLOSED;
+import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.SOCKET_CREATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import integration.VertxNubesTestBase;

@@ -1,7 +1,5 @@
 package com.github.aesteve.vertx.nubes.annotations.sockjs.bridge;
 
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.InboundPermitted;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

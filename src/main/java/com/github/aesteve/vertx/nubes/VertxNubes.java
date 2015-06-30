@@ -1,6 +1,21 @@
 package com.github.aesteve.vertx.nubes;
 
-import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeFinally;
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -13,6 +28,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import com.github.aesteve.vertx.nubes.annotations.File;
 import com.github.aesteve.vertx.nubes.annotations.View;
@@ -68,21 +86,6 @@ import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.templ.TemplateEngine;
-
 public class VertxNubes {
 
 	private Vertx vertx;
@@ -133,7 +136,8 @@ public class VertxNubes {
 		registerMarshaller("application/json", new BoonPayloadMarshaller());
 		if (config.domainPackage != null) {
 			try {
-				registerMarshaller("application/xml", new JAXBPayloadMarshaller(config.domainPackage));
+				Reflections reflections = new Reflections(config.domainPackage, new SubTypesScanner(false));
+				registerMarshaller("application/xml", new JAXBPayloadMarshaller(reflections.getSubTypesOf(Object.class)));
 			} catch (JAXBException je) {
 				throw new RuntimeException(je);
 			}

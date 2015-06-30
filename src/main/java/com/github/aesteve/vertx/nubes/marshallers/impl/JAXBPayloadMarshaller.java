@@ -1,9 +1,8 @@
 package com.github.aesteve.vertx.nubes.marshallers.impl;
 
-import io.vertx.ext.web.impl.Utils;
-
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,8 +23,11 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 	protected Marshaller marshaller;
 	protected Unmarshaller unmarshaller;
 
-	public JAXBPayloadMarshaller(String contextPath) throws JAXBException {
-		JAXBContext jc = JAXBContext.newInstance(contextPath, Utils.getClassLoader());
+	public JAXBPayloadMarshaller(Set<Class<? extends Object>> classes) throws JAXBException {
+		classes.forEach(clazz -> {
+			System.out.println(clazz.getName());
+		});
+		JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class<?>[0]));
 		marshaller = jc.createMarshaller();
 		unmarshaller = jc.createUnmarshaller();
 	}

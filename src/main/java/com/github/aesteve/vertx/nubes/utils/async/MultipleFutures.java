@@ -1,15 +1,14 @@
 package com.github.aesteve.vertx.nubes.utils.async;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MultipleFutures<T> extends SimpleFuture<T> {
 
