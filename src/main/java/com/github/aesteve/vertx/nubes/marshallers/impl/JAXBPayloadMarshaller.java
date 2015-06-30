@@ -24,9 +24,6 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 	protected Unmarshaller unmarshaller;
 
 	public JAXBPayloadMarshaller(Set<Class<? extends Object>> classes) throws JAXBException {
-		classes.forEach(clazz -> {
-			System.out.println(clazz.getName());
-		});
 		JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class<?>[0]));
 		marshaller = jc.createMarshaller();
 		unmarshaller = jc.createUnmarshaller();
