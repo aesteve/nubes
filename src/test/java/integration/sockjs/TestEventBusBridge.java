@@ -8,9 +8,6 @@ import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.SOCKET_CLOSED;
 import static io.vertx.ext.web.handler.sockjs.BridgeEvent.Type.SOCKET_CREATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -20,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-public class TestEventBusBridge extends VertxNubesTestBase {
+public class TestEventBusBridge extends EventBusBridgeTestBase {
 
 	private final static String TEST_EB_ADDRESS = "test.address";
 
@@ -98,25 +95,5 @@ public class TestEventBusBridge extends VertxNubesTestBase {
 		client().websocket("/eventbus/default/websocket", ws -> {
 			ws.close();
 		});
-	}
-
-	protected static void registerThroughBridge(WebSocket ws, String address, String msg) {
-		sendTypeToBridge(ws, "register", address, msg);
-	}
-
-	protected static void publishThroughBridge(WebSocket ws, String address, String msg) {
-		sendTypeToBridge(ws, "publish", address, msg);
-	}
-
-	protected static void sendThroughBridge(WebSocket ws, String address, String msg) {
-		sendTypeToBridge(ws, "send", address, msg);
-	}
-
-	protected static void sendTypeToBridge(WebSocket ws, String type, String address, String msg) {
-		JsonObject json = new JsonObject();
-		json.put("type", type);
-		json.put("address", address);
-		json.put("body", msg);
-		ws.write(Buffer.buffer(json.toString()));
 	}
 }
