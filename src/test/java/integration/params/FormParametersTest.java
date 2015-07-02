@@ -38,11 +38,7 @@ public class FormParametersTest extends VertxNubesTestBase {
 		data.appendString("name=" + dog.getName() + "&breed=" + dog.getBreed());
 		Async async = context.async();
 		client().post("/params/form/dog").handler(response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
+			response.bodyHandler(buff -> {
 				context.assertEquals(dog.toString(), buff.toString("UTF-8"));
 				async.complete();
 			});
