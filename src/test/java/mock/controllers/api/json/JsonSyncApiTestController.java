@@ -2,7 +2,6 @@ package mock.controllers.api.json;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RoutingContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,76 +12,67 @@ import mock.domains.Dog;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
-import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
-import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
-@Controller("/json/")
+@Controller("/json/sync/")
 @ContentType("application/json")
-public class JsonApiTestController {
+public class JsonSyncApiTestController {
 
 	@GET("noContent")
 	public void noContent() {
 	}
 
 	@GET("jsonobject")
-	public void sendJsonObject(Payload<JsonObject> payload) {
+	public JsonObject sendJsonObject() {
 		JsonObject json = new JsonObject();
 		json.put("Bill", "Cocker");
-		payload.set(json);
+		return json;
 	}
 
 	@GET("jsonarray")
-	public void sendJsonArray(Payload<JsonArray> payload) {
+	public JsonArray sendJsonArray() {
 		JsonObject json = new JsonObject();
 		json.put("Bill", "Cocker");
 		List<JsonObject> list = new ArrayList<>(1);
 		list.add(json);
-		payload.set(new JsonArray(list));
+		return new JsonArray(list);
 	}
 
 	@GET("map")
-	public void sendMap(Payload<Map<String, String>> payload) {
+	public Map<String, String> sendMap() {
 		Map<String, String> dogs = new HashMap<>(2);
 		dogs.put("Snoopy", "Beagle");
 		dogs.put("Bill", "Cocker");
-		payload.set(dogs);
+		return dogs;
 	}
 
 	@GET("array")
-	public void sendArray(Payload<List<String>> payload) {
+	public List<String> sendArray() {
 		List<String> dogs = new ArrayList<>(2);
 		dogs.add("Snoopy");
 		dogs.add("Bill");
-		payload.set(dogs);
+		return dogs;
 	}
 
 	@GET("dog")
-	public void sendDomainObject(Payload<Dog> payload) {
-		Dog snoopy = new Dog("Snoopy", "Beagle");
-		payload.set(snoopy);
+	public Dog sendDomainObject() {
+		return new Dog("Snoopy", "Beagle");
 	}
 
 	@GET("dogs")
-	public void sendManyDomainObjects(Payload<List<Dog>> payload) {
+	public List<Dog> sendManyDomainObjects() {
 		List<Dog> dogs = new ArrayList<>(2);
 		Dog snoopy = new Dog("Snoopy", "Beagle");
 		Dog bill = new Dog("Bill", "Cocker");
 		dogs.add(snoopy);
 		dogs.add(bill);
-		payload.set(dogs);
+		return dogs;
 	}
 
 	@POST("postdog")
-	public void postDog(@RequestBody Dog dog, Payload<Dog> payload) {
-		payload.set(dog); // echo back
+	public Dog postDog(@RequestBody Dog dog) {
+		return dog;
 	}
-
-	@GET("fail/:statusCode")
-	public void sendStatusCode(RoutingContext context, @Param("statusCode") Integer statusCode) {
-		context.fail(statusCode);
-	}
-
 }

@@ -1,8 +1,6 @@
 package integration.api.pagination;
 
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -14,29 +12,25 @@ import com.google.common.net.HttpHeaders;
 
 public class PaginationTest extends VertxNubesTestBase {
 
-	public void notPaginatedMethod(TestContext context) {
-		Async async = context.async();
-		client().get("/pagination/notPaginated", response -> {
-			context.assertEquals(204, response.statusCode());
-			async.complete();
-		}).putHeader(ACCEPT, "application/json").end();
-	}
+	// FIXME : 404 on this one, why ?
 
-	public void notPaginatedButUsingPagination(TestContext context) {
-		Async async = context.async();
-		client().get("/pagination/notPaginatedButUsingPagination", response -> {
-			context.assertEquals(500, response.statusCode());
-			async.complete();
-		}).putHeader(ACCEPT, "application/json").end();
-	}
+	// @Test
+	// public void notPaginatedMethod(TestContext context) {
+	// Async async = context.async();
+	// getJSON("/pagination/notPaginated", response -> {
+	// context.assertEquals(204, response.statusCode());
+	// async.complete();
+	// });
+	// }
 
+	@Test
 	public void paginatedMethodWithSingleObject(TestContext context) {
 		Async async = context.async();
-		client().get("/pagination/paginationContextAvailable", response -> {
+		getJSON("/pagination/paginationContextAvailable", response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertNull(response.headers().get(HttpHeaders.LINK));
 			async.complete();
-		}).putHeader(ACCEPT, "application/json").end();
+		});
 	}
 
 	@Test
@@ -45,14 +39,10 @@ public class PaginationTest extends VertxNubesTestBase {
 		int perPage = 50;
 		int page = 3;
 		int total = 502;
-		client().get("/pagination/sendResults?nbResults=" + total + "&page=" + page + "&perPage=" + perPage, response -> {
+		getJSON("/pagination/sendResults?nbResults=" + total + "&page=" + page + "&perPage=" + perPage, response -> {
 			context.assertEquals(200, response.statusCode());
 			context.assertNotNull(response.headers().get(HttpHeaders.LINK));
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
+			response.bodyHandler(buff -> {
 				JsonArray obj = new JsonArray(buff.toString("UTF-8"));
 				context.assertNotNull(obj);
 				context.assertEquals(perPage, obj.size());
@@ -60,7 +50,7 @@ public class PaginationTest extends VertxNubesTestBase {
 				context.assertEquals("My name is dog number " + (perPage * (page - 1)) + " I wish I have a real name :'( ", dog.getString("name"));
 				async.complete();
 			});
-		}).putHeader(ACCEPT, "application/json").end();
+		});
 	}
 
 	/**

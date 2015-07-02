@@ -10,16 +10,20 @@ import io.vertx.ext.web.RoutingContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 
 import org.reflections.Reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.File;
+import com.github.aesteve.vertx.nubes.annotations.View;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.annotations.filters.After;
 import com.github.aesteve.vertx.nubes.annotations.filters.AfterFilter;
@@ -27,6 +31,8 @@ import com.github.aesteve.vertx.nubes.annotations.filters.Before;
 import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
 import com.github.aesteve.vertx.nubes.annotations.routing.Disabled;
 import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
+import com.github.aesteve.vertx.nubes.context.FileResolver;
+import com.github.aesteve.vertx.nubes.context.ViewResolver;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.reflections.factories.AuthenticationFactory;
@@ -41,12 +47,24 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 	private Router router;
 	private RouteRegistry routeRegistry;
 	private AuthenticationFactory authFactory;
+	private Map<Class<? extends Annotation>, BiConsumer<RoutingContext, ?>> returnHandlers;
 
 	public RouteFactory(Router router, Config config) {
 		this.router = router;
 		this.config = config;
-		this.routeRegistry = new RouteRegistry();
-		this.authFactory = new AuthenticationFactory(config);
+		routeRegistry = new RouteRegistry();
+		authFactory = new AuthenticationFactory(config);
+		createReturnHandlers();
+	}
+
+	private void createReturnHandlers() {
+		returnHandlers = new HashMap<>();
+		returnHandlers.put(View.class, (context, res) -> {
+			ViewResolver.resolve(context, (String) res);
+		});
+		returnHandlers.put(File.class, (context, res) -> {
+			FileResolver.resolve(context, (String) res);
+		});
 	}
 
 	public void createHandlers() {
@@ -127,13 +145,18 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
 					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled);
 					for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-						Set<Handler<RoutingContext>> handler = config.annotationHandlers.get(methodAnnotation.annotationType());
+						Class<? extends Annotation> annotClass = methodAnnotation.annotationType();
+						Set<Handler<RoutingContext>> handler = config.annotationHandlers.get(annotClass);
 						if (handler != null) {
 							route.attachHandlers(handler);
 						}
 						AnnotationProcessor<?> annProcessor = config.apRegistry.getProcessor(methodAnnotation);
 						if (annProcessor != null) {
 							route.addProcessor(annProcessor);
+						}
+						BiConsumer<RoutingContext, ?> returnHandler = returnHandlers.get(annotClass);
+						if (returnHandler != null) {
+							route.attachReturnHandler(returnHandler);
 						}
 					}
 					Before before = method.getAnnotation(Before.class);

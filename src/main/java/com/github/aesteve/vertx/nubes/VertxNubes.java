@@ -117,6 +117,7 @@ public class VertxNubes {
 		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
 		config.serviceRegistry = new ServiceRegistry(vertx);
 		config.aopHandlerRegistry = new HashMap<>();
+		config.marshallers = marshallers;
 		CookieHandler cookieHandler = CookieHandler.create();
 		BodyHandler bodyHandler = BodyHandler.create();
 		registerAnnotationHandler(Cookies.class, cookieHandler);

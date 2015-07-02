@@ -1,6 +1,6 @@
 package mock.controllers.redirect;
 
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.core.http.HttpServerResponse;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
@@ -14,22 +14,19 @@ public class RedirectController {
 
 	@GET("/client")
 	@Redirect(REDIRECT_LOCATION)
-	public void redirectMe(RoutingContext context) {
-		context.response().putHeader("X-Custom-Header", "method-called");
-		context.next();
+	public void redirectMe(HttpServerResponse response) {
+		response.putHeader("X-Custom-Header", "method-called");
 	}
 
 	@GET("/client/permanent")
 	@Redirect(value = REDIRECT_LOCATION, code = 301)
-	public void redirectMePermanently(RoutingContext context) {
-		context.response().putHeader("X-Custom-Header", "method-called");
-		context.next();
+	public void redirectMePermanently(HttpServerResponse response) {
+		response.putHeader("X-Custom-Header", "method-called");
 	}
 
 	@GET("/server")
 	@Forward(controller = AfterRedirectController.class, action = "handleRedirect")
-	public void redirectSilently(RoutingContext context) {
-		context.response().putHeader("X-Custom-Header", "method-called");
-		context.next();
+	public void redirectSilently(HttpServerResponse response) {
+		response.putHeader("X-Custom-Header", "method-called");
 	}
 }

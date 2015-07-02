@@ -12,8 +12,7 @@ public class TestFileController {
 
 	@GET("/txt")
 	@File("someFile.txt")
-	public void getTxtFile(RoutingContext context) {
-		context.next();
+	public void getTxtFile() {
 	}
 
 	@GET("/dynamic")
@@ -21,6 +20,12 @@ public class TestFileController {
 	public void getDynamicTxtFile(RoutingContext context) {
 		FileResolver.resolve(context, "someOtherFile.txt");
 		context.next();
+	}
+
+	@GET("/dynamic/sync")
+	@File
+	public String getDynamicSync() {
+		return "yetAnotherFile.txt";
 	}
 
 }

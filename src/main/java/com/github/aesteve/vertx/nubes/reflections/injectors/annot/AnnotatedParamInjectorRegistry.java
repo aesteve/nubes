@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.annotations.auth.User;
 import com.github.aesteve.vertx.nubes.annotations.cookies.CookieValue;
+import com.github.aesteve.vertx.nubes.annotations.params.ContextData;
 import com.github.aesteve.vertx.nubes.annotations.params.Header;
 import com.github.aesteve.vertx.nubes.annotations.params.LocalMapValue;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
@@ -14,6 +15,7 @@ import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.params.VertxLocalMap;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.ContextDataParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.CookieParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.HeaderParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.LocalMapParamInjector;
@@ -37,6 +39,7 @@ public class AnnotatedParamInjectorRegistry {
 		registerInjector(User.class, new UserParamInjector());
 		registerInjector(LocalMapValue.class, new LocalMapValueParamInjector());
 		registerInjector(VertxLocalMap.class, new LocalMapParamInjector());
+		registerInjector(ContextData.class, new ContextDataParamInjector());
 	}
 
 	public <T extends Annotation> void registerInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {

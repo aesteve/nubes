@@ -1,7 +1,6 @@
 package mock.controllers.injection;
 
 import integration.TestVerticle;
-import io.vertx.ext.web.RoutingContext;
 import mock.domains.Dog;
 import mock.services.DogService;
 
@@ -23,14 +22,12 @@ public class TestInjectSock {
 	private Dog snoop; // a simple object registered as a service should be injected, too
 
 	@GET("/service")
-	public void getDog(RoutingContext context, @Param("idx") Integer i, Payload<Dog> payload) {
+	public void getDog(@Param("idx") Integer i, Payload<Dog> payload) {
 		payload.set(dogService.getDog(i));
-		context.next();
 	}
 
 	@GET("/class")
-	public void getSimpleClass(RoutingContext context, Payload<Dog> payload) {
+	public void getSimpleClass(Payload<Dog> payload) {
 		payload.set(snoop);
-		context.next();
 	}
 }

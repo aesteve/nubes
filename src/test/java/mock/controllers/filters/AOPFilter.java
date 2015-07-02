@@ -16,13 +16,12 @@ public class AOPFilter {
 	@GET("/aop")
 	@Before(name = "setDateBefore")
 	@After(name = "setDateAfter")
-	public void beforeAndAfter(RoutingContext context) {
+	public void beforeAndAfter() {
 		try {
 			Thread.sleep(EXECUTION_TIME); // just to make sure that 'After' is slightly different from 'Before'
 		} catch (Exception e) {
 
 		}
-		context.next();
 	}
 
 	@AfterFilter

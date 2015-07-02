@@ -13,11 +13,13 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.Blocking;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
+import com.github.aesteve.vertx.nubes.handlers.impl.PayloadTypeProcessor;
 import com.github.aesteve.vertx.nubes.utils.Filter;
 
 public class MVCRoute {
@@ -36,6 +38,7 @@ public class MVCRoute {
 	private Handler<RoutingContext> postInterceptor;
 	private Config config;
 	private boolean disabled;
+	private BiConsumer<RoutingContext, ?> returnHandler;
 
 	public MVCRoute(Object instance, String path, HttpMethod method, Config config, Handler<RoutingContext> authHandler, boolean disabled) {
 		this.instance = instance;
@@ -79,6 +82,10 @@ public class MVCRoute {
 		} else {
 			this.postInterceptor = handler;
 		}
+	}
+
+	public void attachReturnHandler(BiConsumer<RoutingContext, ?> handler) {
+		returnHandler = handler;
 	}
 
 	public void attachHandler(Handler<RoutingContext> handler) {
@@ -142,13 +149,18 @@ public class MVCRoute {
 			}
 
 		});
-		beforeFilters.forEach(filter -> {
-			setHandler(router, filter.method(), httpMethodFinal, pathFinal);
-		});
+		int i = 0;
+		boolean beforeFiltersHaveNext = mainHandler != null;
+		for (Filter filter : beforeFilters) {
+			boolean hasNext = beforeFiltersHaveNext || i < beforeFilters.size() - 1;
+			setHandler(router, filter.method(), httpMethodFinal, pathFinal, hasNext);
+			i++;
+		}
 		if (preInterceptor != null) {
 			router.route(httpMethodFinal, pathFinal).handler(preInterceptor);
 		}
-		setHandler(router, mainHandler, httpMethodFinal, pathFinal);
+		boolean mainHasNext = redirectRoute != null || postInterceptor != null || afterFilters.size() > 0 || processors.size() > 0;
+		setHandler(router, mainHandler, httpMethodFinal, pathFinal, mainHasNext);
 		if (redirectRoute != null) {
 			// intercepted -> redirected => do not call post processing handlers
 			redirectRoute.attachHandlersToRouter(router, httpMethod, path);
@@ -157,16 +169,23 @@ public class MVCRoute {
 			router.route(httpMethodFinal, pathFinal).handler(postInterceptor);
 			// FIXME ?? : return;
 		}
-		afterFilters.forEach(filter -> {
-			setHandler(router, filter.method(), httpMethodFinal, pathFinal);
-		});
+		i = 0;
+		boolean afterFiltersHaveNext = processors.size() > 0;
+		for (Filter filter : afterFilters) {
+			boolean hasNext = afterFiltersHaveNext || i < afterFilters.size() - 1;
+			setHandler(router, filter.method(), httpMethodFinal, pathFinal, hasNext);
+			i++;
+		}
+		if (!mainHandler.getReturnType().equals(Void.TYPE) && returnHandler == null) { // try to set as payload
+			processors.add(new PayloadTypeProcessor(config.marshallers));
+		}
 		processors.forEach(processor -> {
 			router.route(httpMethodFinal, pathFinal).handler(processor::postHandle);
 		});
 	}
 
-	private void setHandler(Router router, Method method, HttpMethod httpMethod, String path) {
-		Handler<RoutingContext> handler = new DefaultMethodInvocationHandler(instance, method, config);
+	private void setHandler(Router router, Method method, HttpMethod httpMethod, String path, boolean hasNext) {
+		Handler<RoutingContext> handler = new DefaultMethodInvocationHandler<>(instance, method, config, hasNext, returnHandler);
 		if (method.isAnnotationPresent(Blocking.class)) {
 			router.route(httpMethod, path).blockingHandler(handler);
 		} else {

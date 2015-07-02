@@ -3,7 +3,6 @@ package integration.cookies;
 import static io.vertx.core.http.HttpHeaders.COOKIE;
 import static io.vertx.core.http.HttpHeaders.SET_COOKIE;
 import integration.VertxNubesTestBase;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
@@ -34,11 +33,7 @@ public class CookieTest extends VertxNubesTestBase {
 		String value = "Cubitus";
 		Async async = context.async();
 		client().get("/cookies/echo", response -> {
-			Buffer buff = Buffer.buffer();
-			response.handler(buffer -> {
-				buff.appendBuffer(buffer);
-			});
-			response.endHandler(handler -> {
+			response.bodyHandler(buff -> {
 				context.assertEquals(value, buff.toString("UTF-8"));
 				async.complete();
 			});

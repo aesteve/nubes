@@ -1,9 +1,11 @@
 package mock.controllers.cookies;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.cookies.CookieValue;
 import com.github.aesteve.vertx.nubes.annotations.cookies.Cookies;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
@@ -11,22 +13,21 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 public class CookieTestController {
 
 	@GET("noCookie")
-	public void noCookie(RoutingContext context) {
-		context.next();
+	public void noCookie(HttpServerResponse response) {
+		response.end();
 	}
 
 	@GET("setCookie")
 	@Cookies
 	public void setCookie(RoutingContext context) {
 		context.addCookie(Cookie.cookie("dog", "Rantanplan"));
-		context.next();
+		context.response().end();
 	}
 
 	@GET("echo")
 	@Cookies
-	public void echoCookies(RoutingContext context) {
-		String dog = context.getCookie("dog").getValue();
-		context.response().end(dog);
+	public void echoCookies(HttpServerResponse response, @CookieValue("dog") String dog) {
+		response.end(dog);
 	}
 
 }

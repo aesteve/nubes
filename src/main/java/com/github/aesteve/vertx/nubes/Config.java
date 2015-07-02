@@ -24,6 +24,7 @@ import com.github.aesteve.vertx.nubes.context.RateLimit;
 import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
+import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
@@ -36,6 +37,7 @@ public class Config {
 		globalHandlers = new ArrayList<>();
 		templateEngines = new HashMap<>();
 		sockJSOptions = new SockJSHandlerOptions();
+		marshallers = new HashMap<>();
 	}
 
 	public JsonObject json;
@@ -66,6 +68,7 @@ public class Config {
 	public List<Handler<RoutingContext>> globalHandlers;
 	public Map<String, TemplateEngine> templateEngines;
 	public SockJSHandlerOptions sockJSOptions;
+	public Map<String, PayloadMarshaller> marshallers;
 
 	/**
 	 * TODO : check config instead of throwing exceptions

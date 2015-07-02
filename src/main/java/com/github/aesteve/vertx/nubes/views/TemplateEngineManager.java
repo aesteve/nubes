@@ -1,6 +1,9 @@
 package com.github.aesteve.vertx.nubes.views;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.TemplateHandler;
 import io.vertx.ext.web.templ.TemplateEngine;
@@ -9,6 +12,8 @@ import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
 
 public class TemplateEngineManager implements TemplateHandler {
+
+	private final static Logger log = LoggerFactory.getLogger(TemplateEngineManager.class);
 
 	private Config config;
 
@@ -26,6 +31,9 @@ public class TemplateEngineManager implements TemplateHandler {
 	public void handle(RoutingContext context) {
 		String tplName = normalize(config.tplDir) + ViewResolver.getViewName(context);
 		TemplateEngine engine = fromViewName(tplName);
+		if (engine == null) {
+			log.error("No template handler found for " + tplName);
+		}
 		engine.render(context, tplName, res -> {
 			if (res.succeeded()) {
 				context.response().putHeader(CONTENT_TYPE, "text/html").end(res.result());

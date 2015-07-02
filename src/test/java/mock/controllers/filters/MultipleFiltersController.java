@@ -1,5 +1,6 @@
 package mock.controllers.filters;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
@@ -11,22 +12,19 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 public class MultipleFiltersController {
 
 	@BeforeFilter(2)
-	public void before1(RoutingContext context) {
-		context.response().write("before2;");
-		context.next();
+	public void before1(HttpServerResponse response) {
+		response.write("before2;");
 	}
 
 	@BeforeFilter(3)
-	public void before3(RoutingContext context) {
-		context.response().write("before3;");
-		context.next();
+	public void before3(HttpServerResponse response) {
+		response.write("before3;");
 	}
 
 	@BeforeFilter(1)
-	public void before2(RoutingContext context) {
-		context.response().setChunked(true);
-		context.response().write("before1;");
-		context.next();
+	public void before2(HttpServerResponse response) {
+		response.setChunked(true);
+		response.write("before1;");
 	}
 
 	@GET("/order")
@@ -35,21 +33,18 @@ public class MultipleFiltersController {
 	}
 
 	@AfterFilter(2)
-	public void after2(RoutingContext context) {
-		context.response().write("after2;");
-		context.next();
+	public void after2(HttpServerResponse response) {
+		response.write("after2;");
 	}
 
 	@AfterFilter(3)
-	public void after3(RoutingContext context) {
-		context.response().write("after3;");
-		context.response().end();
+	public void after3(HttpServerResponse response) {
+		response.end("after3;");
 	}
 
 	@AfterFilter(1)
-	public void after1(RoutingContext context) {
-		context.response().write("after1;");
-		context.next();
+	public void after1(HttpServerResponse response) {
+		response.write("after1;");
 	}
 
 }

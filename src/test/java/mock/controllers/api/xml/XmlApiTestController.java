@@ -1,6 +1,5 @@
 package mock.controllers.api.xml;
 
-import io.vertx.ext.web.RoutingContext;
 import mock.domains.Dog;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
@@ -15,21 +14,18 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 public class XmlApiTestController {
 
 	@GET("noContent")
-	public void noContent(RoutingContext context) {
-		context.next();
+	public void noContent() {
 	}
 
 	@GET("dog")
-	public void sendDomainObject(RoutingContext context, Payload<Dog> payload) {
+	public void sendDomainObject(Payload<Dog> payload) {
 		Dog snoopy = new Dog("Snoopy", "Beagle");
 		payload.set(snoopy);
-		context.next();
 	}
 
 	@POST("postdog")
-	public void readDog(@RequestBody Dog dog, RoutingContext context, Payload<Dog> payload) {
+	public void readDog(@RequestBody Dog dog, Payload<Dog> payload) {
 		payload.set(dog); // echo back
-		context.next();
 	}
 
 }

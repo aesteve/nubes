@@ -7,22 +7,38 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
-public abstract class AbstractMethodInvocationHandler implements Handler<RoutingContext> {
+public abstract class AbstractMethodInvocationHandler<T> implements Handler<RoutingContext> {
 
 	protected Method method;
 	protected Object instance;
 	protected Config config;
+	protected Class<?>[] parameterClasses;
+	protected Annotation[][] parametersAnnotations;
+	protected boolean usesRoutingContext;
+	protected boolean hasNext;
+	protected BiConsumer<RoutingContext, T> returnHandler;
 
-	public AbstractMethodInvocationHandler(Object instance, Method method, Config config) {
+	public AbstractMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
 		this.method = method;
+		this.hasNext = hasNext;
+		parameterClasses = method.getParameterTypes();
+		for (Class<?> parameterClass : parameterClasses) {
+			if (parameterClass.equals(RoutingContext.class)) {
+				usesRoutingContext = true;
+				break;
+			}
+		}
+		parametersAnnotations = method.getParameterAnnotations();
 		this.config = config;
 		this.instance = instance;
+		this.returnHandler = returnHandler;
 	}
 
 	@Override
@@ -30,8 +46,6 @@ public abstract class AbstractMethodInvocationHandler implements Handler<Routing
 
 	protected Object[] getParameters(RoutingContext routingContext) {
 		List<Object> parameters = new ArrayList<>();
-		Class<?>[] parameterClasses = method.getParameterTypes();
-		Annotation[][] parametersAnnotations = method.getParameterAnnotations();
 		for (int i = 0; i < parameterClasses.length; i++) {
 			Object paramInstance = getParameterInstance(routingContext, parametersAnnotations[i], parameterClasses[i]);
 			parameters.add(paramInstance);

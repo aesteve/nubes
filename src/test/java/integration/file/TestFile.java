@@ -30,4 +30,15 @@ public class TestFile extends VertxNubesTestBase {
 		});
 	}
 
+	@Test
+	public void getFileDynamicSync(TestContext context) {
+		Async async = context.async();
+		client().getNow("/file/dynamic/sync", response -> {
+			response.bodyHandler(buff -> {
+				context.assertEquals("This is yet another text file", buff.toString("UTF-8"));
+				async.complete();
+			});
+		});
+	}
+
 }
