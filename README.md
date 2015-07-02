@@ -1,24 +1,19 @@
 # Vert.x Nubes
 
-## Provides an annotation layer (jersey-like) on top of vertx-web
+## Provides an annotation layer on top of vertx-web
 
-
-It's a work in progress. 
-
-If you're interested on what the actual objectives are, and how they could be achieved, please take a look at [the specifications](https://github.com/aesteve/vertx-mvc-specifications)
-
-Feel free to comment and/or submit ideas in the specifications project.
+/!\ Important note : It's a work in progress. Nubes hasn't been benchmarked yet. /!\
 
 The main idea is to provide a different way to declare your routes than you'd do in a standard vertx-web project by providing a set of hopefully useful annotations / utilities on top of vertx-web.
 
 The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... 
 
-Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of utilities at your disposal.
+Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of additional utilities at your disposal.
 
 
 ## For the impatient, here's a basic example :
 
-### The controller : 
+### A controller : 
 
 ```java
 package com.peanuts.controllers;
@@ -223,8 +218,58 @@ Parameters can be resolved simply by their types (that's how Nubes injects the `
 
 ## The View Layer
 
-TODO : explain that template engines are created by the user, and bound to a file extension.
+TODO : explain that template engines are created by the user, and bound to a file extension. Then how views are resolved, either by `@View("viewName.extension")` or through the `ViewResolver` parameter.
 
 ## The Service Layer
 
-TODO : explain what services are, and how they're created and injected
+Services in Nubes are simple POJOs you register on the Nubes instance using `nubes.registerService(String name, Object serviceInstance)`. This way, you'll be able to access them from your controllers using the `@Service("someName")` annotation. 
+
+### Standard services
+
+Any POJO can be a service. Simply register it against Nubes.
+
+### Async services
+
+In some case, services take time to startup or to be closed. If you want your service to be started when Nubes bootstraps, just implements Nubes `Service` interface and register it, the same way you would register a POJO.
+
+### RPC and service proxies
+
+TODO : add `@ServiceProxy("address")` annotation. And explain how to use vertx's service proxy.
+
+## SockJS
+
+Nubes provides a simple way to declare SockJS handlers with annotations instead of handlers defined in vertx-web.
+
+
+For example, to handle incoming sockets you would do the following.
+
+
+```java
+@SockJS("/sockjs/*")
+public class SockJSController {
+  @OnMessage
+  public void onMessage(SockJSSocket emitter, Buffer message) {
+    emitter.write(Buffer.buffer(message)); // simply echo the message back
+  }
+}
+```
+
+You can also use vertx-web's event-bus bridge if you want your users to access some addresses over the event-bus from client-side using SockJS.
+
+@EventBusBridge("/sockjs/*")
+@InboundPermitted("some-allowed-address")
+public class BridgeController {
+
+  @SOCKET_CREATED
+  public void whenSocketIsCreated(BridgeEvent event) {
+    // do what you want...
+  }
+  
+  @REGISTER
+  public void whenSomeUserRegisters(BridgeEvent event) {
+    // do what you want...
+  }
+  
+}
+```
+
