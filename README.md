@@ -256,6 +256,8 @@ public class SockJSController {
 
 You can also use vertx-web's event-bus bridge if you want your users to access some addresses over the event-bus from client-side using SockJS.
 
+
+```java
 @EventBusBridge("/sockjs/*")
 @InboundPermitted("some-allowed-address")
 public class BridgeController {
