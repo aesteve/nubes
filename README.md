@@ -27,17 +27,16 @@ public class PeanutsPages {
   
   @GET("/character")
   @View("character.hbs")
-  public void getCharacter(RoutingContext context, @Param("type") CharacterType type) {
+  public void getCharacter(@ContextData Map<String, Object> data, @Param("type") CharacterType type) {
     switch(type) {
       case DOG: 
-        context.put("name", "Snoopy");
+        data.put("name", "Snoopy");
         break;
       case BOY:
-        context.put("name", "Charlie Brown");
+        data.put("name", "Charlie Brown");
         break;
       // ...
     }
-    context.next()
   }
 }
 ```
@@ -71,14 +70,12 @@ package com.peanuts.controllers;
 public class CharactersController {
   
   @GET("/character")
-  public void getCharacter(RoutingContext context, @Param("type") CharacterType type, Payload<PeanutsCharacter> payload) {
+  public void getCharacter(@Param("type") CharacterType type) {
     switch(type) {
       case DOG: 
-        payload.set(new PeanutsCharacter(CharacterType.DOG, "Snoopy", snoopysBirthDate));
-        break;
-      // ...
+        return new PeanutsCharacter(CharacterType.DOG, "Snoopy", snoopysBirthDate);
+      // etc. 
     }
-    context.next()
   }
   
   @POST("/character")
