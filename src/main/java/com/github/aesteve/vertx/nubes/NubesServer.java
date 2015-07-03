@@ -13,8 +13,11 @@ import io.vertx.ext.web.templ.impl.JadeTemplateEngineImpl;
 import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
 import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
+<<<<<<< HEAD
 import java.util.Date;
 
+=======
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
 
 public class NubesServer extends AbstractVerticle {
@@ -24,10 +27,17 @@ public class NubesServer extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
 	private HttpServer server;
+<<<<<<< HEAD
 	public static HttpServerOptions options;
 	private VertxNubes nubes;
 	public static JsonArray services = new JsonArray();
 	public static JsonArray templates = new JsonArray();
+=======
+	private HttpServerOptions options;
+	private VertxNubes nubes;
+	private JsonArray services = new JsonArray();
+	private JsonArray templates = new JsonArray();
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -36,10 +46,17 @@ public class NubesServer extends AbstractVerticle {
 		options.setHost(config.getString("host", "localhost"));
 		options.setPort(config.getInteger("port", 9000));
 		services = config.getJsonArray("services");
+<<<<<<< HEAD
 		templates = config.getJsonArray("templates",new JsonArray());
 		createNubesConfig(config);
 		try {
 			nubes = new VertxNubes(vertx, config);
+=======
+		templates = config.getJsonArray("templates");
+		JsonObject nubesConfig = createNubesConfig(config);
+		try {
+			nubes = new VertxNubes(vertx, nubesConfig);
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 
 			//Register services added in conf.json
 			for (int i = 0;i<services.size();i++){
@@ -50,6 +67,7 @@ public class NubesServer extends AbstractVerticle {
 				nubes.registerService(name, clazz.newInstance());
 			}
 
+<<<<<<< HEAD
 			nubes.registerInterceptor("setDateBefore", contxt -> {
 				contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
 				contxt.next();
@@ -58,6 +76,8 @@ public class NubesServer extends AbstractVerticle {
 				contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
 				contxt.next();
 			});
+=======
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 			//Register templateEngines for extensions added in conf.json
 			if(templates.contains("hbs")) {
 				nubes.registerTemplateEngine("hbs", new HandlebarsTemplateEngineImpl());
@@ -101,9 +121,12 @@ public class NubesServer extends AbstractVerticle {
 	private void closeServer(Future<Void> future) {
 		if (server != null) {
 			server.close(completeOrFail(future));
+<<<<<<< HEAD
 			if(!services.isEmpty()){
 				services.clear();
 			}
+=======
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 		} else {
 			future.complete();
 		}
@@ -111,6 +134,7 @@ public class NubesServer extends AbstractVerticle {
 
 	//get the packages paths from conf
 	// defaults are: src.package.verticles, src.package.controllers...
+<<<<<<< HEAD
 	private void createNubesConfig(JsonObject conf) {
 
 		String srcPackage = conf.getString("src-package","src.package");
@@ -134,5 +158,19 @@ public class NubesServer extends AbstractVerticle {
 			fixtures.add(srcPackage + ".fixtures");
 			conf.put("fixture-packages", fixtures);
 		}
+=======
+	private JsonObject createNubesConfig(JsonObject conf) {
+		JsonObject json = new JsonObject();
+		String srcPackage = conf.getString("src-package","src.package");
+		json.put("verticle-package", conf.getString("verticle-package",srcPackage + ".verticles"));
+//		json.put("domain-package", conf.getString("domain-package",srcPackage + ".domains")); still jaxb.index issue
+		JsonArray fixtures = new JsonArray();
+		fixtures.add(srcPackage + ".fixtures");
+		json.put("fixture-packages", conf.getJsonArray("fixture-packages", fixtures));
+		JsonArray controllers = new JsonArray();
+		controllers.add(srcPackage + ".controllers");
+		json.put("controller-packages", conf.getJsonArray("controller-packages",controllers));
+		return json;
+>>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 	}
 }
