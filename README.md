@@ -26,8 +26,8 @@ public class PeanutsPages {
   }
   
   @GET("/character")
-  @View("character.hbs")
-  public void getCharacter(@ContextData Map<String, Object> data, @Param("type") CharacterType type) {
+  @View
+  public String getCharacter(@ContextData Map<String, Object> data, @Param("type") CharacterType type) {
     switch(type) {
       case DOG: 
         data.put("name", "Snoopy");
@@ -37,6 +37,7 @@ public class PeanutsPages {
         break;
       // ...
     }
+    return "character.hbs";
   }
 }
 ```
@@ -70,7 +71,7 @@ package com.peanuts.controllers;
 public class CharactersController {
   
   @GET("/character")
-  public void getCharacter(@Param("type") CharacterType type) {
+  public PeanutsCharacter getCharacter(@Param("type") CharacterType type) {
     switch(type) {
       case DOG: 
         return new PeanutsCharacter(CharacterType.DOG, "Snoopy", snoopysBirthDate);
