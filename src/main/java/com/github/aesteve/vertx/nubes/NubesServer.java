@@ -13,6 +13,8 @@ import io.vertx.ext.web.templ.impl.JadeTemplateEngineImpl;
 import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
 import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
+import java.util.Date;
+
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
 
 public class NubesServer extends AbstractVerticle {
@@ -22,10 +24,10 @@ public class NubesServer extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
 	private HttpServer server;
-	private HttpServerOptions options;
+	public static HttpServerOptions options;
 	private VertxNubes nubes;
-	private JsonArray services = new JsonArray();
-	private JsonArray templates = new JsonArray();
+	public static JsonArray services = new JsonArray();
+	public static JsonArray templates = new JsonArray();
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -48,6 +50,14 @@ public class NubesServer extends AbstractVerticle {
 				nubes.registerService(name, clazz.newInstance());
 			}
 
+			nubes.registerInterceptor("setDateBefore", contxt -> {
+				contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
+				contxt.next();
+			});
+			nubes.registerInterceptor("setDateAfter", contxt -> {
+				contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
+				contxt.next();
+			});
 			//Register templateEngines for extensions added in conf.json
 			if(templates.contains("hbs")) {
 				nubes.registerTemplateEngine("hbs", new HandlebarsTemplateEngineImpl());
@@ -91,6 +101,9 @@ public class NubesServer extends AbstractVerticle {
 	private void closeServer(Future<Void> future) {
 		if (server != null) {
 			server.close(completeOrFail(future));
+			if(!services.isEmpty()){
+				services.clear();
+			}
 		} else {
 			future.complete();
 		}
