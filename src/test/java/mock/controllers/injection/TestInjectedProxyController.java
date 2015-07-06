@@ -17,7 +17,6 @@ public class TestInjectedProxyController {
 	@POST
 	public void echoThroughParrot(HttpServerResponse response, @RequestBody String body) {
 		parrot.echo(body, reply -> {
-			System.out.println("Reply = " + reply.result());
 			response.end(reply.result());
 		});
 	}
