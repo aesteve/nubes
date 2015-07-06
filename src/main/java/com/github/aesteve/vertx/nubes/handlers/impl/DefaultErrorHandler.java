@@ -102,7 +102,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		errorMessages.put(503, "Service temporarily unavailable");
 	}
 
-	private boolean isView(RoutingContext context) {
+	private static boolean isView(RoutingContext context) {
 		return ViewResolver.getViewName(context) != null;
 	}
 

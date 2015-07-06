@@ -36,11 +36,11 @@ public class AuthTest extends VertxNubesTestBase {
 		}).putHeader(HttpHeaders.AUTHORIZATION, getWrongBearer()).end();
 	}
 
-	private String getOKBearer() {
+	private static String getOKBearer() {
 		return "Basic dGltOnNhdXNhZ2Vz";
 	}
 
-	private String getWrongBearer() {
+	private static String getWrongBearer() {
 		return "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==";
 	}
 }

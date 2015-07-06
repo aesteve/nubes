@@ -66,7 +66,7 @@ public abstract class VertxNubesTestBase {
 		client().post(path, responseHandler).putHeader(ACCEPT, "application/xml").putHeader(CONTENT_TYPE, "application/xml").end(payload.toString());
 	}
 
-	private HttpClientOptions options() {
+	private static HttpClientOptions options() {
 		HttpClientOptions options = new HttpClientOptions();
 		options.setDefaultHost(TestVerticle.HOST);
 		options.setDefaultPort(TestVerticle.PORT);

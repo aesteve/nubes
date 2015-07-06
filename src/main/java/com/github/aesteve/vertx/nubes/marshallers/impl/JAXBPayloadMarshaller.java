@@ -66,7 +66,7 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 		return marshallError(statusCode, null, errorMessage);
 	}
 
-	private String marshallError(int status, Throwable error, String message) {
+	private static String marshallError(int status, Throwable error, String message) {
 		if (message == null && error != null) {
 			message = StackTracePrinter.asLineString(null, error).toString();
 		}

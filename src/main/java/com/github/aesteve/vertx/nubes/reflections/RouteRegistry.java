@@ -53,15 +53,15 @@ public class RouteRegistry {
 		return discovered.get(buildKey(annotation));
 	}
 
-	private String buildKey(Class<?> controller, String methodName) {
+	private static String buildKey(Class<?> controller, String methodName) {
 		return controller.getName() + "::" + methodName;
 	}
 
-	private String buildKey(Class<?> controller, Method handler) {
+	private static String buildKey(Class<?> controller, Method handler) {
 		return buildKey(controller, handler.getName());
 	}
 
-	private String buildKey(Forward annotation) {
+	private static String buildKey(Forward annotation) {
 		return buildKey(annotation.controller(), annotation.action());
 	}
 }

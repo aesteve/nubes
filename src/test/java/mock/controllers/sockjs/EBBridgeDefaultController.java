@@ -44,7 +44,7 @@ public class EBBridgeDefaultController {
 		forward(be, eb);
 	}
 
-	private void forward(BridgeEvent be, EventBus eb) {
+	private static void forward(BridgeEvent be, EventBus eb) {
 		String type = be.type().toString();
 		eb.send(type, type);
 		be.complete(true);

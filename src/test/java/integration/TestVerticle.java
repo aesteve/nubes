@@ -83,7 +83,7 @@ public class TestVerticle extends AbstractVerticle {
 		mvc.stop(completeOrFail(stopFuture));
 	}
 
-	private JsonObject createTestConfig() {
+	private static JsonObject createTestConfig() {
 		JsonObject config = new JsonObject();
 		JsonArray controllerPackages = new JsonArray();
 		controllerPackages.add("mock.controllers");

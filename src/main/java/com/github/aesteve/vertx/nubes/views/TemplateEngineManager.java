@@ -43,7 +43,7 @@ public class TemplateEngineManager implements TemplateHandler {
 		});
 	}
 
-	private String normalize(String dir) {
+	private static String normalize(String dir) {
 		if (!dir.endsWith("/")) {
 			dir += "/";
 		}
