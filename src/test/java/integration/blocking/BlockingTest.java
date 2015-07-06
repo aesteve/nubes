@@ -16,7 +16,7 @@ public class BlockingTest extends VertxNubesTestBase {
 			response.bodyHandler(buff -> {
 				long end = System.currentTimeMillis();
 				context.assertEquals("Done.", buff.toString());
-				context.assertTrue(end - start > 3000);
+				context.assertTrue(end - start >= 3000, (end - start) + "should be more than 3000");
 				async.complete();
 			});
 		});
