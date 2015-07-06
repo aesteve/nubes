@@ -34,10 +34,10 @@ public class NubesServer extends AbstractVerticle {
 		options.setHost(config.getString("host", "localhost"));
 		options.setPort(config.getInteger("port", 9000));
 		services = config.getJsonArray("services");
-		templates = config.getJsonArray("templates");
-		JsonObject nubesConfig = createNubesConfig(config);
+		templates = config.getJsonArray("templates",new JsonArray());
+		createNubesConfig(config);
 		try {
-			nubes = new VertxNubes(vertx, nubesConfig);
+			nubes = new VertxNubes(vertx, config);
 
 			//Register services added in conf.json
 			for (int i = 0;i<services.size();i++){
@@ -98,17 +98,28 @@ public class NubesServer extends AbstractVerticle {
 
 	//get the packages paths from conf
 	// defaults are: src.package.verticles, src.package.controllers...
-	private JsonObject createNubesConfig(JsonObject conf) {
-		JsonObject json = new JsonObject();
+	private void createNubesConfig(JsonObject conf) {
+
 		String srcPackage = conf.getString("src-package","src.package");
-		json.put("verticle-package", conf.getString("verticle-package",srcPackage + ".verticles"));
-//		json.put("domain-package", conf.getString("domain-package",srcPackage + ".domains")); still jaxb.index issue
-		JsonArray fixtures = new JsonArray();
-		fixtures.add(srcPackage + ".fixtures");
-		json.put("fixture-packages", conf.getJsonArray("fixture-packages", fixtures));
-		JsonArray controllers = new JsonArray();
-		controllers.add(srcPackage + ".controllers");
-		json.put("controller-packages", conf.getJsonArray("controller-packages",controllers));
-		return json;
+
+		if (conf.getString("verticle-package")==null) {
+			conf.put("verticle-package", srcPackage + ".verticles");
+		}
+
+		if (conf.getString("domain-package")==null) {
+			//conf.put("domain-package", srcPackage + ".domains"); still jaxb.index issue
+		}
+
+		if (conf.getJsonArray("controller-packages")==null) {
+			JsonArray controllers = new JsonArray();
+			controllers.add(srcPackage + ".controllers");
+			conf.put("controller-packages", controllers);
+		}
+
+		if (conf.getJsonArray("fixture-packages")==null){
+			JsonArray fixtures = new JsonArray();
+			fixtures.add(srcPackage + ".fixtures");
+			conf.put("fixture-packages", fixtures);
+		}
 	}
 }
