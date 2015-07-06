@@ -37,7 +37,7 @@ public class NubesServer extends AbstractVerticle {
 		options.setPort(config.getInteger("port", 9000));
 		services = config.getJsonArray("services");
 		templates = config.getJsonArray("templates",new JsonArray());
-		createNubesConfig(config);
+
 		try {
 			nubes = new VertxNubes(vertx, config);
 
@@ -109,30 +109,4 @@ public class NubesServer extends AbstractVerticle {
 		}
 	}
 
-	//get the packages paths from conf
-	// defaults are: src.package.verticles, src.package.controllers...
-	private void createNubesConfig(JsonObject conf) {
-
-		String srcPackage = conf.getString("src-package","src.package");
-
-		if (conf.getString("verticle-package")==null) {
-			conf.put("verticle-package", srcPackage + ".verticles");
-		}
-
-		if (conf.getString("domain-package")==null) {
-			//conf.put("domain-package", srcPackage + ".domains"); still jaxb.index issue
-		}
-
-		if (conf.getJsonArray("controller-packages")==null) {
-			JsonArray controllers = new JsonArray();
-			controllers.add(srcPackage + ".controllers");
-			conf.put("controller-packages", controllers);
-		}
-
-		if (conf.getJsonArray("fixture-packages")==null){
-			JsonArray fixtures = new JsonArray();
-			fixtures.add(srcPackage + ".fixtures");
-			conf.put("fixture-packages", fixtures);
-		}
-	}
 }
