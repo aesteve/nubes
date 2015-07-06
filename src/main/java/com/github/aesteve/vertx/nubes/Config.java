@@ -41,6 +41,7 @@ public class Config {
 	}
 
 	public JsonObject json;
+	public String srcPackage;
 	public List<String> controllerPackages;
 	public List<String> fixturePackages;
 	public String verticlePackage;
@@ -80,24 +81,22 @@ public class Config {
 	public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
 		Config instance = new Config();
 		instance.json = json;
+		instance.srcPackage = json.getString("src-package","src.package");
 		instance.vertx = vertx;
 		instance.i18nDir = json.getString("i18nDir", "web/i18n/");
 		if (!instance.i18nDir.endsWith("/")) {
 			instance.i18nDir = instance.i18nDir + "/";
 		}
-		JsonArray controllers = json.getJsonArray("controller-packages");
-		if (controllers == null) {
-			throw new MissingConfigurationException("controller-packages");
-		}
-		instance.verticlePackage = json.getString("verticle-package");
+		JsonArray controllers = json.getJsonArray("controller-packages",new JsonArray().add(instance.srcPackage + ".controllers"));
 		instance.controllerPackages = controllers.getList();
-		instance.domainPackage = json.getString("domain-package");
-		JsonArray fixtures = json.getJsonArray("fixture-packages");
-		if (fixtures != null) {
-			instance.fixturePackages = fixtures.getList();
-		} else {
-			instance.fixturePackages = new ArrayList<>();
-		}
+
+		instance.verticlePackage = json.getString("verticle-package",instance.srcPackage + ".verticles");
+
+//		instance.domainPackage = json.getString("domain-package",instance.srcPackage + ".domains");
+
+		JsonArray fixtures = json.getJsonArray("fixture-packages",new JsonArray().add(instance.srcPackage + ".fixtures"));
+		instance.fixturePackages = fixtures.getList();
+
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
 		if (rateLimitJson != null) {
 			int count = rateLimitJson.getInteger("count");

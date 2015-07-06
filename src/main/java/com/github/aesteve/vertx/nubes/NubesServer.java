@@ -72,7 +72,7 @@ public class NubesServer extends AbstractVerticle {
 >>>>>>> Added NubesServer  - Tested in a use case which will be committed later
 =======
 		templates = config.getJsonArray("templates",new JsonArray());
-		createNubesConfig(config);
+
 		try {
 			nubes = new VertxNubes(vertx, config);
 >>>>>>> Modified NubesServer config creation
@@ -163,6 +163,7 @@ public class NubesServer extends AbstractVerticle {
 		}
 	}
 
+<<<<<<< HEAD
 	//get the packages paths from conf
 	// defaults are: src.package.verticles, src.package.controllers...
 <<<<<<< HEAD
@@ -230,4 +231,6 @@ public class NubesServer extends AbstractVerticle {
 		}
 >>>>>>> Modified NubesServer config creation
 	}
+=======
+>>>>>>> Added src-package to intern Nubes Config
 }
