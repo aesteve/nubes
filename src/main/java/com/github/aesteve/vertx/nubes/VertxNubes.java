@@ -301,6 +301,10 @@ public class VertxNubes {
 		config.serviceRegistry.registerService(name, service);
 	}
 
+	public void registerServiceProxy(Object service) {
+		config.serviceRegistry.registerService("$nubes-proxy$__" + service.getClass().getName(), service);
+	}
+
 	public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
 		config.paramHandlers.put(parameterClass, handler);
 	}

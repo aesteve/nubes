@@ -54,7 +54,7 @@ public class TestVerticle extends AbstractVerticle {
 		mvc = new VertxNubes(vertx, config);
 		mvc.registerService(DOG_SERVICE_NAME, dogService);
 		mvc.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
-		mvc.registerService("service.parrot", new ParrotServiceImpl());
+		mvc.registerServiceProxy(new ParrotServiceImpl());
 		List<Locale> locales = new ArrayList<>();
 		locales.add(Locale.FRENCH);
 		locales.add(Locale.US);
