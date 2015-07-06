@@ -14,10 +14,15 @@ import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
 import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Date;
 
 =======
 >>>>>>> Added NubesServer  - Tested in a use case which will be committed later
+=======
+import java.util.Date;
+
+>>>>>>> NubesServer test class implemented
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
 
 public class NubesServer extends AbstractVerticle {
@@ -27,6 +32,7 @@ public class NubesServer extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
 	private HttpServer server;
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public static HttpServerOptions options;
 	private VertxNubes nubes;
@@ -38,6 +44,12 @@ public class NubesServer extends AbstractVerticle {
 	private JsonArray services = new JsonArray();
 	private JsonArray templates = new JsonArray();
 >>>>>>> Added NubesServer  - Tested in a use case which will be committed later
+=======
+	public static HttpServerOptions options;
+	private VertxNubes nubes;
+	public static JsonArray services = new JsonArray();
+	public static JsonArray templates = new JsonArray();
+>>>>>>> NubesServer test class implemented
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -75,6 +87,9 @@ public class NubesServer extends AbstractVerticle {
 			}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> NubesServer test class implemented
 			nubes.registerInterceptor("setDateBefore", contxt -> {
 				contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
 				contxt.next();
@@ -83,8 +98,11 @@ public class NubesServer extends AbstractVerticle {
 				contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
 				contxt.next();
 			});
+<<<<<<< HEAD
 =======
 >>>>>>> Added NubesServer  - Tested in a use case which will be committed later
+=======
+>>>>>>> NubesServer test class implemented
 			//Register templateEngines for extensions added in conf.json
 			if(templates.contains("hbs")) {
 				nubes.registerTemplateEngine("hbs", new HandlebarsTemplateEngineImpl());
@@ -129,11 +147,17 @@ public class NubesServer extends AbstractVerticle {
 		if (server != null) {
 			server.close(completeOrFail(future));
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if(!services.isEmpty()){
 				services.clear();
 			}
 =======
 >>>>>>> Added NubesServer  - Tested in a use case which will be committed later
+=======
+			if(!services.isEmpty()){
+				services.clear();
+			}
+>>>>>>> NubesServer test class implemented
 		} else {
 			future.complete();
 		}
