@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import mock.auth.MockAuthProvider;
 import mock.domains.Dog;
 import mock.services.DogService;
+import mock.services.impl.ParrotServiceImpl;
 
 import com.github.aesteve.vertx.nubes.VertxNubes;
 
@@ -53,6 +54,7 @@ public class TestVerticle extends AbstractVerticle {
 		mvc = new VertxNubes(vertx, config);
 		mvc.registerService(DOG_SERVICE_NAME, dogService);
 		mvc.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
+		mvc.registerService("service.parrot", new ParrotServiceImpl());
 		List<Locale> locales = new ArrayList<>();
 		locales.add(Locale.FRENCH);
 		locales.add(Locale.US);

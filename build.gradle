@@ -26,10 +26,44 @@ dependencies {
 	compile 'io.fastjson:boon:0.32'
 	
 	// tests
+	testCompile 'io.vertx:vertx-service-proxy:3.0.0'
+	testCompile 'io.vertx:vertx-codegen:3.0.0'
     testCompile 'com.github.jknack:handlebars:1.3.0'
 	testCompile 'io.vertx:vertx-unit:3.0.0'
 	testCompile 'junit:junit:4.12'
 }
+
+
+/* Service Proxy related */
+def generatedSrcPath="$buildDir/generated-src"
+def generatedSrcDir = file(generatedSrcPath)
+
+sourceSets {
+	test {
+		java.srcDirs += generatedSrcDir
+		output.dir(builtBy: 'generateServiceProxy', generatedSrcPath)
+	}
+}
+
+task generateServiceProxy(type: JavaCompile, description: 'Generates EBServiceProxies') {
+	source = [sourceSets.test.java, sourceSets.main.java]
+	classpath = configurations.testCompile
+	destinationDir = generatedSrcDir
+	options.compilerArgs = [
+		"-proc:only",
+		"-processor", "io.vertx.codegen.CodeGenProcessor",
+		"-AoutputDirectory=$generatedSrcPath"
+	]
+}
+
+compileTestJava.dependsOn generateServiceProxy
+
+clean {
+	delete += generatedSrcDir
+}
+
+
+
 
 test.outputs.upToDateWhen { false }
 

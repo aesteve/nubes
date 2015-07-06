@@ -13,7 +13,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 @Controller("/inject")
 @ContentType("application/json")
-public class TestInjectSock {
+public class TestInjectedController {
 
 	@Service(TestVerticle.DOG_SERVICE_NAME)
 	private DogService dogService; // a service must be injected

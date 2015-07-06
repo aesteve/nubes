@@ -10,7 +10,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
 @SockJS("/injectedSocket/*")
-public class TestInjectController {
+public class TestInjectedSock {
 
 	@Service(TestVerticle.SNOOPY_SERVICE_NAME)
 	private Dog snoop;

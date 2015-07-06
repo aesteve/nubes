@@ -25,14 +25,14 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 
 	@Override
 	public Object resolve(RoutingContext context, RequestBody annotation, Class<?> resultClass) {
+		String body = context.getBodyAsString();
+		if (resultClass.equals(String.class)) {
+			return body;
+		}
 		String contentType = ContentTypeProcessor.getContentType(context);
 		if (contentType == null) {
 			log.error("No suitable Content-Type found, request body can't be read");
 			return null;
-		}
-		String body = context.getBodyAsString();
-		if (resultClass.equals(String.class)) {
-			return body;
 		}
 		if (contentType.equals("application/json") && resultClass.equals(JsonObject.class)) {
 			return new JsonObject(body);
