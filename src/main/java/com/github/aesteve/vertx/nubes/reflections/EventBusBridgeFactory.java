@@ -75,7 +75,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 		router.route(path).handler(sockJSHandler);
 	}
 
-	private BridgeOptions createBridgeOptions(Class<?> controller) {
+	private static BridgeOptions createBridgeOptions(Class<?> controller) {
 		BridgeOptions options = new BridgeOptions();
 		InboundPermitted[] inbounds = controller.getAnnotationsByType(InboundPermitted.class);
 		if (inbounds.length > 0) {
