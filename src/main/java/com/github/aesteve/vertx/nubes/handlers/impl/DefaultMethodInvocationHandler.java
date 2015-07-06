@@ -34,7 +34,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 		}
 		try {
 			T returned = (T) method.invoke(instance, parameters);
-			if (returned != null) {
+			if (returnsSomething) {
 				boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;
 				if (returnHandler != null) {
 					returnHandler.accept(routingContext, returned);

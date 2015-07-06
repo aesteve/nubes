@@ -24,9 +24,11 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 	protected boolean usesRoutingContext;
 	protected boolean hasNext;
 	protected BiConsumer<RoutingContext, T> returnHandler;
+	protected boolean returnsSomething;
 
 	public AbstractMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
 		this.method = method;
+		returnsSomething = !method.getReturnType().equals(Void.TYPE);
 		this.hasNext = hasNext;
 		parameterClasses = method.getParameterTypes();
 		for (Class<?> parameterClass : parameterClasses) {

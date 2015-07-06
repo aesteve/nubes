@@ -160,4 +160,13 @@ public class JsonSyncApiTest extends VertxNubesTestBase {
 			});
 		});
 	}
+
+	@Test
+	public void returnNothing(TestContext context) {
+		Async async = context.async();
+		getJSON("/json/sync/nothing", response -> {
+			context.assertEquals(204, response.statusCode());
+			async.complete();
+		});
+	}
 }

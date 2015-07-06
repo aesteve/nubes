@@ -13,6 +13,7 @@ import mock.domains.Dog;
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.DELETE;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 
@@ -74,5 +75,10 @@ public class JsonSyncApiTestController {
 	@POST("postdog")
 	public Dog postDog(@RequestBody Dog dog) {
 		return dog;
+	}
+
+	@GET("nothing")
+	public Dog returnNothing() {
+		return null;
 	}
 }
