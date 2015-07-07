@@ -106,7 +106,7 @@ public class Config {
 
 
 		//register services included in config
-		services = json.getJsonObject("services");
+		services = json.getJsonObject("services", new JsonObject());
 		instance.serviceRegistry = new ServiceRegistry(vertx);
 
 		for (Map.Entry<String, Object> service : services) {
