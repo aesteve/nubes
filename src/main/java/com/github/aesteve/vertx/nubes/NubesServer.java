@@ -1,16 +1,20 @@
 package com.github.aesteve.vertx.nubes;
 
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.ignoreResult;
+import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.onSuccessOnly;
+
 import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
-import io.vertx.core.*;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-
-import java.util.Date;
-
-import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.*;
 
 public class NubesServer extends AbstractVerticle {
 
@@ -35,16 +39,6 @@ public class NubesServer extends AbstractVerticle {
 		} catch (MissingConfigurationException e) {
 			e.printStackTrace();
 		}
-
-		nubes.registerInterceptor("setDateBefore", contxt -> {
-			contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
-			contxt.next();
-		});
-		nubes.registerInterceptor("setDateAfter", contxt -> {
-			contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
-			contxt.next();
-		});
-
 	}
 
 	@Override
