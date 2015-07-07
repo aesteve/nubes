@@ -2,20 +2,6 @@ package com.github.aesteve.vertx.nubes;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeFinally;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -48,7 +34,6 @@ import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.ClientAccesses;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
-import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
 import com.github.aesteve.vertx.nubes.fixtures.FixtureLoader;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
@@ -82,9 +67,23 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.LocaleParamInjector;
-import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
 public class VertxNubes {
 
@@ -103,7 +102,7 @@ public class VertxNubes {
 	 * 
 	 * @param vertx
 	 */
-	public VertxNubes(Vertx vertx, JsonObject json) throws MissingConfigurationException {
+	public VertxNubes(Vertx vertx, JsonObject json) {
 		this.vertx = vertx;
 		config = Config.fromJsonObject(json, vertx);
 		deploymentIds = new ArrayList<>();
