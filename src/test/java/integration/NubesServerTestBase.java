@@ -1,25 +1,26 @@
 package integration;
 
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+
 import com.github.aesteve.vertx.nubes.NubesServer;
+
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import mock.verticles.AnnotatedVerticle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-
-import java.util.concurrent.TimeUnit;
-
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
-import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 @RunWith(VertxUnitRunner.class)
 public abstract class NubesServerTestBase {
@@ -86,8 +87,8 @@ public abstract class NubesServerTestBase {
 		config.put("host","localhost");
 		config.put("port",8000);
 		config.put("src-package", "mock");
-		JsonArray services = new JsonArray();
-		services.add(new JsonArray().add("dogService").add("mock.services.DogService"));
+		JsonObject services = new JsonObject();
+		services.put("dogService", "mock.services.DogService");
 		config.put("services",services);
 		JsonObject throttling = new JsonObject();
 		throttling.put("time-frame", 10);
