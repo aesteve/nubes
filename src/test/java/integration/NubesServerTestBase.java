@@ -37,7 +37,6 @@ public abstract class NubesServerTestBase {
 		config = createConfig();
 		options.setConfig(config);
 		vertx.deployVerticle("com.github.aesteve.vertx.nubes.NubesServer", options, context.asyncAssertSuccess(handler -> {
-			context.assertTrue(NubesServer.services.size() > 0);
 			context.assertEquals(NB_INSTANCES, AnnotatedVerticle.nbInstances.get());
 			context.assertTrue(AnnotatedVerticle.isStarted.get());
 		}));
@@ -47,7 +46,6 @@ public abstract class NubesServerTestBase {
 	public void tearDown(TestContext context) throws Exception {
 		if (vertx != null) {
 			vertx.close(context.asyncAssertSuccess(handler -> {
-				context.assertTrue(NubesServer.services.isEmpty());
 				context.assertFalse(AnnotatedVerticle.isStarted.get());
 				AnnotatedVerticle.nbInstances.set(0);
 			}));

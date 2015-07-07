@@ -4,14 +4,9 @@ import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.web.templ.impl.HandlebarsTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.JadeTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
 import java.util.Date;
 
@@ -24,10 +19,9 @@ public class NubesServer extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
 	private HttpServer server;
-
 	public static HttpServerOptions options;
 	private VertxNubes nubes;
-	8
+
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -75,32 +69,5 @@ public class NubesServer extends AbstractVerticle {
 			future.complete();
 		}
 	}
-	
-	//get the packages paths from conf
-	// defaults are: src.package.verticles, src.package.controllers...
-
-	private void createNubesConfig(JsonObject conf) {
-
-		String srcPackage = conf.getString("src-package","src.package");
-
-		if (conf.getString("verticle-package")==null) {
-			conf.put("verticle-package", srcPackage + ".verticles");
-		}
-
-		if (conf.getString("domain-package")==null) {
-			//conf.put("domain-package", srcPackage + ".domains"); still jaxb.index issue
-		}
-
-		if (conf.getJsonArray("controller-packages")==null) {
-			JsonArray controllers = new JsonArray();
-			controllers.add(srcPackage + ".controllers");
-			conf.put("controller-packages", controllers);
-		}
-
-		if (conf.getJsonArray("fixture-packages")==null){
-			JsonArray fixtures = new JsonArray();
-			fixtures.add(srcPackage + ".fixtures");
-			conf.put("fixture-packages", fixtures);
-		}
 
 }

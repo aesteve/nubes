@@ -99,7 +99,7 @@ public class Config {
 
 		instance.verticlePackage = json.getString("verticle-package",instance.srcPackage + ".verticles");
 
-//		instance.domainPackage = json.getString("domain-package",instance.srcPackage + ".domains");
+		instance.domainPackage = json.getString("domain-package",instance.srcPackage + ".domains");
 
 		JsonArray fixtures = json.getJsonArray("fixture-packages",new JsonArray().add(instance.srcPackage + ".fixtures"));
 		instance.fixturePackages = fixtures.getList();
