@@ -83,8 +83,6 @@ public class Config {
 	@SuppressWarnings("unchecked")
 	public static Config fromJsonObject(JsonObject json, Vertx vertx) {
 		Config instance = new Config();
-		JsonObject services;
-		JsonArray templates;
 
 		instance.json = json;
 		instance.vertx = vertx;
@@ -100,41 +98,35 @@ public class Config {
 
 		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
 
-		JsonArray fixtures = json.getJsonArray("fixture-packages",new JsonArray().add(instance.srcPackage + ".fixtures"));
+		JsonArray fixtures = json.getJsonArray("fixture-packages", new JsonArray().add(instance.srcPackage + ".fixtures"));
 		instance.fixturePackages = fixtures.getList();
 
-
-		//register services included in config
-		services = json.getJsonObject("services", new JsonObject());
+		// Register services included in config
+		JsonObject services = json.getJsonObject("services", new JsonObject());
 		instance.serviceRegistry = new ServiceRegistry(vertx);
-
-		for (Map.Entry<String, Object> service : services) {
-			String name = service.getKey();
-			String className = (String)service.getValue();
+		services.forEach(entry -> {
+			String name = entry.getKey();
+			String className = (String)entry.getValue();
 			try {
-
 				Class<?> clazz = Class.forName(className);
 				instance.serviceRegistry.registerService(name, clazz.newInstance());
-
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
-		}
+		});
 
-
-		templates = json.getJsonArray("templates", new JsonArray());
-
-		//Register templateEngines for extensions added in config
-		if(templates.contains("hbs")) {
+		// Register templateEngines for extensions added in config
+		JsonArray templates = json.getJsonArray("templates", new JsonArray());
+		if (templates.contains("hbs")) {
 			instance.templateEngines.put("hbs", HandlebarsTemplateEngine.create());
 		}
-		if(templates.contains("jade")) {
+		if (templates.contains("jade")) {
 			instance.templateEngines.put("jade", JadeTemplateEngine.create());
 		}
-		if(templates.contains("templ")){
+		if (templates.contains("templ")){
 			instance.templateEngines.put("templ", MVELTemplateEngine.create());
 		}
-		if(templates.contains("thymeleaf")){
+		if (templates.contains("thymeleaf")){
 			instance.templateEngines.put("html", ThymeleafTemplateEngine.create());
 		}
 
