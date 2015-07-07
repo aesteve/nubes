@@ -1,21 +1,19 @@
 package mock.controllers.api.json;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.DELETE;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import mock.domains.Dog;
 
 @Controller("/json/sync/")
 @ContentType("application/json")
