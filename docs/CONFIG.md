@@ -122,16 +122,23 @@ Here is an example of a valid conf.json file :
 	"host":"localhost",
 	"port":8080,
   	"src-package":"mycompany.myproject",
-  	"domain-package":"mycompany.myproject.domains",
-  	"fixture-packages":["mycompany.myproject.fixtures"],
-  	"controller-packages":["mycompany.myproject.controller"],
+  	"domain-package":"i.put.my.domains.where.i.want.to",
+  	"fixture-packages":["fixtures.are.not.in.convention.package"],
+  	"controller-packages":["definitely.not.using.your.conventions"],
   	"services":{"taskService":"mycompany.myproject.services.TaskService"},
   	"templates":["hbs"]
 
 }
 ```
 
-You can see that the *verticle-package* key is missing, the value in the configuration will then be "mycompany.myproject.verticles".
+As you can see, some values are overriden and aren't using Nubes conventions: 
+* domains
+* fixtures
+* controllers
+
+
+It's not the case of the *verticle-package* key, which is missing from the configuration. 
+Thus the value in the configuration will then be "mycompany.myproject.verticles". If the package exists and contains verticles (annotated with `@Verticle`, Nubes will deploy them. If it's empty or does'nt exist, well... Nubes won't...
 
 
 ## NubesServer configuration
