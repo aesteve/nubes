@@ -47,9 +47,13 @@ public class NubesServer extends AbstractVerticle {
 =======
 	public static HttpServerOptions options;
 	private VertxNubes nubes;
+<<<<<<< HEAD
 	public static JsonArray services = new JsonArray();
 	public static JsonArray templates = new JsonArray();
 >>>>>>> NubesServer test class implemented
+=======
+
+>>>>>>> Simplified NubesServer + added some options to Config.java
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -57,6 +61,7 @@ public class NubesServer extends AbstractVerticle {
 		options = new HttpServerOptions();
 		options.setHost(config.getString("host", "localhost"));
 		options.setPort(config.getInteger("port", 9000));
+<<<<<<< HEAD
 		services = config.getJsonArray("services");
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -124,8 +129,24 @@ public class NubesServer extends AbstractVerticle {
 		} catch (MissingConfigurationException me) {
 			throw new VertxException(me);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+=======
+
+		try {
+			nubes = new VertxNubes(vertx, config);
+		} catch (MissingConfigurationException e) {
+>>>>>>> Simplified NubesServer + added some options to Config.java
 			e.printStackTrace();
 		}
+
+		nubes.registerInterceptor("setDateBefore", contxt -> {
+			contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
+			contxt.next();
+		});
+		nubes.registerInterceptor("setDateAfter", contxt -> {
+			contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
+			contxt.next();
+		});
+
 	}
 
 	@Override
@@ -148,6 +169,7 @@ public class NubesServer extends AbstractVerticle {
 			server.close(completeOrFail(future));
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if(!services.isEmpty()){
 				services.clear();
 			}
@@ -158,6 +180,8 @@ public class NubesServer extends AbstractVerticle {
 				services.clear();
 			}
 >>>>>>> NubesServer test class implemented
+=======
+>>>>>>> Simplified NubesServer + added some options to Config.java
 		} else {
 			future.complete();
 		}
