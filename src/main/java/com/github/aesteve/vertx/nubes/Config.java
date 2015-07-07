@@ -123,7 +123,7 @@ public class Config {
 		}
 
 
-		templates = json.getJsonArray("templates");
+		templates = json.getJsonArray("templates", new JsonArray());
 
 		//Register templateEngines for extensions added in config
 		if(templates.contains("hbs")) {
@@ -146,6 +146,7 @@ public class Config {
 			TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
 			instance.rateLimit = new RateLimit(count, value, timeUnit);
 		}
+
 		instance.webroot = json.getString("webroot", "web/assets");
 		instance.assetsPath = json.getString("static-path", "/assets");
 		instance.tplDir = json.getString("views-dir", "web/views");
