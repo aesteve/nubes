@@ -4,8 +4,6 @@ import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFa
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.ignoreResult;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.onSuccessOnly;
 
-import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
@@ -33,12 +31,7 @@ public class NubesServer extends AbstractVerticle {
 		options = new HttpServerOptions();
 		options.setHost(config.getString("host", "localhost"));
 		options.setPort(config.getInteger("port", 9000));
-
-		try {
-			nubes = new VertxNubes(vertx, config);
-		} catch (MissingConfigurationException e) {
-			e.printStackTrace();
-		}
+		nubes = new VertxNubes(vertx, config);
 	}
 
 	@Override
