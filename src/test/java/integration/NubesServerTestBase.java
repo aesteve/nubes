@@ -36,7 +36,7 @@ public abstract class NubesServerTestBase {
 		options.setInstances(NB_INSTANCES);
 		config = createConfig();
 		options.setConfig(config);
-		vertx.deployVerticle("com.github.aesteve.vertx.nubes.NubesServer", options, context.asyncAssertSuccess(handler -> {
+		vertx.deployVerticle(NubesServer.class.getName(), options, context.asyncAssertSuccess(handler -> {
 			context.assertEquals(NB_INSTANCES, AnnotatedVerticle.nbInstances.get());
 			context.assertTrue(AnnotatedVerticle.isStarted.get());
 		}));
