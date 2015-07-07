@@ -1,18 +1,5 @@
 package com.github.aesteve.vertx.nubes;
 
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
-import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
-import io.vertx.ext.web.templ.JadeTemplateEngine;
-import io.vertx.ext.web.templ.MVELTemplateEngine;
-import io.vertx.ext.web.templ.TemplateEngine;
-import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
-import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
@@ -33,6 +19,19 @@ import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
+
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+import io.vertx.ext.web.templ.JadeTemplateEngine;
+import io.vertx.ext.web.templ.MVELTemplateEngine;
+import io.vertx.ext.web.templ.TemplateEngine;
+import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 
 public class Config {
 
@@ -88,18 +87,18 @@ public class Config {
 		JsonArray templates;
 
 		instance.json = json;
-		instance.srcPackage = json.getString("src-package","src.package");
 		instance.vertx = vertx;
+		instance.srcPackage = json.getString("src-package");
 		instance.i18nDir = json.getString("i18nDir", "web/i18n/");
 		if (!instance.i18nDir.endsWith("/")) {
 			instance.i18nDir = instance.i18nDir + "/";
 		}
-		JsonArray controllers = json.getJsonArray("controller-packages",new JsonArray().add(instance.srcPackage + ".controllers"));
+		JsonArray controllers = json.getJsonArray("controller-packages", new JsonArray().add(instance.srcPackage + ".controllers"));
 		instance.controllerPackages = controllers.getList();
 
-		instance.verticlePackage = json.getString("verticle-package",instance.srcPackage + ".verticles");
+		instance.verticlePackage = json.getString("verticle-package", instance.srcPackage + ".verticles");
 
-		instance.domainPackage = json.getString("domain-package",instance.srcPackage + ".domains");
+		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
 
 		JsonArray fixtures = json.getJsonArray("fixture-packages",new JsonArray().add(instance.srcPackage + ".fixtures"));
 		instance.fixturePackages = fixtures.getList();
