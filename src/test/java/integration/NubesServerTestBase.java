@@ -85,14 +85,7 @@ public abstract class NubesServerTestBase {
 		JsonObject config = new JsonObject();
 		config.put("host","localhost");
 		config.put("port",8000);
-		JsonArray controllerPackages = new JsonArray();
-		controllerPackages.add("mock.controllers");
-		config.put("controller-packages", controllerPackages);
-//		config.put("domain-package", "mock.domains");
-		config.put("verticle-package", "mock.verticles");
-		JsonArray fixturePackages = new JsonArray();
-		fixturePackages.add("mock.fixtures");
-		config.put("fixture-packages", fixturePackages);
+		config.put("src-package", "mock");
 		JsonArray services = new JsonArray();
 		services.add(new JsonArray().add("dogService").add("mock.services.DogService"));
 		config.put("services",services);
