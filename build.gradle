@@ -19,7 +19,7 @@ dependencies {
     compile 'io.vertx:vertx-auth-common:3.0.0'
 	compile 'io.vertx:vertx-service-proxy:3.0.0'
 	compile 'io.vertx:vertx-codegen:3.0.0'
-	
+
 	// reflection
 	compile 'org.reflections:reflections:0.9.9'
 	compile 'commons-beanutils:commons-beanutils:1.9.2'

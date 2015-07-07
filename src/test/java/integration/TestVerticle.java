@@ -90,7 +90,7 @@ public class TestVerticle extends AbstractVerticle {
 		JsonArray controllerPackages = new JsonArray();
 		controllerPackages.add("mock.controllers");
 		config.put("controller-packages", controllerPackages);
-		config.put("domain-package", "mock.domains");
+//		config.put("domain-package", "mock.domains");
 		config.put("verticle-package", "mock.verticles");
 		JsonArray fixturePackages = new JsonArray();
 		fixturePackages.add("mock.fixtures");
