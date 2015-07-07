@@ -29,6 +29,10 @@ import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
+import io.vertx.ext.web.templ.impl.HandlebarsTemplateEngineImpl;
+import io.vertx.ext.web.templ.impl.JadeTemplateEngineImpl;
+import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
+import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
 public class Config {
 
@@ -78,8 +82,11 @@ public class Config {
 	 * @return config
 	 */
 	@SuppressWarnings("unchecked")
-	public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
+	public static Config fromJsonObject(JsonObject json, Vertx vertx) {
 		Config instance = new Config();
+		JsonObject services;
+		JsonArray templates;
+
 		instance.json = json;
 		instance.srcPackage = json.getString("src-package","src.package");
 		instance.vertx = vertx;
@@ -96,6 +103,41 @@ public class Config {
 
 		JsonArray fixtures = json.getJsonArray("fixture-packages",new JsonArray().add(instance.srcPackage + ".fixtures"));
 		instance.fixturePackages = fixtures.getList();
+
+
+		//register services included in config
+		services = json.getJsonObject("services");
+		instance.serviceRegistry = new ServiceRegistry(vertx);
+
+		for (Map.Entry<String, Object> service : services) {
+			String name = service.getKey();
+			String className = (String)service.getValue();
+			try {
+
+				Class<?> clazz = Class.forName(className);
+				instance.serviceRegistry.registerService(name, clazz.newInstance());
+
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+
+
+		templates = json.getJsonArray("templates");
+
+		//Register templateEngines for extensions added in config
+		if(templates.contains("hbs")) {
+			instance.templateEngines.put("hbs", new HandlebarsTemplateEngineImpl());
+		}
+		if(templates.contains("jade")) {
+			instance.templateEngines.put("jade", new JadeTemplateEngineImpl());
+		}
+		if(templates.contains("templ")){
+			instance.templateEngines.put("templ", new MVELTemplateEngineImpl());
+		}
+		if(templates.contains("thymeleaf")){
+			instance.templateEngines.put("html", new ThymeleafTemplateEngineImpl());
+		}
 
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
 		if (rateLimitJson != null) {

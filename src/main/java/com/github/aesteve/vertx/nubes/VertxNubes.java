@@ -115,7 +115,6 @@ public class VertxNubes {
 		marshallers = new HashMap<>();
 		config.typeInjectors = new TypedParamInjectorRegistry(config);
 		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
-		config.serviceRegistry = new ServiceRegistry(vertx);
 		config.aopHandlerRegistry = new HashMap<>();
 		config.marshallers = marshallers;
 		CookieHandler cookieHandler = CookieHandler.create();
@@ -166,7 +165,6 @@ public class VertxNubes {
 		servicesFuture.setHandler(result -> {
 			if (result.succeeded()) {
 				fixtureLoader.setUp(fixturesFuture);
-				;
 			} else {
 				handler.handle(Future.failedFuture(result.cause()));
 			}

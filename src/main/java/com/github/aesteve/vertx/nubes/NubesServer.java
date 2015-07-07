@@ -26,8 +26,7 @@ public class NubesServer extends AbstractVerticle {
 	private HttpServer server;
 	public static HttpServerOptions options;
 	private VertxNubes nubes;
-	public static JsonArray services = new JsonArray();
-	public static JsonArray templates = new JsonArray();
+
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
@@ -35,52 +34,22 @@ public class NubesServer extends AbstractVerticle {
 		options = new HttpServerOptions();
 		options.setHost(config.getString("host", "localhost"));
 		options.setPort(config.getInteger("port", 9000));
-		services = config.getJsonArray("services");
-		templates = config.getJsonArray("templates",new JsonArray());
 
 		try {
 			nubes = new VertxNubes(vertx, config);
-
-			//Register services added in conf.json
-			for (int i = 0;i<services.size();i++){
-				JsonArray tmpService = services.getJsonArray(i);
-				String name = tmpService.getString(0);
-				String className = tmpService.getString(1);
-				Class<?> clazz = Class.forName(className);
-				nubes.registerService(name, clazz.newInstance());
-			}
-
-			nubes.registerInterceptor("setDateBefore", contxt -> {
-				contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
-				contxt.next();
-			});
-			nubes.registerInterceptor("setDateAfter", contxt -> {
-				contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
-				contxt.next();
-			});
-			//Register templateEngines for extensions added in conf.json
-			if(templates.contains("hbs")) {
-				nubes.registerTemplateEngine("hbs", new HandlebarsTemplateEngineImpl());
-				log.info("HandlebarsTemplateEngine registered");
-			}
-			if(templates.contains("jade")) {
-				nubes.registerTemplateEngine("jade", new JadeTemplateEngineImpl());
-				log.info("JadeTemplateEngine registered");
-			}
-			if(templates.contains("templ")){
-				nubes.registerTemplateEngine("templ", new MVELTemplateEngineImpl());
-				log.info("MVELTemplateEngine registered");
-			}
-			if(templates.contains("thymeleaf")){
-				nubes.registerTemplateEngine("html", new ThymeleafTemplateEngineImpl());
-				log.info("ThymeleafTemplateEngine registered");
-			}
-
-		} catch (MissingConfigurationException me) {
-			throw new VertxException(me);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (MissingConfigurationException e) {
 			e.printStackTrace();
 		}
+
+		nubes.registerInterceptor("setDateBefore", contxt -> {
+			contxt.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
+			contxt.next();
+		});
+		nubes.registerInterceptor("setDateAfter", contxt -> {
+			contxt.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
+			contxt.next();
+		});
+
 	}
 
 	@Override
@@ -101,9 +70,6 @@ public class NubesServer extends AbstractVerticle {
 	private void closeServer(Future<Void> future) {
 		if (server != null) {
 			server.close(completeOrFail(future));
-			if(!services.isEmpty()){
-				services.clear();
-			}
 		} else {
 			future.complete();
 		}
