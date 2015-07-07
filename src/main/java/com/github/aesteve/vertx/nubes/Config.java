@@ -76,7 +76,8 @@ public class Config {
 
 	/**
 	 * TODO : check config instead of throwing exceptions
-	 * 
+	 * TODO : we should be consistent on single/multiple values
+	 *  (controllers is an array, fixtures is a list, domain is a single value, verticle is a single value) : this is wrong
 	 * @param json
 	 * @return config
 	 */
@@ -91,14 +92,25 @@ public class Config {
 		if (!instance.i18nDir.endsWith("/")) {
 			instance.i18nDir = instance.i18nDir + "/";
 		}
-		JsonArray controllers = json.getJsonArray("controller-packages", new JsonArray().add(instance.srcPackage + ".controllers"));
+		JsonArray controllers = json.getJsonArray("controller-packages");
+		if (instance.srcPackage != null && controllers == null) {
+			controllers = new JsonArray().add(instance.srcPackage + ".controllers");
+		}
 		instance.controllerPackages = controllers.getList();
 
-		instance.verticlePackage = json.getString("verticle-package", instance.srcPackage + ".verticles");
+		instance.verticlePackage = json.getString("verticle-package");
+		if (instance.verticlePackage == null && instance.srcPackage != null) {
+			instance.verticlePackage = instance.srcPackage + ".verticles";
+		}
 
 		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
-
-		JsonArray fixtures = json.getJsonArray("fixture-packages", new JsonArray().add(instance.srcPackage + ".fixtures"));
+		JsonArray fixtures = json.getJsonArray("fixture-packages");
+		if (fixtures == null) { 
+			fixtures = new JsonArray();
+			if (instance.srcPackage != null) {
+				fixtures.add(instance.srcPackage + ".fixtures");
+			} 
+		} 
 		instance.fixturePackages = fixtures.getList();
 
 		// Register services included in config

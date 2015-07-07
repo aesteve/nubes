@@ -2,30 +2,16 @@
 
 Here is the list of all supported configurations (for now):
 
-### `host`
-
-* **Type:**   *String*
-
-* **Description:**   This is the hostname of your server.
-
-* **Default:**   Default value (only for NubesServer instance) is "localhost".
-
-### `port`
-
-* **Type:**   *int*
-
-* **Description:**   This is the port of your server.
-
-* **Default:**   Default value (only for NubesServer instance) is 9000.
+## Nubes configuration
 
 ### `src-package`
 
 
 * **Type:**   *String*
 
-* **Description:**   This is the base package of your project, it should look like "user.company.projectname". This is probably the only key which should always be set, for it is used to set default values for the other configuration keys.
+* **Description:**   This is the base package of your project, it should look like "user.company.projectname". It's a convention-over-configuraton shorthand for other keys below. If you follow our own conventions, you'll only need this key set-up. If not, the keys below will override the default ones.
 
-* **Default:**   You shouldn't need that, but default value is "src.package".
+* **Default:** No default value (then you'll need to define controllers, fixtures, domains, verticle, services packages independently)
 
 
 ### `controller-packages`
@@ -35,7 +21,7 @@ Here is the list of all supported configurations (for now):
 
 * **Description:**   This is a JsonArray, which should contain all the packages where your controllers are located. 
 
-* **Default:**	 If the key is missing, the value will be a concatenation of the *src-package* value with ".controllers". You see why *src-package* definition is important now? :)
+* **Default:**	 If the key is missing, the value will be a concatenation of the *src-package* value with ".controllers". If it doesn't exist, well, you'll have no controllers set-up. Which can be fine if you're not using them.
 
 
 ### `fixture-packages`
@@ -146,3 +132,26 @@ Here is an example of a valid conf.json file :
 ```
 
 You can see that the *verticle-package* key is missing, the value in the configuration will then be "mycompany.myproject.verticles".
+
+
+## NubesServer configuration
+
+Sometimes you'll just don't need to instantiate Nubes programmatically and just deploy a web-server with everything already set-up.
+
+In this case, you'll use `NubesServer` our own implementation of a web-server Verticle, and you can specify two more options in your configuration :
+
+### `host`
+
+* **Type:**   *String*
+
+* **Description:**   This is the hostname of your server.
+
+* **Default:**   Default value (only for NubesServer instance) is "localhost".
+
+### `port`
+
+* **Type:**   *int*
+
+* **Description:**   This is the port of your server.
+
+* **Default:**   Default value (only for NubesServer instance) is 9000.
