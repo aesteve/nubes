@@ -7,7 +7,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+import io.vertx.ext.web.templ.JadeTemplateEngine;
+import io.vertx.ext.web.templ.MVELTemplateEngine;
 import io.vertx.ext.web.templ.TemplateEngine;
+import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -29,10 +33,6 @@ import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
-import io.vertx.ext.web.templ.impl.HandlebarsTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.JadeTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.MVELTemplateEngineImpl;
-import io.vertx.ext.web.templ.impl.ThymeleafTemplateEngineImpl;
 
 public class Config {
 
@@ -127,16 +127,16 @@ public class Config {
 
 		//Register templateEngines for extensions added in config
 		if(templates.contains("hbs")) {
-			instance.templateEngines.put("hbs", new HandlebarsTemplateEngineImpl());
+			instance.templateEngines.put("hbs", HandlebarsTemplateEngine.create());
 		}
 		if(templates.contains("jade")) {
-			instance.templateEngines.put("jade", new JadeTemplateEngineImpl());
+			instance.templateEngines.put("jade", JadeTemplateEngine.create());
 		}
 		if(templates.contains("templ")){
-			instance.templateEngines.put("templ", new MVELTemplateEngineImpl());
+			instance.templateEngines.put("templ", MVELTemplateEngine.create());
 		}
 		if(templates.contains("thymeleaf")){
-			instance.templateEngines.put("html", new ThymeleafTemplateEngineImpl());
+			instance.templateEngines.put("html", ThymeleafTemplateEngine.create());
 		}
 
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
