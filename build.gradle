@@ -17,6 +17,11 @@ dependencies {
 	compile 'io.vertx:vertx-core:3.0.0'
 	compile 'io.vertx:vertx-web:3.0.0'
     compile 'io.vertx:vertx-auth-common:3.0.0'
+    compile 'io.vertx:vertx-auth-shiro:3.0.0'
+	compile 'io.vertx:vertx-auth-jwt:3.0.0'
+    compile 'io.vertx:vertx-auth-jdbc:3.0.0'
+    compile 'io.vertx:vertx-jdbc-client:3.0.0'
+
 	compile 'io.vertx:vertx-service-proxy:3.0.0'
 	compile 'io.vertx:vertx-codegen:3.0.0'
 
