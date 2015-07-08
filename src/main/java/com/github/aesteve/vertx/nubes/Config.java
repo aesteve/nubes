@@ -1,14 +1,5 @@
 package com.github.aesteve.vertx.nubes;
 
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
-import io.vertx.ext.web.templ.TemplateEngine;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
-import com.github.aesteve.vertx.nubes.exceptions.MissingConfigurationException;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
@@ -29,6 +19,19 @@ import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
+
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+import io.vertx.ext.web.templ.JadeTemplateEngine;
+import io.vertx.ext.web.templ.MVELTemplateEngine;
+import io.vertx.ext.web.templ.TemplateEngine;
+import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 
 public class Config {
 
@@ -41,6 +44,7 @@ public class Config {
 	}
 
 	public JsonObject json;
+	public String srcPackage;
 	public List<String> controllerPackages;
 	public List<String> fixturePackages;
 	public String verticlePackage;
@@ -72,32 +76,72 @@ public class Config {
 
 	/**
 	 * TODO : check config instead of throwing exceptions
-	 * 
+	 * TODO : we should be consistent on single/multiple values
+	 *  (controllers is an array, fixtures is a list, domain is a single value, verticle is a single value) : this is wrong
 	 * @param json
 	 * @return config
 	 */
 	@SuppressWarnings("unchecked")
-	public static Config fromJsonObject(JsonObject json, Vertx vertx) throws MissingConfigurationException {
+	public static Config fromJsonObject(JsonObject json, Vertx vertx) {
 		Config instance = new Config();
+
 		instance.json = json;
 		instance.vertx = vertx;
+		instance.srcPackage = json.getString("src-package");
 		instance.i18nDir = json.getString("i18nDir", "web/i18n/");
 		if (!instance.i18nDir.endsWith("/")) {
 			instance.i18nDir = instance.i18nDir + "/";
 		}
 		JsonArray controllers = json.getJsonArray("controller-packages");
-		if (controllers == null) {
-			throw new MissingConfigurationException("controller-packages");
+		if (instance.srcPackage != null && controllers == null) {
+			controllers = new JsonArray().add(instance.srcPackage + ".controllers");
 		}
-		instance.verticlePackage = json.getString("verticle-package");
 		instance.controllerPackages = controllers.getList();
-		instance.domainPackage = json.getString("domain-package");
-		JsonArray fixtures = json.getJsonArray("fixture-packages");
-		if (fixtures != null) {
-			instance.fixturePackages = fixtures.getList();
-		} else {
-			instance.fixturePackages = new ArrayList<>();
+
+		instance.verticlePackage = json.getString("verticle-package");
+		if (instance.verticlePackage == null && instance.srcPackage != null) {
+			instance.verticlePackage = instance.srcPackage + ".verticles";
 		}
+
+		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
+		JsonArray fixtures = json.getJsonArray("fixture-packages");
+		if (fixtures == null) { 
+			fixtures = new JsonArray();
+			if (instance.srcPackage != null) {
+				fixtures.add(instance.srcPackage + ".fixtures");
+			} 
+		} 
+		instance.fixturePackages = fixtures.getList();
+
+		// Register services included in config
+		JsonObject services = json.getJsonObject("services", new JsonObject());
+		instance.serviceRegistry = new ServiceRegistry(vertx);
+		services.forEach(entry -> {
+			String name = entry.getKey();
+			String className = (String)entry.getValue();
+			try {
+				Class<?> clazz = Class.forName(className);
+				instance.serviceRegistry.registerService(name, clazz.newInstance());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
+		// Register templateEngines for extensions added in config
+		JsonArray templates = json.getJsonArray("templates", new JsonArray());
+		if (templates.contains("hbs")) {
+			instance.templateEngines.put("hbs", HandlebarsTemplateEngine.create());
+		}
+		if (templates.contains("jade")) {
+			instance.templateEngines.put("jade", JadeTemplateEngine.create());
+		}
+		if (templates.contains("templ")){
+			instance.templateEngines.put("templ", MVELTemplateEngine.create());
+		}
+		if (templates.contains("thymeleaf")){
+			instance.templateEngines.put("html", ThymeleafTemplateEngine.create());
+		}
+
 		JsonObject rateLimitJson = json.getJsonObject("throttling");
 		if (rateLimitJson != null) {
 			int count = rateLimitJson.getInteger("count");
@@ -105,6 +149,7 @@ public class Config {
 			TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
 			instance.rateLimit = new RateLimit(count, value, timeUnit);
 		}
+
 		instance.webroot = json.getString("webroot", "web/assets");
 		instance.assetsPath = json.getString("static-path", "/assets");
 		instance.tplDir = json.getString("views-dir", "web/views");
