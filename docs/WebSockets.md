@@ -1,7 +1,7 @@
 ## Using websockets with Nubes
 
 Like Vertx-Web, Nubes allows verticles to communicate through the event bus.
-We will see here how a javascript client can communicate with a Nubes server using websockets.
+We will see here how a (javascript) client can communicate with a Nubes server using websockets.
 
 
 
