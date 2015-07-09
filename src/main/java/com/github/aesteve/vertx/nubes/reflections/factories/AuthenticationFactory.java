@@ -36,8 +36,6 @@ public class AuthenticationFactory {
 				if(auth.redirectURL()!="")
 					return RedirectAuthHandler.create(config.authProvider, auth.redirectURL());
 				return RedirectAuthHandler.create(config.authProvider,"/");
-			case FORM:
-				return FormLoginHandler.create(config.authProvider);
 			default:
 				throw new UnsupportedOperationException();
 		}
