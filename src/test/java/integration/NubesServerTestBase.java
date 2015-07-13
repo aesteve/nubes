@@ -75,21 +75,20 @@ public abstract class NubesServerTestBase {
 
 	private HttpClientOptions options() {
 		HttpClientOptions options = new HttpClientOptions();
-		options.setDefaultHost(config.getString("host","localhost"));
-		options.setDefaultPort(config.getInteger("port",8000));
+		options.setDefaultHost(config.getString("host", "localhost"));
+		options.setDefaultPort(config.getInteger("port", 8000));
 		options.setKeepAlive(false);
 		return options;
 	}
 
-	private JsonObject createConfig() {
-
+	private static JsonObject createConfig() {
 		JsonObject config = new JsonObject();
-		config.put("host","localhost");
-		config.put("port",8000);
+		config.put("host", "localhost");
+		config.put("port", 8000);
 		config.put("src-package", "mock");
 		JsonObject services = new JsonObject();
 		services.put("dogService", "mock.services.DogService");
-		config.put("services",services);
+		config.put("services", services);
 		JsonObject throttling = new JsonObject();
 		throttling.put("time-frame", 10);
 		throttling.put("time-unit", TimeUnit.SECONDS.toString());
