@@ -7,6 +7,9 @@ import io.vertx.ext.web.handler.BasicAuthHandler;
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
+import io.vertx.ext.web.handler.FormLoginHandler;
+import io.vertx.ext.web.handler.JWTAuthHandler;
+import io.vertx.ext.web.handler.RedirectAuthHandler;
 
 public class AuthenticationFactory {
 
@@ -27,6 +30,12 @@ public class AuthenticationFactory {
 		switch (authMethod) {
 			case BASIC:
 				return BasicAuthHandler.create(config.authProvider);
+			case JWT:
+				return JWTAuthHandler.create(config.authProvider);
+			case REDIRECT:
+				if(auth.redirectURL()!="")
+					return RedirectAuthHandler.create(config.authProvider, auth.redirectURL());
+				return RedirectAuthHandler.create(config.authProvider,"/");
 			default:
 				throw new UnsupportedOperationException();
 		}

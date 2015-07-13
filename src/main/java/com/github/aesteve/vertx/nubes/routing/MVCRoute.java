@@ -7,6 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
 import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.handler.UserSessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 import java.lang.reflect.Method;
@@ -133,6 +134,8 @@ public class MVCRoute {
 		}
 		if (authHandler != null) {
 			router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
+//			router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
+			router.route(httpMethodFinal, pathFinal).handler(UserSessionHandler.create(config.authProvider));
 			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
 			router.route(httpMethodFinal, pathFinal).handler(authHandler);
 		}

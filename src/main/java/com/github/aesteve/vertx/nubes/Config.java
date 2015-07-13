@@ -25,6 +25,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.jdbc.JDBCAuth;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.shiro.ShiroAuth;
+import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
+import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
 import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
@@ -148,6 +153,30 @@ public class Config {
 			int value = rateLimitJson.getInteger("time-frame");
 			TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
 			instance.rateLimit = new RateLimit(count, value, timeUnit);
+		}
+
+		String auth = json.getString("auth-type",""); //Maybe could set a valid default auth-type
+
+		JsonObject authProperties = json.getJsonObject("auth-properties");
+
+		String dbName = json.getString("db-name","nubes-db");
+
+		if(authProperties!=null) {
+			//For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
+			if (auth.equals("JWT")) {
+				JWTAuth jwt = JWTAuth.create(vertx, authProperties);
+				instance.authProvider = jwt;
+			} else if (auth.equals("Shiro")) {//For now only allow properties realm
+				AuthProvider shiro = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
+				instance.authProvider = shiro;
+			} else if (auth.equals("JDBC")) {
+				JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
+				AuthProvider jdbc = JDBCAuth.create(client);
+				instance.authProvider = jdbc;
+			}
+		}
+		else{
+			// warning : No auth properties found in config ? idk...
 		}
 
 		instance.webroot = json.getString("webroot", "web/assets");

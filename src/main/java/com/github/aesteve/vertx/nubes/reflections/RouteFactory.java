@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.logging.Logger;
@@ -18,6 +19,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
 
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.FormLoginHandler;
 import org.reflections.Reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
@@ -141,6 +144,10 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					Handler<RoutingContext> authHandler = null;
 					if (method.isAnnotationPresent(Auth.class) || controller.isAnnotationPresent(Auth.class)) {
 						authHandler = authFactory.create(auth);
+						if(auth.method()!=null && auth.method().equals(AuthMethod.REDIRECT)) {
+								router.route(auth.redirectURL() + "/loginhandler").handler(BodyHandler.create());
+								router.route(auth.redirectURL() + "/loginhandler").handler(FormLoginHandler.create(config.authProvider));
+						}
 					}
 					boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
 					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled);
