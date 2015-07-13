@@ -4,6 +4,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.jdbc.JDBCAuth;
 import io.vertx.ext.auth.jwt.JWTAuth;
@@ -39,6 +41,8 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInje
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 
 public class Config {
+
+	private static final Logger log = LoggerFactory.getLogger(Config.class);
 
 	private Config() {
 		bundlesByLocale = new HashMap<>();
@@ -156,27 +160,29 @@ public class Config {
 			instance.rateLimit = new RateLimit(count, value, timeUnit);
 		}
 
-		String auth = json.getString("auth-type", ""); // Maybe could set a valid default auth-type
-
+		String auth = json.getString("auth-type");
 		JsonObject authProperties = json.getJsonObject("auth-properties");
 
 		String dbName = json.getString("db-name", "nubes-db");
 
-		if (authProperties != null) {
+		if (authProperties != null && authProperties != null) {
 			// For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
-			if (auth.equals("JWT")) {
-				JWTAuth jwt = JWTAuth.create(vertx, authProperties);
-				instance.authProvider = jwt;
-			} else if (auth.equals("Shiro")) {// For now only allow properties realm
-				AuthProvider shiro = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
-				instance.authProvider = shiro;
-			} else if (auth.equals("JDBC")) {
-				JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
-				AuthProvider jdbc = JDBCAuth.create(client);
-				instance.authProvider = jdbc;
+			switch (auth) {
+				case "JWT":// For now only allow properties realm
+					instance.authProvider = JWTAuth.create(vertx, authProperties);
+					break;
+				case "Shiro":
+					instance.authProvider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
+					break;
+				case "JDBC":
+					JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
+					instance.authProvider = JDBCAuth.create(client);
+					break;
+				default:
+					log.warn("Unknown type of auth : " + auth + " . Ignoring.");
 			}
-		} else {
-			// warning : No auth properties found in config ? idk...
+		} else if (auth != null) {
+			log.warn("You have defined " + auth + " as auth type, but didn't provide any configuration, can't create authProvider");
 		}
 
 		instance.webroot = json.getString("webroot", "web/assets");
