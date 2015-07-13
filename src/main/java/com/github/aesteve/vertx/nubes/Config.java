@@ -163,8 +163,7 @@ public class Config {
 		String auth = json.getString("auth-type");
 		JsonObject authProperties = json.getJsonObject("auth-properties");
 
-		String dbName = json.getString("db-name", "nubes-db");
-
+		// TODO : discuss it. I'm really not convinced about all the boilerplate needed in config (dbName only for JDBC, etc.)
 		if (authProperties != null && authProperties != null) {
 			// For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
 			switch (auth) {
@@ -175,6 +174,10 @@ public class Config {
 					instance.authProvider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
 					break;
 				case "JDBC":
+					String dbName = json.getString("db-name", "nubes-db");
+					if (dbName == null) {
+						throw new IllegalArgumentException("You cannot use JDBC authentification without a DB");
+					}
 					JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
 					instance.authProvider = JDBCAuth.create(client);
 					break;
