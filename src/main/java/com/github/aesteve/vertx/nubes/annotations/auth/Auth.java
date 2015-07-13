@@ -14,4 +14,6 @@ public @interface Auth {
 	AuthMethod method();
 
 	String authority();
+
+	String redirectURL() default "";
 }

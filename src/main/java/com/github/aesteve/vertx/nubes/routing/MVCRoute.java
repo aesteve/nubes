@@ -6,7 +6,9 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.FormLoginHandler;
 import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.handler.UserSessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 import java.lang.reflect.Method;
@@ -34,6 +36,7 @@ public class MVCRoute {
 	private Set<Processor> processors;
 	private MVCRoute redirectRoute;
 	private Handler<RoutingContext> authHandler;
+	private String loginRedirect;
 	private Handler<RoutingContext> preInterceptor;
 	private Handler<RoutingContext> postInterceptor;
 	private Config config;
@@ -59,6 +62,10 @@ public class MVCRoute {
 
 	public void redirectTo(MVCRoute anotherRoute) {
 		redirectRoute = anotherRoute;
+	}
+
+	public void setLoginRedirect(String loginRedirect) {
+		this.loginRedirect = loginRedirect;
 	}
 
 	public void addProcessor(Processor processor) {
@@ -133,8 +140,17 @@ public class MVCRoute {
 		}
 		if (authHandler != null) {
 			router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
+			// router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
+			router.route(httpMethodFinal, pathFinal).handler(UserSessionHandler.create(config.authProvider));
 			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
 			router.route(httpMethodFinal, pathFinal).handler(authHandler);
+			if (loginRedirect != null && !"".equals(loginRedirect)) {
+				router.post(loginRedirect).handler(CookieHandler.create());
+				router.post(loginRedirect).handler(BodyHandler.create());
+				router.post(loginRedirect).handler(UserSessionHandler.create(config.authProvider));
+				router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
+				router.post(loginRedirect).handler(FormLoginHandler.create(config.authProvider));
+			}
 		}
 		processors.forEach(processor -> {
 			router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
