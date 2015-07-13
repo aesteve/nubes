@@ -1,6 +1,5 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
-import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.logging.Logger;
@@ -19,8 +18,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
 
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.FormLoginHandler;
 import org.reflections.Reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
@@ -34,6 +31,7 @@ import com.github.aesteve.vertx.nubes.annotations.filters.Before;
 import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
 import com.github.aesteve.vertx.nubes.annotations.routing.Disabled;
 import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
+import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.FileResolver;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
@@ -142,15 +140,16 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 				Map<HttpMethod, String> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
 				httpMethods.forEach((httpMethod, path) -> {
 					Handler<RoutingContext> authHandler = null;
-					if (method.isAnnotationPresent(Auth.class) || controller.isAnnotationPresent(Auth.class)) {
+					String redirectURL = null;
+					if (auth != null) {
 						authHandler = authFactory.create(auth);
-						if(auth.method()!=null && auth.method().equals(AuthMethod.REDIRECT)) {
-								router.route(auth.redirectURL() + "/loginhandler").handler(BodyHandler.create());
-								router.route(auth.redirectURL() + "/loginhandler").handler(FormLoginHandler.create(config.authProvider));
+						if (AuthMethod.REDIRECT.equals(auth.method())) {
+							redirectURL = auth.redirectURL();
 						}
 					}
 					boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
 					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled);
+					route.setLoginRedirect(redirectURL);
 					for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
 						Class<? extends Annotation> annotClass = methodAnnotation.annotationType();
 						Set<Handler<RoutingContext>> handler = config.annotationHandlers.get(annotClass);

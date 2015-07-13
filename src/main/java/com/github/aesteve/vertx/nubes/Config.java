@@ -1,5 +1,23 @@
 package com.github.aesteve.vertx.nubes;
 
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.jdbc.JDBCAuth;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.shiro.ShiroAuth;
+import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
+import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
+import io.vertx.ext.web.templ.JadeTemplateEngine;
+import io.vertx.ext.web.templ.MVELTemplateEngine;
+import io.vertx.ext.web.templ.TemplateEngine;
+import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,24 +37,6 @@ import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
-
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.auth.jdbc.JDBCAuth;
-import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.auth.shiro.ShiroAuth;
-import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
-import io.vertx.ext.jdbc.JDBCClient;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
-import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
-import io.vertx.ext.web.templ.JadeTemplateEngine;
-import io.vertx.ext.web.templ.MVELTemplateEngine;
-import io.vertx.ext.web.templ.TemplateEngine;
-import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 
 public class Config {
 
@@ -82,7 +82,8 @@ public class Config {
 	/**
 	 * TODO : check config instead of throwing exceptions
 	 * TODO : we should be consistent on single/multiple values
-	 *  (controllers is an array, fixtures is a list, domain is a single value, verticle is a single value) : this is wrong
+	 * (controllers is an array, fixtures is a list, domain is a single value, verticle is a single value) : this is wrong
+	 * 
 	 * @param json
 	 * @return config
 	 */
@@ -110,12 +111,12 @@ public class Config {
 
 		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
 		JsonArray fixtures = json.getJsonArray("fixture-packages");
-		if (fixtures == null) { 
+		if (fixtures == null) {
 			fixtures = new JsonArray();
 			if (instance.srcPackage != null) {
 				fixtures.add(instance.srcPackage + ".fixtures");
-			} 
-		} 
+			}
+		}
 		instance.fixturePackages = fixtures.getList();
 
 		// Register services included in config
@@ -123,7 +124,7 @@ public class Config {
 		instance.serviceRegistry = new ServiceRegistry(vertx);
 		services.forEach(entry -> {
 			String name = entry.getKey();
-			String className = (String)entry.getValue();
+			String className = (String) entry.getValue();
 			try {
 				Class<?> clazz = Class.forName(className);
 				instance.serviceRegistry.registerService(name, clazz.newInstance());
@@ -140,10 +141,10 @@ public class Config {
 		if (templates.contains("jade")) {
 			instance.templateEngines.put("jade", JadeTemplateEngine.create());
 		}
-		if (templates.contains("templ")){
+		if (templates.contains("templ")) {
 			instance.templateEngines.put("templ", MVELTemplateEngine.create());
 		}
-		if (templates.contains("thymeleaf")){
+		if (templates.contains("thymeleaf")) {
 			instance.templateEngines.put("html", ThymeleafTemplateEngine.create());
 		}
 
@@ -155,18 +156,18 @@ public class Config {
 			instance.rateLimit = new RateLimit(count, value, timeUnit);
 		}
 
-		String auth = json.getString("auth-type",""); //Maybe could set a valid default auth-type
+		String auth = json.getString("auth-type", ""); // Maybe could set a valid default auth-type
 
 		JsonObject authProperties = json.getJsonObject("auth-properties");
 
-		String dbName = json.getString("db-name","nubes-db");
+		String dbName = json.getString("db-name", "nubes-db");
 
-		if(authProperties!=null) {
-			//For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
+		if (authProperties != null) {
+			// For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
 			if (auth.equals("JWT")) {
 				JWTAuth jwt = JWTAuth.create(vertx, authProperties);
 				instance.authProvider = jwt;
-			} else if (auth.equals("Shiro")) {//For now only allow properties realm
+			} else if (auth.equals("Shiro")) {// For now only allow properties realm
 				AuthProvider shiro = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
 				instance.authProvider = shiro;
 			} else if (auth.equals("JDBC")) {
@@ -174,8 +175,7 @@ public class Config {
 				AuthProvider jdbc = JDBCAuth.create(client);
 				instance.authProvider = jdbc;
 			}
-		}
-		else{
+		} else {
 			// warning : No auth properties found in config ? idk...
 		}
 

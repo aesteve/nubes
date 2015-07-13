@@ -16,8 +16,6 @@ import io.vertx.core.logging.LoggerFactory;
 
 public class NubesServer extends AbstractVerticle {
 
-
-
 	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
 	private HttpServer server;
