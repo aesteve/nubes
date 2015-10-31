@@ -86,9 +86,10 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.TemplateEngine;
 
 public class VertxNubes {
-
-	private Vertx vertx;
-	private Config config;
+	
+	protected Config config;
+	protected Vertx vertx;
+	
 	private Router router;
 	private FixtureLoader fixtureLoader;
 	private Handler<RoutingContext> failureHandler;

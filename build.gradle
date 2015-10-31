@@ -12,6 +12,7 @@ def vertxVersion = '3.1.0'
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 }
 
 dependencies {

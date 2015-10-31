@@ -16,11 +16,11 @@ import io.vertx.core.logging.LoggerFactory;
 
 public class NubesServer extends AbstractVerticle {
 
-	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
+	protected static final Logger log = LoggerFactory.getLogger(NubesServer.class);
 
-	private HttpServer server;
-	public static HttpServerOptions options;
-	private VertxNubes nubes;
+	protected HttpServer server;
+	protected HttpServerOptions options;
+	protected VertxNubes nubes;
 
 	@Override
 	public void init(Vertx vertx, Context context) {
