@@ -10,14 +10,18 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 public class CookieParamInjector implements AnnotatedParamInjector<CookieValue> {
 
 	@Override
-	public Object resolve(RoutingContext context, CookieValue annotation, Class<?> resultClass) {
-		Cookie cookie = context.getCookie(annotation.value());
+	public Object resolve(RoutingContext context, CookieValue annotation, String paramName, Class<?> resultClass) {
+		String cookieName = annotation.value();
+		if ("".equals(cookieName)) {
+			cookieName = paramName;
+		}
+		Cookie cookie = context.getCookie(cookieName);
 		if (resultClass.equals(Cookie.class) && cookie != null) {
 			return cookie;
 		} else if (resultClass.equals(String.class) && cookie != null) {
 			return cookie.getValue();
 		} else if (cookie == null) {
-			DefaultErrorHandler.badRequest(context, "Cookie " + annotation.value() + " must be set");
+			DefaultErrorHandler.badRequest(context, "Cookie " + cookieName + " must be set");
 		}
 		return null;
 	}

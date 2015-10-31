@@ -1,11 +1,14 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl;
 
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.params.Header;
-import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
+import com.github.aesteve.vertx.nubes.exceptions.params.InvalidParamValueException;
+import com.github.aesteve.vertx.nubes.exceptions.params.MandatoryParamException;
+import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
+import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException.ParamType;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
+
+import io.vertx.ext.web.RoutingContext;
 
 public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
 
@@ -16,19 +19,21 @@ public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
 	}
 
 	@Override
-	public Object resolve(RoutingContext context, Header annotation, Class<?> resultClass) {
-		String headerValue = context.request().getHeader(annotation.value());
+	public Object resolve(RoutingContext context, Header annotation, String paramName, Class<?> resultClass) throws WrongParameterException {
+		String headerName = annotation.value();
+		if ("".equals(headerName)) {
+			headerName = paramName;
+		}
+		String headerValue = context.request().getHeader(headerName);
 		if (headerValue == null) {
 			if (annotation.mandatory()) {
-				DefaultErrorHandler.badRequest(context, "Header : " + headerValue + " is not set");
+				throw new MandatoryParamException(ParamType.HEADER, headerName);
 			}
-			return null;
 		}
 		try {
 			return registry.adaptParam(headerValue, resultClass);
 		} catch (Exception e) {
-			DefaultErrorHandler.badRequest(context, "Wrong value for header : " + annotation.value());
-			return null;
+			throw new InvalidParamValueException(ParamType.HEADER, headerName, headerValue);
 		}
 	}
 

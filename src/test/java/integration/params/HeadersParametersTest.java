@@ -48,8 +48,25 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 		Async async = context.async();
 		client().get("/headers/mandatory", response -> {
 			context.assertEquals(400, response.statusCode());
-			async.complete();
+			response.bodyHandler(buff -> {
+				String msg = buff.toString("UTF-8");
+				System.out.println(msg);
+				async.complete();
+			});
 		}).end();
+	}
+	
+	@Test
+	public void echoByName(TestContext context) {
+		Async async = context.async();
+		String value = "Pluto";
+		client().get("/headers/echoByName", response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buffer -> {
+				context.assertEquals(value, buffer.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader("someHeader", value).end();
 	}
 
 }

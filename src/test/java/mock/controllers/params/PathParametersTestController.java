@@ -1,5 +1,6 @@
 package mock.controllers.params;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
@@ -31,5 +32,10 @@ public class PathParametersTestController {
 	@GET("int/:parameter")
 	public void testParam(RoutingContext context, @Param("parameter") Integer parameter) {
 		context.response().end(parameter.toString());
+	}
+	
+	@GET("byName/:dog")
+	public void testParamByName(HttpServerResponse response, @Param String dog) {
+		response.end(dog);
 	}
 }

@@ -11,5 +11,5 @@ public @interface LocalMapValue {
 
 	String key();
 
-	String mapName();
+	String mapName() default "";
 }

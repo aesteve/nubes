@@ -53,7 +53,7 @@ public class PaginationContext {
 	 * 
 	 * @param context
 	 * @return
-	 * @throws BadRequestException
+	 * @throws MandatoryParamException
 	 */
 	public static PaginationContext fromContext(RoutingContext context) {
 		HttpServerRequest request = context.request();

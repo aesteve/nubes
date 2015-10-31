@@ -46,6 +46,9 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 }
 
+compileTestJava {
+	options.compilerArgs << '-parameters'
+}
 
 /* Service Proxy related */
 def generatedSrcPath="$buildDir/generated-src"

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Header {
-	public String value();
+	public String value() default "";
 
 	boolean mandatory() default false;
 }

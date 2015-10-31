@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 public class ContextDataParamInjector implements AnnotatedParamInjector<ContextData> {
 
 	@Override
-	public Object resolve(RoutingContext context, ContextData annotation, Class<?> resultClass) {
+	public Object resolve(RoutingContext context, ContextData annotation, String paramName, Class<?> resultClass) {
 		return context.data();
 	}
 

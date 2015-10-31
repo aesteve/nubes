@@ -1,5 +1,6 @@
 package mock.controllers.params;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Date;
@@ -43,5 +44,10 @@ public class QueryParametersTestController {
 	@GET("float")
 	public void testParam(RoutingContext context, @Param("parameter") Float parameter) {
 		context.response().end(parameter.toString());
+	}
+	
+	@GET("byName")
+	public void testByName(HttpServerResponse response, @Param String dog) {
+		response.end(dog);
 	}
 }

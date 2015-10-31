@@ -1,5 +1,6 @@
 package mock.controllers.params;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Date;
@@ -23,5 +24,10 @@ public class HeadersControllerTest {
 		} else {
 			context.response().end(Long.toString(date.getTime()));
 		}
+	}
+	
+	@GET("echoByName")
+	public void getHeaderByName(HttpServerResponse response, @Header String someHeader) {
+		response.end(someHeader);
 	}
 }

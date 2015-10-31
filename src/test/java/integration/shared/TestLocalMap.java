@@ -29,4 +29,18 @@ public class TestLocalMap extends VertxNubesTestBase {
 			async.complete();
 		});
 	}
+	
+	
+	@Test
+	public void testDynamicMapValueByName(TestContext context) {
+		Async async = context.async();
+		String testValue = "Woodstock";
+		String key = "bird";
+		vertx.sharedData().getLocalMap("someMap").put(key, testValue);
+		client().getNow("/shared/local/dynamicValueWithParamName?key=" + key, response -> {
+			context.assertEquals(testValue, response.getHeader("X-Map-Value"));
+			async.complete();
+		});
+	}
+
 }

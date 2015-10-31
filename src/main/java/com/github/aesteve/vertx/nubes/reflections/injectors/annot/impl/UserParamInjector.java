@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 public class UserParamInjector implements AnnotatedParamInjector<User> {
 
 	@Override
-	public Object resolve(RoutingContext context, User annotation, Class<?> resultClass) {
+	public Object resolve(RoutingContext context, User annotation, String paramName, Class<?> resultClass) {
 		return context.user();
 	}
 

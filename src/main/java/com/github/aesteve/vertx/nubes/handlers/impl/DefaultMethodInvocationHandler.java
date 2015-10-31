@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 
 import com.github.aesteve.vertx.nubes.Config;
+import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
 import com.github.aesteve.vertx.nubes.handlers.AbstractMethodInvocationHandler;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
@@ -27,8 +28,8 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 		Object[] parameters = null;
 		try {
 			parameters = getParameters(routingContext);
-		} catch (Exception e) {
-			routingContext.fail(400);
+		} catch (WrongParameterException e) {
+			DefaultErrorHandler.badRequest(routingContext, e.getMessage());
 			return;
 		}
 		try {
@@ -54,6 +55,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 				routingContext.next();
 			}
 		} catch (InvocationTargetException ite) {
+			ite.printStackTrace();
 			routingContext.fail(ite.getCause());
 			return;
 		} catch (Throwable others) {

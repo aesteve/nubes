@@ -30,4 +30,9 @@ public class CookieTestController {
 		response.end(dog);
 	}
 
+	@GET("echoByName")
+	@Cookies
+	public void echoCookieByName(HttpServerResponse response, @CookieValue String dog) {
+		response.end(dog);
+	}
 }

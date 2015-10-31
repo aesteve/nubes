@@ -1,11 +1,14 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl;
 
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
-import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
+import com.github.aesteve.vertx.nubes.exceptions.params.InvalidParamValueException;
+import com.github.aesteve.vertx.nubes.exceptions.params.MandatoryParamException;
+import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
+import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException.ParamType;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
+
+import io.vertx.ext.web.RoutingContext;
 
 public class ParamInjector implements AnnotatedParamInjector<Param> {
 
@@ -16,19 +19,21 @@ public class ParamInjector implements AnnotatedParamInjector<Param> {
 	}
 
 	@Override
-	public Object resolve(RoutingContext context, Param annotation, Class<?> resultClass) {
-		String paramValue = context.request().getParam(annotation.value());
+	public Object resolve(RoutingContext context, Param annotation, String paramName, Class<?> resultClass) throws WrongParameterException {
+		String requestParamName = annotation.value();
+		if ("".equals(requestParamName)) {
+			requestParamName = paramName;
+		}
+		String paramValue = context.request().getParam(requestParamName);
 		if (paramValue == null) {
 			if (annotation.mandatory()) {
-				DefaultErrorHandler.badRequest(context, "Parameter " + annotation.value() + " is mandatory");
+				throw new MandatoryParamException(ParamType.REQUEST_PARAM, requestParamName);
 			}
-			return null;
 		}
 		try {
 			return adapters.adaptParam(paramValue, resultClass);
 		} catch (Exception e) {
-			DefaultErrorHandler.badRequest(context, "Wrong value for param : " + annotation.value());
-			return null;
+			throw new InvalidParamValueException(ParamType.REQUEST_PARAM, requestParamName, paramValue);
 		}
 	}
 

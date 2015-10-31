@@ -57,4 +57,17 @@ public class PathParametersTest extends VertxNubesTestBase {
 		});
 	}
 
+	@Test
+	public void testPathParam(TestContext context) {
+		String value = "Droopy";
+		Async async = context.async();
+		client().getNow("/params/path/byName/" + value, response -> {
+			response.bodyHandler(buff -> {
+				context.assertEquals(value, buff.toString("UTF-8"));
+				async.complete();
+			});
+		});
+	}
+
+	
 }

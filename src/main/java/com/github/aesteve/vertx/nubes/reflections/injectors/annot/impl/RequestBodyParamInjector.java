@@ -24,7 +24,7 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 	}
 
 	@Override
-	public Object resolve(RoutingContext context, RequestBody annotation, Class<?> resultClass) {
+	public Object resolve(RoutingContext context, RequestBody annotation, String paramName, Class<?> resultClass) {
 		String body = context.getBodyAsString();
 		if (resultClass.equals(String.class)) {
 			return body;

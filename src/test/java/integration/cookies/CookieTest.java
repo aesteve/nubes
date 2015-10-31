@@ -39,4 +39,17 @@ public class CookieTest extends VertxNubesTestBase {
 			});
 		}).putHeader(COOKIE, key + "=" + value).end();
 	}
+	
+	@Test
+	public void testReadCookieByName(TestContext context) {
+		String key = "dog";
+		String value = "Milou";
+		Async async = context.async();
+		client().get("/cookies/echoByName", response -> {
+			response.bodyHandler(buff -> {
+				context.assertEquals(value, buff.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader(COOKIE, key + "=" + value).end();
+	}
 }
