@@ -50,7 +50,7 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 			context.assertEquals(400, response.statusCode());
 			response.bodyHandler(buff -> {
 				String msg = buff.toString("UTF-8");
-				System.out.println(msg);
+				context.assertTrue(msg.contains("mandatory"));
 				async.complete();
 			});
 		}).end();
