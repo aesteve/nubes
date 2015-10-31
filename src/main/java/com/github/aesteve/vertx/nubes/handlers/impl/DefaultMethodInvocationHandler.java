@@ -16,7 +16,6 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 		super(instance, method, config, hasNext, returnHandler);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(RoutingContext routingContext) {
 		if (routingContext.response().ended()) {
@@ -33,6 +32,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 			return;
 		}
 		try {
+			@SuppressWarnings("unchecked")
 			T returned = (T) method.invoke(instance, parameters);
 			if (returnsSomething) {
 				boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;

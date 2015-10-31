@@ -18,10 +18,9 @@ public class PayloadTypeProcessor implements Processor {
 		this.marshallers = marshallers;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void preHandle(RoutingContext context) {
-		Payload<?> payload = new Payload();
+		Payload<?> payload = new Payload<>();
 		context.put(Payload.DATA_ATTR, payload);
 		context.next();
 	}
