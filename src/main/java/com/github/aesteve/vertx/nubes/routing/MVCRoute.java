@@ -152,9 +152,6 @@ public class MVCRoute {
 				router.post(loginRedirect).handler(FormLoginHandler.create(config.authProvider));
 			}
 		}
-		processors.forEach(processor -> {
-			router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
-		});
 		handlers.forEach(handler -> {
 			if (isRedirect) {
 				if (!(handler instanceof BodyHandler)) { // we can't attach this handler twice
@@ -164,6 +161,9 @@ public class MVCRoute {
 				router.route(httpMethodFinal, pathFinal).handler(handler);
 			}
 
+		});
+		processors.forEach(processor -> {
+			router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
 		});
 		int i = 0;
 		boolean beforeFiltersHaveNext = mainHandler != null;
