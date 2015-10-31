@@ -1,7 +1,7 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
-import io.vertx.ext.web.handler.sockjs.BridgeEvent;
-import io.vertx.ext.web.handler.sockjs.BridgeEvent.Type;
+import io.vertx.ext.web.handler.sockjs.BridgeEventType;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,22 +18,22 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.UNREGISTE
 
 public class BridgeEventFactory {
 
-	private static final Map<Class<? extends Annotation>, BridgeEvent.Type> types = new HashMap<>();
+	private static final Map<Class<? extends Annotation>, BridgeEventType> types = new HashMap<>();
 	static {
-		types.put(PUBLISH.class, Type.PUBLISH);
-		types.put(RECEIVE.class, Type.RECEIVE);
-		types.put(REGISTER.class, Type.REGISTER);
-		types.put(SEND.class, Type.SEND);
-		types.put(SOCKET_CLOSED.class, Type.SOCKET_CLOSED);
-		types.put(SOCKET_CREATED.class, Type.SOCKET_CREATED);
-		types.put(UNREGISTER.class, Type.UNREGISTER);
+		types.put(PUBLISH.class, PUBLISH);
+		types.put(RECEIVE.class, RECEIVE);
+		types.put(REGISTER.class, REGISTER);
+		types.put(SEND.class, SEND);
+		types.put(SOCKET_CLOSED.class, SOCKET_CLOSED);
+		types.put(SOCKET_CREATED.class, SOCKET_CREATED);
+		types.put(UNREGISTER.class, UNREGISTER);
 	}
 
-	public static Map<BridgeEvent.Type, Method> createFromController(Class<?> controller) {
-		Map<BridgeEvent.Type, Method> map = new HashMap<>();
+	public static Map<BridgeEventType, Method> createFromController(Class<?> controller) {
+		Map<BridgeEventType, Method> map = new HashMap<>();
 		for (Method method : controller.getMethods()) {
 			for (Annotation annot : method.getDeclaredAnnotations()) {
-				Type type = types.get(annot.annotationType());
+				BridgeEventType type = types.get(annot.annotationType());
 				if (type != null) {
 					if (map.get(type) != null) {
 						throw new IllegalArgumentException("You cannot register many methods on the same BridgeEvent.Type");

@@ -6,6 +6,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.sockjs.BridgeEvent;
+import io.vertx.ext.web.handler.sockjs.BridgeEventType;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
@@ -56,7 +57,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 			throw new RuntimeException("Could not instanciate socket controller : " + controller.getName(), e);
 		}
 		final Object instance = ctrlInstance;
-		Map<BridgeEvent.Type, Method> handlers = BridgeEventFactory.createFromController(controller);
+		Map<BridgeEventType, Method> handlers = BridgeEventFactory.createFromController(controller);
 		sockJSHandler.bridge(bridge, be -> {
 			Method method = handlers.get(be.type());
 			if (method != null) {

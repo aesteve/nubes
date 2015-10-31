@@ -1,4 +1,4 @@
-@GenModule(groupPackageName = "mock.services", name = "nubes-services")
+@ModuleGen(groupPackage = "mock.services", name = "nubes-services")
 package mock.services;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
