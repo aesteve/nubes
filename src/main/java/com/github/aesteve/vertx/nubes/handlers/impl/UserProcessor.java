@@ -6,7 +6,7 @@ import io.vertx.ext.web.handler.UserSessionHandler;
 
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 
-public class UserProcessor implements Processor {
+public class UserProcessor extends NoopAfterAllProcessor implements Processor {
 
 	private UserSessionHandler handler;
 

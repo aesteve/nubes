@@ -12,7 +12,7 @@ import java.util.Optional;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
-public class ContentTypeProcessor implements AnnotationProcessor<ContentType> {
+public class ContentTypeProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<ContentType> {
 
 	public final static String BEST_CONTENT_TYPE = "nubes-best-content-type";
 

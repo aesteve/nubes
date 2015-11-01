@@ -6,4 +6,6 @@ public interface Processor {
 	public void preHandle(RoutingContext context);
 
 	public void postHandle(RoutingContext context);
+	
+	public void afterAll(RoutingContext context);
 }

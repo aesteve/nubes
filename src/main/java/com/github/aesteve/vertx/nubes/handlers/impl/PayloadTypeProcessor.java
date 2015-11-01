@@ -10,7 +10,7 @@ import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 
-public class PayloadTypeProcessor implements Processor {
+public class PayloadTypeProcessor extends NoopAfterAllProcessor implements Processor {
 
 	private Map<String, PayloadMarshaller> marshallers;
 

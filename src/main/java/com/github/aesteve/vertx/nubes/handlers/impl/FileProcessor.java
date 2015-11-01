@@ -6,7 +6,7 @@ import com.github.aesteve.vertx.nubes.annotations.File;
 import com.github.aesteve.vertx.nubes.context.FileResolver;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
-public class FileProcessor implements AnnotationProcessor<File> {
+public class FileProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<File> {
 
 	private File annotation;
 

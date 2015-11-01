@@ -7,7 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
-public class ClientRedirectProcessor implements AnnotationProcessor<Redirect> {
+public class ClientRedirectProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<Redirect> {
 
 	private final static String LOCATION_DATA = "client-redirect-location";
 

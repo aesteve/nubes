@@ -6,7 +6,7 @@ import io.vertx.ext.web.RoutingContext;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
-public class CheckAuthorityProcessor implements AnnotationProcessor<Auth> {
+public class CheckAuthorityProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<Auth> {
 
 	private Auth annotation;
 

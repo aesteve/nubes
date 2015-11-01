@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.google.common.net.HttpHeaders;
 
-public class PaginationProcessor implements Processor {
+public class PaginationProcessor extends NoopAfterAllProcessor implements Processor {
 
 	private static final Logger log = LoggerFactory.getLogger(PaginationProcessor.class);
 

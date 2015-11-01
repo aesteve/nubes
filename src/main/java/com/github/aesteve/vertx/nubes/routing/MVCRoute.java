@@ -198,6 +198,9 @@ public class MVCRoute {
 		processors.forEach(processor -> {
 			router.route(httpMethodFinal, pathFinal).handler(processor::postHandle);
 		});
+		processors.forEach(processor -> {
+			router.route(httpMethodFinal, pathFinal).handler(processor::afterAll);
+		});
 	}
 
 	private void setHandler(Router router, Method method, HttpMethod httpMethod, String path, boolean hasNext) {

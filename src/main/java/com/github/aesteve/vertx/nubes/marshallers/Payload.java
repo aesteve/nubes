@@ -13,4 +13,11 @@ public class Payload<T> {
 	public T get() {
 		return userPayload;
 	}
+	
+	public Class<?> getType() {
+		if (userPayload == null) {
+			return Void.class;
+		}
+		return userPayload.getClass();
+	}
 }

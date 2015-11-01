@@ -7,7 +7,7 @@ import com.github.aesteve.vertx.nubes.context.ViewResolver;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-public class ViewProcessor implements AnnotationProcessor<View> {
+public class ViewProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<View> {
 
 	private TemplateEngineManager templateHandler;
 	private View annotation;
