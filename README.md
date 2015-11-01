@@ -6,7 +6,7 @@
 
 The main idea is to provide a different way to declare your routes than you'd do in a standard vertx-web project by providing a set of hopefully useful annotations / utilities on top of vertx-web.
 
-The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... 
+The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... A good example on how to extend the framework is [Nubes Hibernate](http://github.com/aesteve/nubes-hibernate), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Hibernate/JPA on top of Nubes.
 
 Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of additional utilities at your disposal.
 
