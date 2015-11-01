@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.web.RoutingContext;
 
 public class AsyncUtils {
 
@@ -70,6 +71,16 @@ public class AsyncUtils {
 		return (res -> {
 			if (res.failed()) {
 				handler.handle(res.result());
+			}
+		});
+	}
+	
+	public static <T> Handler<AsyncResult<T>> nextOrFail(RoutingContext context) {
+		return (res -> {
+			if (res.failed()) {
+				context.fail(res.cause());
+			} else {
+				context.next();
 			}
 		});
 	}
