@@ -7,8 +7,10 @@ import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class MultipleFutures<T> extends SimpleFuture<T> {
 
@@ -27,6 +29,11 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 	public MultipleFutures(Handler<AsyncResult<T>> after) {
 		this();
 		join(after);
+	}
+
+	public <L> MultipleFutures(Collection<L> elements, Function<L, Handler<Future<T>>> transform) {
+		this();
+		addAll(elements, transform);
 	}
 
 	public void add(Handler<Future<T>> handler) {
@@ -102,4 +109,16 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 	public void join(Handler<AsyncResult<T>> handler) {
 		setHandler(handler);
 	}
+
+	public <L> void addAll(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
+		list.forEach(element -> {
+			this.add(transform.apply(element));
+		});
+	}
+
+	public <L> void treatAllNow(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
+		addAll(list, transform);
+		start();
+	}
+
 }
