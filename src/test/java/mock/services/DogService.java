@@ -3,6 +3,7 @@ package mock.services;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class DogService implements Service {
 	private Vertx vertx;
 
 	@Override
-	public void init(Vertx vertx) {
+	public void init(Vertx vertx, JsonObject config) {
 		this.vertx = vertx;
 	}
 

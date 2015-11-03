@@ -125,7 +125,7 @@ public class Config {
 
 		// Register services included in config
 		JsonObject services = json.getJsonObject("services", new JsonObject());
-		instance.serviceRegistry = new ServiceRegistry(vertx);
+		instance.serviceRegistry = new ServiceRegistry(vertx, instance);
 		services.forEach(entry -> {
 			String name = entry.getKey();
 			String className = (String) entry.getValue();

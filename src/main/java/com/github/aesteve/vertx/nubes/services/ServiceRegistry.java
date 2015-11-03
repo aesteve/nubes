@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.services.Consumer;
 import com.github.aesteve.vertx.nubes.annotations.services.PeriodicTask;
 import com.github.aesteve.vertx.nubes.annotations.services.Proxify;
@@ -31,11 +32,13 @@ public class ServiceRegistry {
 	private Map<String, Object> services;
 	private Map<String, Object> serviceProxies;
 	private Set<Long> timerIds;
+	private Config config;
 
 	private Vertx vertx;
 
-	public ServiceRegistry(Vertx vertx) {
+	public ServiceRegistry(Vertx vertx, Config config) {
 		this.vertx = vertx;
+		this.config = config;
 		services = new HashMap<>();
 		serviceProxies = new HashMap<>();
 		timerIds = new HashSet<>();
@@ -92,7 +95,7 @@ public class ServiceRegistry {
 			introspectService(obj);
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
-				service.init(vertx);
+				service.init(vertx, config.json);
 				futures.add(service::start);
 			}
 		});
