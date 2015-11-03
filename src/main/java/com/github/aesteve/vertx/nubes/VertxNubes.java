@@ -2,6 +2,20 @@ package com.github.aesteve.vertx.nubes;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeFinally;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -49,6 +63,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.JAXBPayloadMarshaller;
+import com.github.aesteve.vertx.nubes.marshallers.impl.PlainTextMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.AnnotVerticleFactory;
 import com.github.aesteve.vertx.nubes.reflections.EventBusBridgeFactory;
 import com.github.aesteve.vertx.nubes.reflections.RouteFactory;
@@ -70,26 +85,11 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.LocalePar
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.templ.TemplateEngine;
-
 public class VertxNubes {
-	
+
 	protected Config config;
 	protected Vertx vertx;
-	
+
 	private Router router;
 	private FixtureLoader fixtureLoader;
 	private Handler<RoutingContext> failureHandler;
@@ -142,6 +142,7 @@ public class VertxNubes {
 				throw new RuntimeException(je);
 			}
 		}
+		registerMarshaller("text/plain", new PlainTextMarshaller());
 		failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
 	}
 
