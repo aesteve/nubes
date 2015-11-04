@@ -7,6 +7,10 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class AsyncUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(AsyncUtils.class);
@@ -74,7 +78,7 @@ public class AsyncUtils {
 			}
 		});
 	}
-	
+
 	public static <T> Handler<AsyncResult<T>> nextOrFail(RoutingContext context) {
 		return (res -> {
 			if (res.failed()) {
@@ -85,4 +89,41 @@ public class AsyncUtils {
 		});
 	}
 
+	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>> nextHandler) {
+		Future<Void> nextFuture = Future.future();
+		future.setHandler(res -> {
+			if (res.failed()) {
+				globalHandler.handle(Future.failedFuture(res.cause()));
+			} else {
+				nextHandler.handle(nextFuture);
+			}
+		});
+		return nextFuture;
+	}
+
+	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, List<Handler<Future<Void>>> list) {
+		List<Future<Void>> futures = new ArrayList<>(list.size());
+		int i = 0;
+		Future<Void> firstFuture = Future.future();
+		for (Handler<Future<Void>> handler : list) {
+			Future<Void> fut = i == 0 ? firstFuture : futures.get(i - 1);
+			futures.add(chainOnSuccess(globalHandler, fut, handler));
+			i++;
+		}
+		future.setHandler(res -> {
+			if (res.failed()) {
+				globalHandler.handle(Future.failedFuture(res.cause()));
+			} else {
+				list.get(0).handle(firstFuture);
+			}
+		});
+		return futures.get(futures.size() - 1);
+	}
+
+	@SafeVarargs
+	// or we're screwed...
+	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>>... handlers) {
+		List<Handler<Future<Void>>> list = Arrays.asList(handlers);
+		return AsyncUtils.chainOnSuccess(globalHandler, future, list);
+	}
 }

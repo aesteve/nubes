@@ -82,6 +82,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.LocaleParamInjector;
+import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
@@ -148,41 +149,19 @@ public class VertxNubes {
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
 		setUpRouter(paramRouter);
-
-		// fixtures
 		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
-		Future<Void> fixturesFuture = Future.future();
-		fixturesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				periodicallyCleanHistoryMap();
-				handler.handle(Future.succeededFuture(router));
-			} else {
-				handler.handle(Future.failedFuture(result.cause()));
-			}
-		});
-
-		// services
-		Future<Void> servicesFuture = Future.future();
-		servicesFuture.setHandler(result -> {
-			if (result.succeeded()) {
-				fixtureLoader.setUp(fixturesFuture);
-			} else {
-				handler.handle(Future.failedFuture(result.cause()));
-			}
-		});
-
-		// verticles
 		MultipleFutures<String> vertFutures = new MultipleFutures<>();
-		AnnotVerticleFactory vertFactory = new AnnotVerticleFactory(config);
-		Map<String, DeploymentOptions> verticles = vertFactory.scan();
-		vertFutures.setHandler(res -> {
-			if (res.succeeded()) {
-				config.serviceRegistry.startAll(servicesFuture);
-			} else {
-				handler.handle(Future.failedFuture(res.cause()));
-			}
-		});
+		Map<String, DeploymentOptions> verticles = new AnnotVerticleFactory(config).scan();
 		vertFutures.addAll(verticles, this::deployVerticle);
+		AsyncUtils.chainOnSuccess(
+				handler,
+				vertFutures,
+				config.serviceRegistry::startAll,
+				fixtureLoader::setUp,
+				res -> {
+					periodicallyCleanHistoryMap();
+					handler.handle(Future.succeededFuture(router));
+				});
 		vertFutures.start();
 	}
 
