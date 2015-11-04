@@ -38,25 +38,27 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 		addAll(elements, transform);
 	}
 
-	public void add(Handler<Future<T>> handler) {
+	public MultipleFutures<T> add(Handler<Future<T>> handler) {
 		if (handler == null) {
-			return;
+			return this;
 		}
 		Future<T> future = Future.future();
 		future.setHandler(futureHandler -> {
 			checkCallHandler();
 		});
 		consumers.put(handler, future);
+		return this;
 	}
 
-	public void start() {
+	public MultipleFutures<T> start() {
 		if (consumers.isEmpty()) {
 			complete();
-			return;
+			return this;
 		}
 		consumers.forEach((consumer, future) -> {
 			consumer.handle(future);
 		});
+		return this;
 	}
 
 	@Override
@@ -107,31 +109,36 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 		});
 	}
 
-	public void join(Future<T> future) {
+	public MultipleFutures<T> join(Future<T> future) {
 		setHandler(completeOrFail(future));
+		return this;
 	}
 
-	public void join(Handler<AsyncResult<T>> handler) {
+	public MultipleFutures<T> join(Handler<AsyncResult<T>> handler) {
 		setHandler(handler);
+		return this;
 	}
 
-	public <L> void addAll(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
+	public <L> MultipleFutures<T> addAll(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
 		list.forEach(element -> {
 			add(transform.apply(element));
 		});
+		return this;
 	}
 
-	public <L> void treatAllNow(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
+	public <L> MultipleFutures<T> treatAllNow(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
 		addAll(list, transform);
 		start();
+		return this;
 	}
 
-	public <K, V> void addAll(Map<K, V> map, TriConsumer<K, V, Future<T>> transform) {
+	public <K, V> MultipleFutures<T> addAll(Map<K, V> map, TriConsumer<K, V, Future<T>> transform) {
 		map.forEach((key, value) -> {
 			add(res -> {
 				transform.accept(key, value, res);
 			});
 		});
+		return this;
 	}
 
 }
