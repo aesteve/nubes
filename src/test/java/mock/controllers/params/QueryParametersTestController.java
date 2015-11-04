@@ -45,7 +45,7 @@ public class QueryParametersTestController {
 	public void testParam(RoutingContext context, @Param("parameter") Float parameter) {
 		context.response().end(parameter.toString());
 	}
-	
+
 	@GET("byName")
 	public void testByName(HttpServerResponse response, @Param String dog) {
 		response.end(dog);

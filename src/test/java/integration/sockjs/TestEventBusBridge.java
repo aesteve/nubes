@@ -73,8 +73,7 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
 
 			try {
 				Thread.sleep(500);/* let some time to handle the register event on server side */
-			} catch (Exception e) {
-			}
+			} catch (Exception e) {}
 			vertx.eventBus().publish(TEST_EB_ADDRESS, msg);
 		});
 		assertTrue(latch.await(2, TimeUnit.SECONDS));

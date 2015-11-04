@@ -29,8 +29,7 @@ public class TestLocalMap extends VertxNubesTestBase {
 			async.complete();
 		});
 	}
-	
-	
+
 	@Test
 	public void testDynamicMapValueByName(TestContext context) {
 		Async async = context.async();

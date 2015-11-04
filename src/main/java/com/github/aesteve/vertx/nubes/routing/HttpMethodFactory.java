@@ -65,13 +65,13 @@ public class HttpMethodFactory {
 
 	public static boolean isRouteMethod(Method method) {
 		return method.isAnnotationPresent(CONNECT.class)
-						|| method.isAnnotationPresent(DELETE.class)
-						|| method.isAnnotationPresent(GET.class)
-						|| method.isAnnotationPresent(HEAD.class)
-						|| method.isAnnotationPresent(OPTIONS.class)
-						|| method.isAnnotationPresent(PATCH.class)
-						|| method.isAnnotationPresent(POST.class)
-						|| method.isAnnotationPresent(PUT.class)
-						|| method.isAnnotationPresent(TRACE.class);
+				|| method.isAnnotationPresent(DELETE.class)
+				|| method.isAnnotationPresent(GET.class)
+				|| method.isAnnotationPresent(HEAD.class)
+				|| method.isAnnotationPresent(OPTIONS.class)
+				|| method.isAnnotationPresent(PATCH.class)
+				|| method.isAnnotationPresent(POST.class)
+				|| method.isAnnotationPresent(PUT.class)
+				|| method.isAnnotationPresent(TRACE.class);
 	}
 }

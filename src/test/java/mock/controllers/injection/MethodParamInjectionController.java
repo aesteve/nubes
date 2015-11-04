@@ -24,7 +24,7 @@ public class MethodParamInjectionController {
 	@ContentType("application/json")
 	public JsonObject getNetSocket(HttpVersion version) {
 		return new JsonObject()
-						.put("version", version.toString());
+				.put("version", version.toString());
 	}
 
 	@GET("/headers")
@@ -35,8 +35,8 @@ public class MethodParamInjectionController {
 
 	private static JsonObject toJson(SocketAddress address) {
 		return new JsonObject()
-						.put("host", address.host())
-						.put("port", address.port());
+				.put("host", address.host())
+				.put("port", address.port());
 	}
 
 }

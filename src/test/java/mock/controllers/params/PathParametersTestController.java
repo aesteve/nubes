@@ -33,7 +33,7 @@ public class PathParametersTestController {
 	public void testParam(RoutingContext context, @Param("parameter") Integer parameter) {
 		context.response().end(parameter.toString());
 	}
-	
+
 	@GET("byName/:dog")
 	public void testParamByName(HttpServerResponse response, @Param String dog) {
 		response.end(dog);

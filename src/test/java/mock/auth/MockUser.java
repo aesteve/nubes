@@ -35,7 +35,6 @@ public class MockUser implements User {
 	}
 
 	@Override
-	public void setAuthProvider(AuthProvider authProvider) {
-	}
+	public void setAuthProvider(AuthProvider authProvider) {}
 
 }

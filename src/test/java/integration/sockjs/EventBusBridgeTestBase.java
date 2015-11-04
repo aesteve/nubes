@@ -54,8 +54,7 @@ public abstract class EventBusBridgeTestBase extends VertxNubesTestBase {
 			registerThroughBridge(socket, address, msg);
 			try {
 				Thread.sleep(1000);
-			} catch (Exception e) {
-			}
+			} catch (Exception e) {}
 			vertx.eventBus().publish(address, msg);
 		});
 	}

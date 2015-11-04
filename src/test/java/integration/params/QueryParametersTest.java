@@ -95,12 +95,12 @@ public class QueryParametersTest extends VertxNubesTestBase {
 			});
 		});
 	}
-	
+
 	@Test
 	public void testParamByName(TestContext context) throws Exception {
 		String name = "Snoopy";
 		Async async = context.async();
-		client().getNow("/params/query/byName?dog="+name, response -> {
+		client().getNow("/params/query/byName?dog=" + name, response -> {
 			response.bodyHandler(buff -> {
 				context.assertEquals(name, buff.toString("UTF-8"));
 				async.complete();

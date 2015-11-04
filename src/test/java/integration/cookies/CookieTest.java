@@ -39,7 +39,7 @@ public class CookieTest extends VertxNubesTestBase {
 			});
 		}).putHeader(COOKIE, key + "=" + value).end();
 	}
-	
+
 	@Test
 	public void testReadCookieByName(TestContext context) {
 		String key = "dog";

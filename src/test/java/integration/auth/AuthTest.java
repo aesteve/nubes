@@ -65,10 +65,10 @@ public class AuthTest extends VertxNubesTestBase {
 				String boundary = "dLV9Wyq26L_-JQxk6ferf-RT153LhOO";
 				Buffer buffer = Buffer.buffer();
 				String str = "--" + boundary + "\r\n" +
-								"Content-Disposition: form-data; name=\"username\"\r\n\r\n" + goodUsername() + "\r\n" +
-								"--" + boundary + "\r\n" +
-								"Content-Disposition: form-data; name=\"password\"\r\n\r\n" + goodPwd() + "\r\n" +
-								"--" + boundary + "--\r\n";
+						"Content-Disposition: form-data; name=\"username\"\r\n\r\n" + goodUsername() + "\r\n" +
+						"--" + boundary + "\r\n" +
+						"Content-Disposition: form-data; name=\"password\"\r\n\r\n" + goodPwd() + "\r\n" +
+						"--" + boundary + "--\r\n";
 				buffer.appendString(str);
 				loginRequest.putHeader("content-length", String.valueOf(buffer.length()));
 				loginRequest.putHeader("content-type", "multipart/form-data; boundary=" + boundary);

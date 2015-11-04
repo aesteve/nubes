@@ -4,10 +4,10 @@ import com.github.aesteve.vertx.nubes.handlers.Processor;
 
 import io.vertx.ext.web.RoutingContext;
 
-public abstract class NoopAfterAllProcessor implements  Processor {
-	
+public abstract class NoopAfterAllProcessor implements Processor {
+
 	public void afterAll(RoutingContext context) {
 		context.next();
 	}
-	
+
 }

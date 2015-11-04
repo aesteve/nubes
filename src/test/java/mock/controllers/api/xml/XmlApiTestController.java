@@ -14,8 +14,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 public class XmlApiTestController {
 
 	@GET("noContent")
-	public void noContent() {
-	}
+	public void noContent() {}
 
 	@GET("dog")
 	public void sendDomainObject(Payload<Dog> payload) {

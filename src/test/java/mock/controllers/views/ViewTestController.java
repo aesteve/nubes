@@ -17,8 +17,7 @@ public class ViewTestController {
 
 	@GET("/default")
 	@View("index.html")
-	public void rootView() {
-	}
+	public void rootView() {}
 
 	@GET("/handlebars")
 	@View("dog-name.hbs")

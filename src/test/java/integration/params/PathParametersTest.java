@@ -69,5 +69,4 @@ public class PathParametersTest extends VertxNubesTestBase {
 		});
 	}
 
-	
 }

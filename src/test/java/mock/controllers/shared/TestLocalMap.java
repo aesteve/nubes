@@ -24,9 +24,9 @@ public class TestLocalMap {
 		context.response().putHeader("X-Map-Value", map.get(key));
 		context.response().end();
 	}
-	
+
 	@GET("/dynamicValueWithParamName")
-	public void getDynamicValueWithParamName(HttpServerResponse response, @VertxLocalMap LocalMap<String, String > someMap, @Param String key) {
+	public void getDynamicValueWithParamName(HttpServerResponse response, @VertxLocalMap LocalMap<String, String> someMap, @Param String key) {
 		response.putHeader("X-Map-Value", someMap.get(key));
 		response.end();
 	}

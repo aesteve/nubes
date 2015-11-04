@@ -24,8 +24,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 public class JsonApiTestController {
 
 	@GET("noContent")
-	public void noContent() {
-	}
+	public void noContent() {}
 
 	@GET("jsonobject")
 	public void sendJsonObject(Payload<JsonObject> payload) {

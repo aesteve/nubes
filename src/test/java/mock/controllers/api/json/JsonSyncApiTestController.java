@@ -20,8 +20,7 @@ import mock.domains.Dog;
 public class JsonSyncApiTestController {
 
 	@GET("noContent")
-	public void noContent() {
-	}
+	public void noContent() {}
 
 	@GET("jsonobject")
 	public JsonObject sendJsonObject() {

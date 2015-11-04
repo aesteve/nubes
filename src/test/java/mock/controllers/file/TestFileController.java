@@ -12,8 +12,7 @@ public class TestFileController {
 
 	@GET("/txt")
 	@File("someFile.txt")
-	public void getTxtFile() {
-	}
+	public void getTxtFile() {}
 
 	@GET("/dynamic")
 	@File

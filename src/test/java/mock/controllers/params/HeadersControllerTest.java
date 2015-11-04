@@ -25,7 +25,7 @@ public class HeadersControllerTest {
 			context.response().end(Long.toString(date.getTime()));
 		}
 	}
-	
+
 	@GET("echoByName")
 	public void getHeaderByName(HttpServerResponse response, @Header String someHeader) {
 		response.end(someHeader);

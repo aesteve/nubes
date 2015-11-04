@@ -55,7 +55,7 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 			});
 		}).end();
 	}
-	
+
 	@Test
 	public void echoByName(TestContext context) {
 		Async async = context.async();

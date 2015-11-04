@@ -61,8 +61,7 @@ public class ThrottlingTest extends VertxNubesTestBase {
 						try {
 							Thread.sleep(10000);
 							future.complete();
-						} catch (Exception e) {
-						}
+						} catch (Exception e) {}
 					}, res -> {
 						client().get("/throttling/dog", fourthResponse -> {
 							context.assertEquals(200, fourthResponse.statusCode());
