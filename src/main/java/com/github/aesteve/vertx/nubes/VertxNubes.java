@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.bind.JAXBException;
 
@@ -154,50 +155,18 @@ public class VertxNubes {
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
 		setUpRouter(paramRouter);
 		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
-		MultipleFutures<String> vertFutures = new MultipleFutures<>();
 		Map<String, DeploymentOptions> verticles = new AnnotVerticleFactory(config).scan();
-		vertFutures.addAll(verticles, this::deployVerticle);
+		MultipleFutures<String> vertFutures = new MultipleFutures<String>(verticles, this::deployVerticle);
 		AsyncUtils.chainOnSuccess(
 				handler,
 				vertFutures,
 				config.serviceRegistry::startAll,
 				fixtureLoader::setUp,
 				res -> {
-					periodicallyCleanHistoryMap();
+					vertx.setPeriodic(60000, this::cleanHistoryMap);
 					handler.handle(Future.succeededFuture(router));
 				});
 		vertFutures.start();
-	}
-
-	private void deployVerticle(String vertName, DeploymentOptions options, Future<String> future) {
-		vertx.deployVerticle(vertName, options, completeOrFail(future));
-	}
-
-	private void setUpRouter(Router paramRouter) {
-		router = paramRouter;
-		router.route().failureHandler(failureHandler);
-		if (locResolver != null) {
-			for (Locale loc : locResolver.getAvailableLocales()) {
-				loadResourceBundle(loc);
-			}
-			loadResourceBundle(locResolver.getDefaultLocale());
-		}
-		if (config.authProvider != null) {
-			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
-		}
-		RouteFactory routeDiscovery = new RouteFactory(router, config);
-		routeDiscovery.createHandlers();
-		SocketFactory socketFactory = new SocketFactory(router, config);
-		socketFactory.createHandlers();
-		EventBusBridgeFactory ebBridgeFactory = new EventBusBridgeFactory(router, config);
-		ebBridgeFactory.createHandlers();
-		StaticHandler staticHandler;
-		if (config.webroot != null) {
-			staticHandler = StaticHandler.create(config.webroot);
-		} else {
-			staticHandler = StaticHandler.create();
-		}
-		router.route(config.assetsPath + "/*").handler(staticHandler);
 	}
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler) {
@@ -210,12 +179,6 @@ public class VertxNubes {
 		futures.add(fixtureLoader::tearDown);
 		futures.add(config.serviceRegistry::stopAll);
 		futures.add(this::stopDeployments);
-		futures.start();
-	}
-
-	private void stopDeployments(Future<Void> future) {
-		MultipleFutures<Void> futures = new MultipleFutures<>(future);
-		futures.addAll(deploymentIds, this::undeployVerticle);
 		futures.start();
 	}
 
@@ -322,26 +285,50 @@ public class VertxNubes {
 		config.globalHandlers.add(handler);
 	}
 
-	private void periodicallyCleanHistoryMap() {
-		vertx.setPeriodic(60000, timerId -> {
-			LocalMap<Object, Object> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");
-			if (rateLimitations == null) {
-				return;
-			}
-			List<String> clientIpsToRemove = new ArrayList<>();
-			RateLimit rateLimit = config.rateLimit;
-			for (Object key : rateLimitations.keySet()) {
-				String clientIp = (String) key;
-				ClientAccesses accesses = (ClientAccesses) rateLimitations.get(clientIp);
-				long keepAfter = config.rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
-				accesses.clearHistory(keepAfter);
-				if (accesses.noAccess()) {
-					clientIpsToRemove.add(clientIp);
-				}
-			}
-			clientIpsToRemove.forEach(clientIp -> {
-				rateLimitations.remove(clientIp);
-			});
+	// private methods
+
+	private void setUpRouter(Router paramRouter) {
+		router = paramRouter;
+		router.route().failureHandler(failureHandler);
+		if (locResolver != null) {
+			locResolver.getAvailableLocales().forEach(this::loadResourceBundle);
+			loadResourceBundle(locResolver.getDefaultLocale());
+		}
+		if (config.authProvider != null) {
+			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
+		}
+		RouteFactory routeDiscovery = new RouteFactory(router, config);
+		routeDiscovery.createHandlers();
+		SocketFactory socketFactory = new SocketFactory(router, config);
+		socketFactory.createHandlers();
+		EventBusBridgeFactory ebBridgeFactory = new EventBusBridgeFactory(router, config);
+		ebBridgeFactory.createHandlers();
+		StaticHandler staticHandler;
+		if (config.webroot != null) {
+			staticHandler = StaticHandler.create(config.webroot);
+		} else {
+			staticHandler = StaticHandler.create();
+		}
+		router.route(config.assetsPath + "/*").handler(staticHandler);
+	}
+
+	private void cleanHistoryMap(Long timerId) {
+		LocalMap<String, ClientAccesses> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");
+		if (rateLimitations == null) {
+			return;
+		}
+		rateLimitations.keySet().stream()
+				.filter(clientsWithNoAccessPredicate(rateLimitations))
+				.forEach(rateLimitations::remove);
+	}
+
+	private Predicate<String> clientsWithNoAccessPredicate(LocalMap<String, ClientAccesses> rateLimitations) {
+		RateLimit rateLimit = config.rateLimit;
+		return (clientIp -> {
+			ClientAccesses accesses = rateLimitations.get(clientIp);
+			long keepAfter = rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
+			accesses.clearHistory(keepAfter);
+			return accesses.noAccess();
 		});
 	}
 
@@ -349,4 +336,15 @@ public class VertxNubes {
 		ResourceBundle bundle = ResourceBundle.getBundle(config.i18nDir + "messages", loc);
 		config.bundlesByLocale.put(loc, bundle);
 	}
+
+	private void deployVerticle(String vertName, DeploymentOptions options, Future<String> future) {
+		vertx.deployVerticle(vertName, options, completeOrFail(future));
+	}
+
+	private void stopDeployments(Future<Void> future) {
+		MultipleFutures<Void> futures = new MultipleFutures<>(future);
+		futures.addAll(deploymentIds, this::undeployVerticle);
+		futures.start();
+	}
+
 }

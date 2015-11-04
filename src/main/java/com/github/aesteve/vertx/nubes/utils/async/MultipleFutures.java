@@ -39,6 +39,18 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 		addAll(elements, transform);
 	}
 
+	public <L> MultipleFutures(Collection<L> elements, BiConsumer<L, Future<T>> transform) {
+		this();
+		addAll(elements, transform);
+	}
+
+	public <K, V> MultipleFutures(Map<K, V> elements, TriConsumer<K, V, Future<T>> transform) {
+		this();
+		addAll(elements, transform);
+	}
+
+	//
+
 	public MultipleFutures<T> add(Handler<Future<T>> handler) {
 		if (handler == null) {
 			return this;
