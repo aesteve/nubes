@@ -1,5 +1,8 @@
 package com.github.aesteve.vertx.nubes.handlers;
 
+import io.vertx.core.Handler;
+import io.vertx.ext.web.RoutingContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -11,9 +14,6 @@ import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
-
-import io.vertx.core.Handler;
-import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractMethodInvocationHandler<T> implements Handler<RoutingContext> {
 

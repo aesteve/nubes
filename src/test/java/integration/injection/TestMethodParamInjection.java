@@ -1,13 +1,13 @@
 package integration.injection;
 
-import org.junit.Test;
-
+import static io.vertx.core.http.HttpVersion.HTTP_1_1;
 import integration.VertxNubesTestBase;
-import static io.vertx.core.http.HttpVersion.*;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+
+import org.junit.Test;
 
 public class TestMethodParamInjection extends VertxNubesTestBase {
 

@@ -1,17 +1,20 @@
 package integration.auth;
 
-import java.util.concurrent.atomic.AtomicReference;
-
+import static io.vertx.core.http.HttpHeaders.AUTHORIZATION;
+import static io.vertx.core.http.HttpHeaders.COOKIE;
+import static io.vertx.core.http.HttpHeaders.LOCATION;
+import static io.vertx.core.http.HttpHeaders.SET_COOKIE;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+
+import java.util.concurrent.atomic.AtomicReference;
+
 import mock.controllers.auth.RedirectedController;
 
 import org.junit.Test;
-
-import static io.vertx.core.http.HttpHeaders.*;
 
 public class AuthTest extends VertxNubesTestBase {
 

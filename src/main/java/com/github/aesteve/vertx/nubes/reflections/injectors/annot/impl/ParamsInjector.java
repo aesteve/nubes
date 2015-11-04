@@ -1,12 +1,12 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl;
 
+import io.vertx.ext.web.RoutingContext;
+
 import com.github.aesteve.vertx.nubes.annotations.params.Params;
 import com.github.aesteve.vertx.nubes.exceptions.params.InvalidParamValueException;
 import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
-
-import io.vertx.ext.web.RoutingContext;
 
 public class ParamsInjector implements AnnotatedParamInjector<Params> {
 

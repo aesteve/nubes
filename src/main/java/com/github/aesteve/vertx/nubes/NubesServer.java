@@ -3,7 +3,6 @@ package com.github.aesteve.vertx.nubes;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.ignoreResult;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.onSuccessOnly;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;

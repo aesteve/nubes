@@ -2,15 +2,6 @@ package integration;
 
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-
-import com.github.aesteve.vertx.nubes.NubesServer;
-
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -20,7 +11,16 @@ import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+
+import java.util.concurrent.TimeUnit;
+
 import mock.verticles.AnnotatedVerticle;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+
+import com.github.aesteve.vertx.nubes.NubesServer;
 
 @RunWith(VertxUnitRunner.class)
 public abstract class NubesServerTestBase {

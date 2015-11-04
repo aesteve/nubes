@@ -1,7 +1,6 @@
 package com.github.aesteve.vertx.nubes.views;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;

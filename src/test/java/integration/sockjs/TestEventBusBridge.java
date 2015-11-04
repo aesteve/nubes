@@ -1,6 +1,11 @@
 package integration.sockjs;
 
-import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.PUBLISH;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.RECEIVE;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.REGISTER;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SEND;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SOCKET_CLOSED;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SOCKET_CREATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import io.vertx.core.json.JsonObject;

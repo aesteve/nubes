@@ -1,8 +1,9 @@
 package mock.controllers.views;
 
+import io.vertx.ext.web.RoutingContext;
+
 import java.util.Map;
 
-import io.vertx.ext.web.RoutingContext;
 import mock.domains.Dog;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;

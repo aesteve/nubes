@@ -1,7 +1,13 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.PUBLISH;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.RECEIVE;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.REGISTER;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SEND;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SOCKET_CLOSED;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.SOCKET_CREATED;
+import static io.vertx.ext.web.handler.sockjs.BridgeEventType.UNREGISTER;
 import io.vertx.ext.web.handler.sockjs.BridgeEventType;
-import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

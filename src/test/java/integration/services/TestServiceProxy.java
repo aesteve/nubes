@@ -1,13 +1,13 @@
 package integration.services;
 
-import org.junit.Test;
-
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+
+import org.junit.Test;
 
 public class TestServiceProxy extends VertxNubesTestBase {
 

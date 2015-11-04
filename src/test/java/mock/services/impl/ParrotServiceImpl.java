@@ -1,11 +1,11 @@
 package mock.services.impl;
 
-import com.github.aesteve.vertx.nubes.annotations.services.Proxify;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import mock.services.ParrotService;
+
+import com.github.aesteve.vertx.nubes.annotations.services.Proxify;
 
 @Proxify("service.parrot")
 public class ParrotServiceImpl implements ParrotService {

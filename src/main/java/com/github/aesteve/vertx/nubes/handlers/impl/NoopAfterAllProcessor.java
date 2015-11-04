@@ -1,8 +1,8 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
-import com.github.aesteve.vertx.nubes.handlers.Processor;
-
 import io.vertx.ext.web.RoutingContext;
+
+import com.github.aesteve.vertx.nubes.handlers.Processor;
 
 public abstract class NoopAfterAllProcessor implements Processor {
 

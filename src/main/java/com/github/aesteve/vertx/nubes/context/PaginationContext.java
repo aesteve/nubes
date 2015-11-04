@@ -7,6 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.aesteve.vertx.nubes.exceptions.params.MandatoryParamException;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 
 /**
