@@ -118,6 +118,24 @@ public class VertxNubes {
 		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
 		config.aopHandlerRegistry = new HashMap<>();
 		config.marshallers = marshallers;
+
+		// marshalling
+		TemplateEngineManager templManager = new TemplateEngineManager(config);
+		registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
+		registerAnnotationProcessor(File.class, new FileProcessorFactory());
+		registerMarshaller("text/plain", new PlainTextMarshaller());
+		registerMarshaller("application/json", new BoonPayloadMarshaller());
+		if (config.domainPackage != null) {
+			try {
+				Reflections reflections = new Reflections(config.domainPackage, new SubTypesScanner(false));
+				registerMarshaller("application/xml", new JAXBPayloadMarshaller(reflections.getSubTypesOf(Object.class)));
+			} catch (JAXBException je) {
+				throw new RuntimeException(je);
+			}
+		}
+		failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
+
+		// default processors/handlers
 		CookieHandler cookieHandler = CookieHandler.create();
 		BodyHandler bodyHandler = BodyHandler.create();
 		registerAnnotationHandler(Cookies.class, cookieHandler);
@@ -131,20 +149,6 @@ public class VertxNubes {
 		registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
 		registerAnnotationProcessor(Redirect.class, new ClientRedirectProcessorFactory());
 		registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
-		TemplateEngineManager templManager = new TemplateEngineManager(config);
-		registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
-		registerAnnotationProcessor(File.class, new FileProcessorFactory());
-		registerMarshaller("application/json", new BoonPayloadMarshaller());
-		if (config.domainPackage != null) {
-			try {
-				Reflections reflections = new Reflections(config.domainPackage, new SubTypesScanner(false));
-				registerMarshaller("application/xml", new JAXBPayloadMarshaller(reflections.getSubTypesOf(Object.class)));
-			} catch (JAXBException je) {
-				throw new RuntimeException(je);
-			}
-		}
-		registerMarshaller("text/plain", new PlainTextMarshaller());
-		failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
 	}
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
