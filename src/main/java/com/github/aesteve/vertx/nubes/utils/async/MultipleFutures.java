@@ -10,6 +10,7 @@ import io.vertx.core.logging.LoggerFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.github.aesteve.vertx.nubes.utils.functional.TriConsumer;
@@ -116,6 +117,15 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 
 	public MultipleFutures<T> join(Handler<AsyncResult<T>> handler) {
 		setHandler(handler);
+		return this;
+	}
+
+	public <L> MultipleFutures<T> addAll(Collection<L> list, BiConsumer<L, Future<T>> transform) {
+		list.forEach(element -> {
+			add(res -> {
+				transform.accept(element, res);
+			});
+		});
 		return this;
 	}
 

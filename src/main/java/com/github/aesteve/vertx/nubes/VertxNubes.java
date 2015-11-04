@@ -211,11 +211,7 @@ public class VertxNubes {
 
 	private void stopDeployments(Future<Void> future) {
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
-		deploymentIds.forEach(deploymentId -> {
-			futures.add(fut -> {
-				undeployVerticle(deploymentId, fut);
-			});
-		});
+		futures.addAll(deploymentIds, this::undeployVerticle);
 		futures.start();
 	}
 

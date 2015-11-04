@@ -112,11 +112,12 @@ public class ServiceRegistry {
 			vertx.cancelTimer(timerId);
 		});
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
-		services().forEach(obj -> {
+		futures.addAll(services(), obj -> {
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
-				futures.add(service::stop);
+				return service::stop;
 			}
+			return null;
 		});
 		futures.start();
 	}
