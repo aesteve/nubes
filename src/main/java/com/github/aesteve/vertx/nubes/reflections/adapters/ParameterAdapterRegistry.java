@@ -5,18 +5,20 @@ import io.vertx.core.MultiMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.aesteve.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
+
 public class ParameterAdapterRegistry {
 
 	private Map<Class<?>, ParameterAdapter<?>> adapters;
 	private ParameterAdapter<Object> defaultParameterAdapter;
 
-	public ParameterAdapterRegistry() {
+	public ParameterAdapterRegistry(ParameterAdapter<Object> defaultParameterAdapter) {
 		adapters = new HashMap<>();
+		this.defaultParameterAdapter = defaultParameterAdapter;
 	}
 
-	public ParameterAdapterRegistry(ParameterAdapter<Object> defaultParameterAdapter) {
-		this();
-		this.defaultParameterAdapter = defaultParameterAdapter;
+	public ParameterAdapterRegistry() {
+		this(new DefaultParameterAdapter());
 	}
 
 	public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
