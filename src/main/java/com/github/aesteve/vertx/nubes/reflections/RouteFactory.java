@@ -39,7 +39,6 @@ import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.reflections.factories.AuthenticationFactory;
 import com.github.aesteve.vertx.nubes.routing.HttpMethodFactory;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
-import com.github.aesteve.vertx.nubes.utils.Filter;
 
 public class RouteFactory extends AbstractInjectionFactory implements HandlerFactory {
 

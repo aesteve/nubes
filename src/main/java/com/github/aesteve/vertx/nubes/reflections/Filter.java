@@ -1,4 +1,4 @@
-package com.github.aesteve.vertx.nubes.utils;
+package com.github.aesteve.vertx.nubes.reflections;
 
 import java.lang.reflect.Method;
 

@@ -22,7 +22,7 @@ import com.github.aesteve.vertx.nubes.annotations.Blocking;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultMethodInvocationHandler;
 import com.github.aesteve.vertx.nubes.handlers.impl.PayloadTypeProcessor;
-import com.github.aesteve.vertx.nubes.utils.Filter;
+import com.github.aesteve.vertx.nubes.reflections.Filter;
 
 public class MVCRoute {
 
