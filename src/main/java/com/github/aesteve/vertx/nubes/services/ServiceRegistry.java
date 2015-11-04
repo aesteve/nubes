@@ -91,13 +91,14 @@ public class ServiceRegistry {
 			return;
 		}
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
-		services().forEach(obj -> {
+		futures.addAll(services(), obj -> {
 			introspectService(obj);
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
 				service.init(vertx, config.json);
-				futures.add(service::start);
+				return service::start;
 			}
+			return null;
 		});
 		futures.start();
 	}

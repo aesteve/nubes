@@ -182,11 +182,7 @@ public class VertxNubes {
 				handler.handle(Future.failedFuture(res.cause()));
 			}
 		});
-		verticles.forEach((vertName, options) -> {
-			vertFutures.add(fut -> {
-				deployVerticle(vertName, options, fut);
-			});
-		});
+		vertFutures.addAll(verticles, this::deployVerticle);
 		vertFutures.start();
 	}
 

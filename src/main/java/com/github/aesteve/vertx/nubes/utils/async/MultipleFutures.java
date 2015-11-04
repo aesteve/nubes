@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.github.aesteve.vertx.nubes.utils.functional.TriConsumer;
+
 public class MultipleFutures<T> extends SimpleFuture<T> {
 
 	private final Map<Handler<Future<T>>, Future<T>> consumers;
@@ -37,6 +39,9 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 	}
 
 	public void add(Handler<Future<T>> handler) {
+		if (handler == null) {
+			return;
+		}
 		Future<T> future = Future.future();
 		future.setHandler(futureHandler -> {
 			checkCallHandler();
@@ -112,13 +117,21 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 
 	public <L> void addAll(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
 		list.forEach(element -> {
-			this.add(transform.apply(element));
+			add(transform.apply(element));
 		});
 	}
 
 	public <L> void treatAllNow(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
 		addAll(list, transform);
 		start();
+	}
+
+	public <K, V> void addAll(Map<K, V> map, TriConsumer<K, V, Future<T>> transform) {
+		map.forEach((key, value) -> {
+			add(res -> {
+				transform.accept(key, value, res);
+			});
+		});
 	}
 
 }
