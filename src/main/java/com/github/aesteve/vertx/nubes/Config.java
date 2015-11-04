@@ -164,7 +164,7 @@ public class Config {
 		JsonObject authProperties = json.getJsonObject("auth-properties");
 
 		// TODO : discuss it. I'm really not convinced about all the boilerplate needed in config (dbName only for JDBC, etc.)
-		if (authProperties != null && authProperties != null) {
+		if (authProperties != null) {
 			// For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
 			switch (auth) {
 				case "JWT":// For now only allow properties realm
