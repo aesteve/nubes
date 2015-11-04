@@ -297,12 +297,9 @@ public class VertxNubes {
 		if (config.authProvider != null) {
 			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
 		}
-		RouteFactory routeDiscovery = new RouteFactory(router, config);
-		routeDiscovery.createHandlers();
-		SocketFactory socketFactory = new SocketFactory(router, config);
-		socketFactory.createHandlers();
-		EventBusBridgeFactory ebBridgeFactory = new EventBusBridgeFactory(router, config);
-		ebBridgeFactory.createHandlers();
+		new RouteFactory(router, config).createHandlers();
+		new SocketFactory(router, config).createHandlers();
+		new EventBusBridgeFactory(router, config).createHandlers();
 		StaticHandler staticHandler;
 		if (config.webroot != null) {
 			staticHandler = StaticHandler.create(config.webroot);
