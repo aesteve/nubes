@@ -82,6 +82,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.LocaleParamInjector;
+import com.github.aesteve.vertx.nubes.services.Service;
 import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
@@ -234,6 +235,10 @@ public class VertxNubes {
 
 	public void registerService(String name, Object service) {
 		config.serviceRegistry.registerService(name, service);
+	}
+
+	public Service getService(String name) {
+		return (Service) config.serviceRegistry.get(name);
 	}
 
 	public void registerServiceProxy(Object service) {
