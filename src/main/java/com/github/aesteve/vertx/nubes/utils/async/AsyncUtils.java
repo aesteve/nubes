@@ -134,4 +134,16 @@ public class AsyncUtils {
 		List<Handler<Future<Void>>> list = Arrays.asList(handlers);
 		return AsyncUtils.chainOnSuccess(globalHandler, future, list);
 	}
+
+	public static <T> Handler<AsyncResult<T>> logIfFailed(String msg, Logger logger) {
+		return res -> {
+			if (res.failed()) {
+				if (msg != null) {
+					logger.error(msg, res.cause());
+				} else {
+					logger.error(res.cause());
+				}
+			}
+		};
+	}
 }
