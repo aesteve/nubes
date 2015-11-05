@@ -41,6 +41,14 @@ public class AsyncUtils {
 		});
 	}
 
+	public static <T> AsyncResult<Void> withoutResult(AsyncResult<T> res) {
+		if (res.failed()) {
+			return Future.failedFuture(res.cause());
+		} else {
+			return Future.succeededFuture();
+		}
+	}
+
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(Future<Void> future, Handler<T> handler) {
 		return (res -> {
 			if (res.failed()) {
