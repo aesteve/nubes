@@ -47,6 +47,7 @@ public class CheckTokenHandler extends AuthHandlerImpl {
 		authProvider.authenticate(authInfo, res -> {
 			if (res.succeeded()) {
 				User authenticated = res.result();
+				authenticated.setAuthProvider(authProvider);
 				context.setUser(authenticated);
 				authorise(authenticated, context);
 			} else {
