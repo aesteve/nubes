@@ -17,6 +17,10 @@ public class CheckAuthorityProcessor extends NoopAfterAllProcessor implements An
 	@Override
 	public void preHandle(RoutingContext context) {
 		User user = context.user();
+		if (user == null) {
+			context.fail(401);
+			return;
+		}
 		user.isAuthorised(annotation.authority(), result -> {
 			if (!result.result()) {
 				context.fail(403);
