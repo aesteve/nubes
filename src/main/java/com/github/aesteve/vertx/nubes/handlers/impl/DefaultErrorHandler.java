@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
+import com.github.aesteve.vertx.nubes.exceptions.http.HttpException;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
@@ -55,15 +56,26 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		}
 		PayloadMarshaller marshaller = marshallers.get(ContentTypeProcessor.getContentType(context));
 		if (cause != null) {
-			response.setStatusCode(500);
+			int statusCode = 500;
+			String statusMsg = errorMessages.get(500);
+			if (cause instanceof HttpException) {
+				HttpException he = (HttpException) cause;
+				statusCode = he.status;
+				statusMsg = he.getMessage();
+			}
+			response.setStatusCode(statusCode);
 			if (isView(context)) {
-				String tplFile = errorTemplates.get(500);
+				String tplFile = errorTemplates.get(statusCode);
 				renderViewError(tplFile, context, cause);
 			} else {
 				if (marshaller != null) {
-					response.end(marshaller.marshallUnexpectedError(cause, config.displayErrors));
+					if (statusCode == 500) {
+						response.end(marshaller.marshallUnexpectedError(cause, config.displayErrors));
+					} else {
+						response.end(marshaller.marshallHttpStatus(statusCode, statusMsg));
+					}
 				} else {
-					response.end(errorMessages.get(500));
+					response.end(statusMsg);
 				}
 			}
 		} else {
