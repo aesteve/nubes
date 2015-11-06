@@ -11,7 +11,11 @@ public class MockAuthProvider implements AuthProvider {
 
 	@Override
 	public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
-		User user = new MockUser(authInfo.getString("username"));
+		String userId = authInfo.getString("username");
+		if (userId == null) {
+			userId = authInfo.getString("access_token");
+		}
+		User user = new MockUser(userId);
 		resultHandler.handle(Future.succeededFuture(user));
 	}
 

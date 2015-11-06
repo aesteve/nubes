@@ -16,7 +16,7 @@ import mock.controllers.auth.RedirectedController;
 
 import org.junit.Test;
 
-public class AuthTest extends VertxNubesTestBase {
+public class BasicAuthTest extends VertxNubesTestBase {
 
 	protected AtomicReference<String> sessionCookie = new AtomicReference<>();
 

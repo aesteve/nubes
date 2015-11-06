@@ -23,4 +23,11 @@ public class PrivateController {
 	public void getAdmin(RoutingContext context, @User MockUser user) {
 		context.response().end(user.login);
 	}
+
+	@GET("/api")
+	@Auth(authority = "admin", method = AuthMethod.API_TOKEN)
+	public String getApi(@User MockUser user) {
+		return user.login;
+	}
+
 }

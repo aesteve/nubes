@@ -9,6 +9,7 @@ import io.vertx.ext.web.handler.RedirectAuthHandler;
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
+import com.github.aesteve.vertx.nubes.handlers.impl.CheckTokenHandler;
 
 public class AuthenticationFactory {
 
@@ -37,6 +38,8 @@ public class AuthenticationFactory {
 					throw new IllegalArgumentException("You must specify a redirectURL if you're using Redirect Auth");
 				}
 				return RedirectAuthHandler.create(config.authProvider, redirect);
+			case API_TOKEN:
+				return new CheckTokenHandler(config.authProvider);
 			default:
 				throw new UnsupportedOperationException();
 		}
