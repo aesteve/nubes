@@ -19,6 +19,7 @@ import io.vertx.ext.web.templ.JadeTemplateEngine;
 import io.vertx.ext.web.templ.MVELTemplateEngine;
 import io.vertx.ext.web.templ.TemplateEngine;
 import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
+import io.vertx.ext.web.handler.BodyHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -193,6 +194,8 @@ public class Config {
 		instance.tplDir = json.getString("views-dir", "web/views");
 		instance.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
 		// TODO : read sockJSOptions from config
+
+		instance.globalHandlers.add(BodyHandler.create());
 		return instance;
 	}
 

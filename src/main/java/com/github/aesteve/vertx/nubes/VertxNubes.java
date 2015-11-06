@@ -12,7 +12,6 @@ import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.TemplateEngine;
@@ -41,10 +40,6 @@ import com.github.aesteve.vertx.nubes.annotations.cookies.Cookies;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.mixins.Throttled;
 import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.PATCH;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.PUT;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.ClientAccesses;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
@@ -137,14 +132,9 @@ public class VertxNubes {
 
 		// default processors/handlers
 		CookieHandler cookieHandler = CookieHandler.create();
-		BodyHandler bodyHandler = BodyHandler.create();
 		registerAnnotationHandler(Cookies.class, cookieHandler);
 		registerAnnotationHandler(CookieValue.class, cookieHandler);
 		registerAnnotationHandler(Throttled.class, RateLimitationHandler.create(config));
-		registerAnnotationHandler(GET.class, bodyHandler);
-		registerAnnotationHandler(POST.class, bodyHandler);
-		registerAnnotationHandler(PUT.class, bodyHandler);
-		registerAnnotationHandler(PATCH.class, bodyHandler);
 		registerTypeProcessor(PaginationContext.class, new PaginationProcessor());
 		registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
 		registerAnnotationProcessor(Redirect.class, new ClientRedirectProcessorFactory());
