@@ -6,9 +6,11 @@
 
 The main idea is to provide a different way to declare your routes than you'd do in a standard vertx-web project by providing a set of hopefully useful annotations / utilities on top of vertx-web.
 
-The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... A good example on how to extend the framework is [Nubes Hibernate](http://github.com/aesteve/nubes-hibernate), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Hibernate/JPA on top of Nubes.
+The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... A good example on how to extend the framework is [Nubes Hibernate](http://github.com/aesteve/nubes-hibernate), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Hibernate/JPA on top of Nubes. You can also have a look at [nubes-mongo](http://github.com/aesteve/nubes-mongo), a Mongo ORM on top of Nubes.
 
-Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of additional utilities at your disposal.
+If you're interested in how a real-life project built with Nubes would look like, you can have a look at [Projuice](http:/github.com/aesteve/projuice), a simple project manager built with Nubes framework and Mongo. You'll see how real-life REST API controllers look like, how to deal with a MongoDB database very easily, how to handle authentication in your own way, and how to write unit-testing.
+
+Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of additional utilities at your disposal to declare your web routes in another way (a SpringMVC-ish way), to declare and inject services if you don't have a DI framework at your disposal, or to write Verticles differently.
 
 
 ## For the impatient, here's a basic example :
