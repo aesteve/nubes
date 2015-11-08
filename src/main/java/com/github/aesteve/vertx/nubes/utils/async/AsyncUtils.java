@@ -96,6 +96,16 @@ public class AsyncUtils {
 			}
 		});
 	}
+	
+	public static <T> Handler<AsyncResult<T>> failOr(RoutingContext context, Handler<AsyncResult<T>> handler) {
+		return res -> {
+			if (res.failed()) {
+				context.fail(res.cause());
+			} else {
+				handler.handle(res);
+			}
+		};
+	}
 
 	public static <T, U, V> Future<V> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<V>> nextHandler) {
 		Future<V> nextFuture = Future.future();
