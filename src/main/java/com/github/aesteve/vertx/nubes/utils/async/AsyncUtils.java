@@ -1,15 +1,15 @@
 package com.github.aesteve.vertx.nubes.utils.async;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class AsyncUtils {
 
@@ -97,8 +97,8 @@ public class AsyncUtils {
 		});
 	}
 
-	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>> nextHandler) {
-		Future<Void> nextFuture = Future.future();
+	public static <T, U, V> Future<V> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<V>> nextHandler) {
+		Future<V> nextFuture = Future.future();
 		future.setHandler(res -> {
 			if (res.failed()) {
 				globalHandler.handle(Future.failedFuture(res.cause()));
@@ -109,6 +109,41 @@ public class AsyncUtils {
 		return nextFuture;
 	}
 
+	public static<T> void chainHandlers(Handler<AsyncResult<T>> global, List<Handler<Future<T>>> handlers) {
+		if (handlers == null || handlers.isEmpty()) {
+			global.handle(Future.succeededFuture());
+			return;
+		}
+		int nbHandlers = handlers.size();
+		Future<T> firstFuture = Future.future();
+		if (nbHandlers == 1) {
+			firstFuture.setHandler(global);
+			handlers.get(0).handle(firstFuture);
+			return;
+		}
+		List<Future<T>> futures = new ArrayList<>(handlers.size());
+		int i = 0;
+		for (Handler<Future<T>> handler : handlers) {
+			if (i < handlers.size() - 1) {
+				Future<T> fut = i == 0 ? firstFuture : futures.get(i - 1);
+				futures.add(chainOnSuccess(global, fut, handler));
+				i++;
+			}
+		}
+		futures.get(futures.size() - 1).setHandler(global);
+		handlers.get(0).handle(firstFuture);
+	}
+	
+	public static<T> void chainHandlers(Future<T> global, List<Handler<Future<T>>> handlers) {
+		chainHandlers(res -> {
+			if (res.failed()) {
+				global.fail(res.cause());
+			} else {
+				global.complete(res.result());
+			}
+		}, handlers);
+	}
+	
 	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, List<Handler<Future<Void>>> list) {
 		List<Future<Void>> futures = new ArrayList<>(list.size());
 		int i = 0;

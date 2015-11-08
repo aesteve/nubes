@@ -48,6 +48,7 @@ public class NubesServer extends AbstractVerticle {
 
 	private void closeServer(Future<Void> future) {
 		if (server != null) {
+			log.info("Closing HTTP server");
 			server.close(completeOrFail(future));
 		} else {
 			future.complete();

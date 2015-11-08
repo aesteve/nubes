@@ -1,18 +1,21 @@
 package com.github.aesteve.vertx.nubes.fixtures;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.reflections.Reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
-import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
+import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
+
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 
 public class FixtureLoader {
 
@@ -29,7 +32,7 @@ public class FixtureLoader {
 		this.vertx = vertx;
 		this.config = config;
 		this.serviceRegistry = serviceRegistry;
-		fixtures = new TreeSet<>();
+		fixtures = new HashSet<>();
 	}
 
 	public void setUp(Future<Void> future) {
@@ -44,29 +47,29 @@ public class FixtureLoader {
 		exec(future, "tearDown");
 	}
 
-	private void exec(Future<Void> startFuture, String methodName) {
+	private void exec(Future<Void> rootFuture, String methodName) {
 		if (fixtures.isEmpty()) {
-			startFuture.complete();
+			rootFuture.complete();
 			return;
 		}
-		MultipleFutures<Void> futures = new MultipleFutures<>(startFuture);
-		fixtures.forEach(fixture -> {
+		List<Handler<Future<Void>>> list = new ArrayList<>();
+		fixtures.stream().sorted().forEach(fixture -> {
 			switch (methodName) {
 				case "startUp":
-					futures.add(future -> {
-						fixture.startUp(vertx, future);
+					list.add(fut -> {
+						fixture.startUp(vertx, fut);
 					});
 					break;
 				case "tearDown":
-					futures.add(future -> {
-						fixture.tearDown(vertx, future);
+					list.add(fut -> {
+						fixture.tearDown(vertx, fut);
 					});
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown method : " + methodName);
 			}
 		});
-		futures.start();
+		AsyncUtils.chainHandlers(rootFuture, list);
 	}
 
 	private void injectServicesIntoFixture(Fixture fixture) throws IllegalAccessException {
