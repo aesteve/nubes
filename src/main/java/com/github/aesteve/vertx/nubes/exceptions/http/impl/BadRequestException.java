@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.exceptions.http.impl;
 
+import com.github.aesteve.vertx.nubes.exceptions.ValidationException;
 import com.github.aesteve.vertx.nubes.exceptions.http.HttpException;
 
 public class BadRequestException extends HttpException {
@@ -12,5 +13,9 @@ public class BadRequestException extends HttpException {
 
 	public BadRequestException(String msg) {
 		super(400, "Bad request. " + msg);
+	}
+	
+	public BadRequestException(ValidationException ve) {
+		this(ve.getValidationMsg());
 	}
 }
