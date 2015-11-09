@@ -1,5 +1,11 @@
 package unit;
 
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,18 +16,12 @@ import org.junit.runner.RunWith;
 
 import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.unit.Async;
-
 @RunWith(VertxUnitRunner.class)
 public class AsyncTest {
-	
+
 	private final static Random rand = new Random();
 	protected StringBuilder testSb;
-	
+
 	@Test
 	public void testChanHandlers(TestContext context) {
 		Async async = context.async();
@@ -36,13 +36,12 @@ public class AsyncTest {
 			async.complete();
 		}, handlers);
 	}
-	
-	
+
 	private void println(int order, Future<Void> future) {
 		testSb.append(order + ";");
 		try {
 			Thread.sleep(rand.nextInt(300));
-		} catch(Exception e) {}
+		} catch (Exception e) {}
 		future.complete();
 	}
 }

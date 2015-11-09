@@ -1,12 +1,12 @@
 package integration.auth;
 
-import org.junit.Test;
-
-import com.google.common.net.HttpHeaders;
-
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+
+import org.junit.Test;
+
+import com.google.common.net.HttpHeaders;
 
 public class ApiAuthTest extends VertxNubesTestBase {
 

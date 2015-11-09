@@ -1,5 +1,9 @@
 package com.github.aesteve.vertx.nubes.fixtures;
 
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,10 +16,6 @@ import org.reflections.Reflections;
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
-
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 
 public class FixtureLoader {
 

@@ -14,7 +14,7 @@ public class BadRequestException extends HttpException {
 	public BadRequestException(String msg) {
 		super(400, "Bad request. " + msg);
 	}
-	
+
 	public BadRequestException(ValidationException ve) {
 		this(ve.getValidationMsg());
 	}

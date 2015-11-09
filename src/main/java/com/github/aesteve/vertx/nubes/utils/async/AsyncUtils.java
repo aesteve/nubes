@@ -1,15 +1,15 @@
 package com.github.aesteve.vertx.nubes.utils.async;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AsyncUtils {
 
@@ -96,7 +96,7 @@ public class AsyncUtils {
 			}
 		});
 	}
-	
+
 	public static <T> Handler<AsyncResult<T>> failOr(RoutingContext context, Handler<AsyncResult<T>> handler) {
 		return res -> {
 			if (res.failed()) {
@@ -119,7 +119,7 @@ public class AsyncUtils {
 		return nextFuture;
 	}
 
-	public static<T> void chainHandlers(Handler<AsyncResult<T>> global, List<Handler<Future<T>>> handlers) {
+	public static <T> void chainHandlers(Handler<AsyncResult<T>> global, List<Handler<Future<T>>> handlers) {
 		if (handlers == null || handlers.isEmpty()) {
 			global.handle(Future.succeededFuture());
 			return;
@@ -143,8 +143,8 @@ public class AsyncUtils {
 		futures.get(futures.size() - 1).setHandler(global);
 		handlers.get(0).handle(firstFuture);
 	}
-	
-	public static<T> void chainHandlers(Future<T> global, List<Handler<Future<T>>> handlers) {
+
+	public static <T> void chainHandlers(Future<T> global, List<Handler<Future<T>>> handlers) {
 		chainHandlers(res -> {
 			if (res.failed()) {
 				global.fail(res.cause());
@@ -153,7 +153,7 @@ public class AsyncUtils {
 			}
 		}, handlers);
 	}
-	
+
 	public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, List<Handler<Future<Void>>> list) {
 		List<Future<Void>> futures = new ArrayList<>(list.size());
 		int i = 0;
