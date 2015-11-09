@@ -16,6 +16,13 @@ public abstract class AbstractInjectionFactory {
 				field.set(instance, service);
 			}
 		}
+		for (Field field : instance.getClass().getSuperclass().getDeclaredFields()) {
+			Object service = config.serviceRegistry.get(field);
+			if (service != null) {
+				field.setAccessible(true);
+				field.set(instance, service);
+			}
+		}
 	}
 
 }
