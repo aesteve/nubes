@@ -132,13 +132,14 @@ public class AsyncUtils {
 			return;
 		}
 		List<Future<T>> futures = new ArrayList<>(handlers.size());
+		futures.add(firstFuture);
 		int i = 0;
 		for (Handler<Future<T>> handler : handlers) {
-			if (i < handlers.size() - 1) {
-				Future<T> fut = i == 0 ? firstFuture : futures.get(i - 1);
+			if (i > 0) {
+				Future<T> fut = futures.get(i - 1);
 				futures.add(chainOnSuccess(global, fut, handler));
-				i++;
 			}
+			i++;
 		}
 		futures.get(futures.size() - 1).setHandler(global);
 		handlers.get(0).handle(firstFuture);
