@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.auth.User;
 
 import com.github.aesteve.vertx.nubes.annotations.auth.Logout;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
@@ -9,7 +10,11 @@ public class LogoutProcessor extends AfterProcessor implements AnnotationProcess
 
 	@Override
 	public void postHandle(RoutingContext context) {
-		context.clearUser();
+		User user = context.user();
+		if (user != null) {
+			user.clearCache();
+			context.clearUser();
+		}
 	}
 
 	@Override
