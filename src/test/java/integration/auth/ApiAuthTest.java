@@ -10,7 +10,7 @@ import com.google.common.net.HttpHeaders;
 
 public class ApiAuthTest extends VertxNubesTestBase {
 
-	private static final String VALID_TOKEN = "tim";
+	public static final String VALID_TOKEN = "tim";
 
 	@Test
 	public void testWithNoToken(TestContext context) {

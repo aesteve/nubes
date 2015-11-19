@@ -9,6 +9,8 @@ import io.vertx.ext.auth.User;
 
 public class MockUser implements User {
 
+	public static boolean FLAGGED_AS_CLEARED = false;
+
 	public String login;
 
 	public MockUser(String login) {
@@ -24,6 +26,7 @@ public class MockUser implements User {
 
 	@Override
 	public User clearCache() {
+		FLAGGED_AS_CLEARED = true;
 		return this;
 	}
 

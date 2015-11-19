@@ -35,7 +35,7 @@ public class AnnotationProcessorRegistry {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Annotation> AnnotationProcessor<T> getSimpleProcessor(T annotation) {
-		return (AnnotationProcessor<T>) processorMap.get(annotation);
+		return (AnnotationProcessor<T>) processorMap.get(annotation.annotationType());
 	}
 
 	@SuppressWarnings("unchecked")

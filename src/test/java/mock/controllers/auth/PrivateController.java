@@ -5,10 +5,11 @@ import mock.auth.MockUser;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
+import com.github.aesteve.vertx.nubes.annotations.auth.Logout;
 import com.github.aesteve.vertx.nubes.annotations.auth.User;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
+import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 @Controller("/private")
 public class PrivateController {
@@ -31,8 +32,11 @@ public class PrivateController {
 		return user.login;
 	}
 
-	@POST("/logout")
+	@GET("/logout")
 	@Auth(authority = "admin", method = AuthMethod.API_TOKEN)
-	public void logout() {}
+	@Logout
+	public void logout(Payload<Void> payload) {
+		payload.set(null);
+	}
 
 }
