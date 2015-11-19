@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -53,6 +54,15 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 			}
 			if (!usesRoutingContext && hasNext) { // cannot call context.next(), assume the method is sync
 				routingContext.next();
+			}
+			if (!usesRoutingContext && !usesHttpResponse && !hasNext) {
+				HttpServerResponse response = routingContext.response();
+				try {
+					response.setStatusCode(204);
+					response.end();
+				} catch (IllegalStateException ise) {
+					routingContext.next();
+				}
 			}
 		} catch (InvocationTargetException ite) {
 			ite.printStackTrace();

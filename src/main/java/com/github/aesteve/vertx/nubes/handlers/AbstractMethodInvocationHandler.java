@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.handlers;
 
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.lang.annotation.Annotation;
@@ -22,6 +23,7 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 	protected Config config;
 	protected Parameter[] parameters;
 	protected boolean usesRoutingContext;
+	protected boolean usesHttpResponse;
 	protected boolean hasNext;
 	protected BiConsumer<RoutingContext, T> returnHandler;
 	protected boolean returnsSomething;
@@ -32,9 +34,12 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 		this.hasNext = hasNext;
 		parameters = method.getParameters();
 		for (Parameter param : parameters) {
-			if (param.getType().equals(RoutingContext.class)) {
+			Class<?> paramType = param.getType();
+			if (paramType.equals(RoutingContext.class)) {
 				usesRoutingContext = true;
-				break;
+			}
+			if (paramType.equals(HttpServerResponse.class)) {
+				usesHttpResponse = true;
 			}
 		}
 		this.config = config;
