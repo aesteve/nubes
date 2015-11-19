@@ -8,27 +8,38 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class AnnotationProcessorRegistry {
 
-	private Map<Class<? extends Annotation>, AnnotationProcessorFactory<? extends Annotation>> map;
+	private Map<Class<? extends Annotation>, AnnotationProcessorFactory<? extends Annotation>> factoryMap;
+	private Map<Class<? extends Annotation>, AnnotationProcessor<? extends Annotation>> processorMap;
 
 	public AnnotationProcessorRegistry() {
-		map = new HashMap<>();
+		factoryMap = new HashMap<>();
+		processorMap = new HashMap<>();
 	}
 
 	public <T extends Annotation> void registerProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
-		map.put(annotation, processor);
+		factoryMap.put(annotation, processor);
+	}
+
+	public <T extends Annotation> void registerProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
+		processorMap.put(annotation, processor);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Annotation> AnnotationProcessor<T> getProcessor(T annotation) {
-		AnnotationProcessorFactory<T> processor = (AnnotationProcessorFactory<T>) getProcessor(annotation.annotationType());
-		if (processor == null) {
-			return null;
+		AnnotationProcessorFactory<T> factory = (AnnotationProcessorFactory<T>) getFactory(annotation.annotationType());
+		if (factory != null) {
+			return factory.create(annotation);
 		}
-		return processor.create(annotation);
+		return getSimpleProcessor(annotation);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Annotation> AnnotationProcessorFactory<T> getProcessor(Class<T> annotation) {
-		return (AnnotationProcessorFactory<T>) map.get(annotation);
+	private <T extends Annotation> AnnotationProcessor<T> getSimpleProcessor(T annotation) {
+		return (AnnotationProcessor<T>) processorMap.get(annotation);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Annotation> AnnotationProcessorFactory<T> getFactory(Class<T> annotation) {
+		return (AnnotationProcessorFactory<T>) factoryMap.get(annotation);
 	}
 }
