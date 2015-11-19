@@ -1,10 +1,10 @@
 package integration.exceptions;
 
-import org.junit.Test;
-
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+
+import org.junit.Test;
 
 public class ExceptionsTest extends VertxNubesTestBase {
 

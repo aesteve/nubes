@@ -1,5 +1,11 @@
 package unit;
 
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,12 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
-
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 @RunWith(VertxUnitRunner.class)
 public class AsyncTest {
