@@ -7,6 +7,7 @@ import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.annotations.auth.User;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 
 @Controller("/private")
@@ -29,5 +30,9 @@ public class PrivateController {
 	public String getApi(@User MockUser user) {
 		return user.login;
 	}
+
+	@POST("/logout")
+	@Auth(authority = "admin", method = AuthMethod.API_TOKEN)
+	public void logout() {}
 
 }

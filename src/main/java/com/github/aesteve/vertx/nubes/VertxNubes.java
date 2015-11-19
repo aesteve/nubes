@@ -35,6 +35,7 @@ import org.reflections.scanners.SubTypesScanner;
 import com.github.aesteve.vertx.nubes.annotations.File;
 import com.github.aesteve.vertx.nubes.annotations.View;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
+import com.github.aesteve.vertx.nubes.annotations.auth.Logout;
 import com.github.aesteve.vertx.nubes.annotations.cookies.CookieValue;
 import com.github.aesteve.vertx.nubes.annotations.cookies.Cookies;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
@@ -45,10 +46,12 @@ import com.github.aesteve.vertx.nubes.context.ClientAccesses;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
 import com.github.aesteve.vertx.nubes.fixtures.FixtureLoader;
+import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 import com.github.aesteve.vertx.nubes.handlers.impl.LocaleHandler;
+import com.github.aesteve.vertx.nubes.handlers.impl.LogoutProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.PaginationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.PayloadTypeProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.RateLimitationHandler;
@@ -139,6 +142,7 @@ public class VertxNubes {
 		registerTypeProcessor(Payload.class, new PayloadTypeProcessor(marshallers));
 		registerAnnotationProcessor(Redirect.class, new ClientRedirectProcessorFactory());
 		registerAnnotationProcessor(ContentType.class, new ContentTypeProcessorFactory());
+		registerAnnotationProcessor(Logout.class, new LogoutProcessor());
 	}
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
@@ -259,6 +263,10 @@ public class VertxNubes {
 	}
 
 	public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
+		config.apRegistry.registerProcessor(annotation, processor);
+	}
+
+	public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
 		config.apRegistry.registerProcessor(annotation, processor);
 	}
 
