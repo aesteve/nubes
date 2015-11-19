@@ -7,10 +7,6 @@ import mock.controllers.assets.TestAssetsController;
 
 import org.junit.Test;
 
-/**
- * @README : Be careful : runnin this test from your IDE won't work
- * Since the assets path is set as a relative path ("web/assets/") it can only work when ran from the root of the project
- */
 public class AssetsTest extends VertxNubesTestBase {
 
 	@Test
