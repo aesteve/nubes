@@ -34,10 +34,4 @@ public class CheckAuthorityProcessor extends NoopAfterAllProcessor implements An
 	public void postHandle(RoutingContext context) {
 		context.next();
 	}
-
-	@Override
-	public Class<? extends Auth> getAnnotationType() {
-		return Auth.class;
-	}
-
 }

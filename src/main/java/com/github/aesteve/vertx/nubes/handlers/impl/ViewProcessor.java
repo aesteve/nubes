@@ -31,9 +31,4 @@ public class ViewProcessor extends NoopAfterAllProcessor implements AnnotationPr
 		templateHandler.handle(context);
 	}
 
-	@Override
-	public Class<? extends View> getAnnotationType() {
-		return View.class;
-	}
-
 }

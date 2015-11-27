@@ -32,9 +32,4 @@ public class ClientRedirectProcessor extends NoopAfterAllProcessor implements An
 		response.end();
 	}
 
-	@Override
-	public Class<? extends Redirect> getAnnotationType() {
-		return Redirect.class;
-	}
-
 }

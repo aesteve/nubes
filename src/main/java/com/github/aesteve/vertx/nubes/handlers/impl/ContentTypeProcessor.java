@@ -48,11 +48,6 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
 		context.next();
 	}
 
-	@Override
-	public Class<? extends ContentType> getAnnotationType() {
-		return ContentType.class;
-	}
-
 	public static String getContentType(RoutingContext context) {
 		return context.get(BEST_CONTENT_TYPE);
 	}

@@ -28,9 +28,4 @@ public class FileProcessor extends NoopAfterAllProcessor implements AnnotationPr
 		context.response().sendFile(FileResolver.getFileName(context));
 	}
 
-	@Override
-	public Class<? extends File> getAnnotationType() {
-		return File.class;
-	}
-
 }

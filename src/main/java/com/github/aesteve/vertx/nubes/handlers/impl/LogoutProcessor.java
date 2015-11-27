@@ -18,9 +18,4 @@ public class LogoutProcessor extends AfterProcessor implements AnnotationProcess
 		context.next();
 	}
 
-	@Override
-	public Class<? extends Logout> getAnnotationType() {
-		return Logout.class;
-	}
-
 }
