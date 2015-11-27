@@ -69,4 +69,20 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 		}).putHeader("someHeader", value).end();
 	}
 
+	@Test
+	public void wrongHeaderType(TestContext context) {
+		Async async = context.async();
+		String header = "X-Date";
+		String value = "invalidDate";
+		client().get("/headers/facultative", response -> {
+			context.assertEquals(400, response.statusCode());
+			response.bodyHandler(buffer -> {
+				System.out.println(buffer.toString("UTF-8"));
+				context.assertEquals("Invalid value : " + value + " for header : " + header, buffer.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader(header, value).end();
+
+	}
+
 }

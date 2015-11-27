@@ -108,4 +108,19 @@ public class QueryParametersTest extends VertxNubesTestBase {
 		});
 	}
 
+	@Test
+	public void testWrongParam(TestContext context) {
+		String name = "parameter";
+		String value = "invalidDate";
+		Async async = context.async();
+		client().getNow("/params/query/date?" + name + "=" + value, response -> {
+			context.assertEquals(400, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals("Invalid value : " + value + " for request parameter : " + name, buff.toString("UTF-8"));
+				async.complete();
+			});
+		});
+
+	}
+
 }

@@ -44,4 +44,20 @@ public class FormParametersTest extends VertxNubesTestBase {
 			});
 		}).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);
 	}
+
+	@Test
+	public void testWrongBackingParams(TestContext context) {
+		Dog dog = TestVerticle.dogService.someDog();
+		String invalidValue = "invalidLong";
+		Buffer data = Buffer.buffer();
+		data.appendString("name=" + dog.getName() + "&breed=" + dog.getBreed() + "&age=" + invalidValue);
+		Async async = context.async();
+		client().post("/params/form/dog").handler(response -> {
+			context.assertEquals(400, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals("Some request of form parameter has an invalid value", buff.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader(CONTENT_TYPE, "application/x-www-form-urlencoded").end(data);
+	}
 }

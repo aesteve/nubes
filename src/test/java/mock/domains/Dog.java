@@ -7,6 +7,7 @@ public class Dog {
 
 	private String name;
 	private String breed;
+	public Long age;
 
 	public Dog() {}
 
