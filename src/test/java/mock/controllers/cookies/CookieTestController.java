@@ -35,4 +35,11 @@ public class CookieTestController {
 	public void echoCookieByName(HttpServerResponse response, @CookieValue String dog) {
 		response.end(dog);
 	}
+
+	@GET("echoObject")
+	@Cookies
+	public void echoCookieObject(HttpServerResponse response, @CookieValue Cookie dog) {
+		response.end(dog.getValue());
+	}
+
 }
