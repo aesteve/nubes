@@ -12,11 +12,12 @@ public class LocalMapValueParamInjector implements AnnotatedParamInjector<LocalM
 	public Object resolve(RoutingContext context, LocalMapValue annotation, String paramName, Class<?> resultClass) {
 		SharedData sd = context.vertx().sharedData();
 		String mapName = annotation.mapName();
-		if ("".equals(mapName)) {
-			mapName = paramName;
+		String key = annotation.key();
+		if ("".equals(key)) {
+			key = paramName;
 		}
 		io.vertx.core.shareddata.LocalMap<Object, Object> map = sd.getLocalMap(mapName);
-		return map.get(annotation.key());
+		return map.get(key);
 	}
 
 }

@@ -19,6 +19,12 @@ public class TestLocalMap {
 		context.response().end();
 	}
 
+	@GET("/staticValueWithParam")
+	public void getLocalValueWithParamName(RoutingContext context, @LocalMapValue(mapName = "test-map") String key) {
+		context.response().putHeader("X-Map-Value", key);
+		context.response().end();
+	}
+
 	@GET("/dynamicValue")
 	public void getDynamicValue(RoutingContext context, @VertxLocalMap("test-map") LocalMap<String, String> map, @Param("key") String key) {
 		context.response().putHeader("X-Map-Value", map.get(key));
