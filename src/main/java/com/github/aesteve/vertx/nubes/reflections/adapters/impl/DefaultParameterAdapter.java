@@ -38,8 +38,10 @@ public class DefaultParameterAdapter implements ParameterAdapter<Object> {
 		Field[] fields = parameterClass.getDeclaredFields();
 		for (Field field : fields) {
 			String requestValue = params.get(field.getName());
-			Object value = adaptParam(requestValue, field.getType());
-			PropertyUtils.setProperty(instance, field.getName(), value);
+			if (requestValue != null) {
+				Object value = adaptParam(requestValue, field.getType());
+				PropertyUtils.setProperty(instance, field.getName(), value);
+			}
 		}
 		return instance;
 	}
