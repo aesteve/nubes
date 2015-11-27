@@ -1,6 +1,8 @@
 package mock.controllers.injection;
 
 import io.vertx.core.MultiMap;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.SocketAddress;
@@ -31,6 +33,18 @@ public class MethodParamInjectionController {
 	@ContentType("text/plain")
 	public String getHeader(@Headers MultiMap headers, @Param String headerName) {
 		return headers.get(headerName);
+	}
+
+	@GET("/request")
+	@ContentType("text/plain")
+	public String getRequest(HttpServerRequest request) {
+		return request.uri();
+	}
+
+	@GET("/eventBus")
+	@ContentType("text/plain")
+	public String getEventBus(EventBus eb) {
+		return eb.toString();
 	}
 
 	private static JsonObject toJson(SocketAddress address) {

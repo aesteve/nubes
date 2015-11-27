@@ -51,4 +51,30 @@ public class TestMethodParamInjection extends VertxNubesTestBase {
 		}).putHeader(HttpHeaders.ACCEPT, "text/plain").putHeader(headerName, headerValue).end();
 	}
 
+	@Test
+	public void testRequest(TestContext context) {
+		Async async = context.async();
+		String path = "/params/injection/request";
+		client().get(path, response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals(path, buff.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader(HttpHeaders.ACCEPT, "text/plain").end();
+	}
+
+	@Test
+	public void testEventBus(TestContext context) {
+		Async async = context.async();
+		String path = "/params/injection/eventBus";
+		client().get(path, response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertNotNull(buff.toString("UTF-8"));
+				async.complete();
+			});
+		}).putHeader(HttpHeaders.ACCEPT, "text/plain").end();
+	}
+
 }
