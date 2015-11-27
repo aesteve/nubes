@@ -8,7 +8,6 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
-import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 import com.github.aesteve.vertx.nubes.handlers.impl.ContentTypeProcessor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
@@ -42,12 +41,7 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 			log.error("No marshaller found for Content-Type : " + contentType + ", request body can't be read");
 			return null;
 		}
-		try {
-			return marshaller.unmarshallPayload(body, resultClass);
-		} catch (MarshallingException me) {
-			context.fail(me);
-			return null;
-		}
+		return marshaller.unmarshallPayload(body, resultClass);
 	}
 
 }

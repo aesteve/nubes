@@ -5,7 +5,6 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.Map;
 
-import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
@@ -47,13 +46,9 @@ public class PayloadTypeProcessor extends NoopAfterAllProcessor implements Proce
 				context.fail(new IllegalArgumentException("No marshaller found for content-type : " + contentType));
 				return;
 			}
-			try {
-				String marshalled = marshaller.marshallPayload(userPayload);
-				response.setStatusCode(200);
-				response.end(marshalled);
-			} catch (MarshallingException me) {
-				context.fail(me);
-			}
+			String marshalled = marshaller.marshallPayload(userPayload);
+			response.setStatusCode(200);
+			response.end(marshalled);
 		}
 	}
 

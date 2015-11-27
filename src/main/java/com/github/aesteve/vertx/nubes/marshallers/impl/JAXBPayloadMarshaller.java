@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
 
@@ -30,21 +29,21 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 	}
 
 	@Override
-	public <T> T unmarshallPayload(String body, Class<T> clazz) throws MarshallingException {
+	public <T> T unmarshallPayload(String body, Class<T> clazz) {
 		try {
 			return unmarshaller.unmarshal(loadXMLFromString(body), clazz).getValue();
 		} catch (Exception e) {
-			throw new MarshallingException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public String marshallPayload(Object payload) throws MarshallingException {
+	public String marshallPayload(Object payload) {
 		StringWriter writer = new StringWriter();
 		try {
 			marshaller.marshal(payload, writer);
 		} catch (JAXBException je) {
-			throw new MarshallingException(je);
+			throw new RuntimeException(je);
 		}
 		return writer.toString();
 	}
