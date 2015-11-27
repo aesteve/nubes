@@ -85,4 +85,16 @@ public class HeadersParametersTest extends VertxNubesTestBase {
 
 	}
 
+	@Test
+	public void wrongHeadersType(TestContext context) {
+		Async async = context.async();
+		String header = "X-Date";
+		String value = "invalidDate";
+		client().get("/headers/wrongHeaders", response -> {
+			context.assertEquals(500, response.statusCode());
+			async.complete();
+		}).putHeader(header, value).end();
+
+	}
+
 }

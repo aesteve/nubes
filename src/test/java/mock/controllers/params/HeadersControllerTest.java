@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.Header;
+import com.github.aesteve.vertx.nubes.annotations.params.Headers;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/headers/")
@@ -29,5 +30,10 @@ public class HeadersControllerTest {
 	@GET("echoByName")
 	public void getHeaderByName(HttpServerResponse response, @Header String someHeader) {
 		response.end(someHeader);
+	}
+
+	@GET("wrongHeaders")
+	public void getHeaders(HttpServerResponse response, @Headers String headers) {
+		response.end(headers);
 	}
 }
