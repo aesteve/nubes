@@ -3,6 +3,7 @@ package integration.injection;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -51,5 +52,51 @@ public class TestInject extends VertxNubesTestBase {
 			sock.write(Buffer.buffer("something"));
 		});
 	}
+	
+	@Test
+	public void testReadBodyAsJsonObject(TestContext context) {
+		Async async = context.async();
+		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed","Beagle");
+		sendJSON("/inject/readBodyAsJsonObject", snoop, response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals(snoop, new JsonObject(buff.toString("UTF-8")));
+				async.complete();
+			});
+		});
+	}
 
+	@Test
+	public void testReadBodyAsJsonArray(TestContext context) {
+		Async async = context.async();
+		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed","Beagle");
+		JsonObject snowy = new JsonObject().put("name", "Snowy").put("breed","Terrier");
+		JsonArray dogs = new JsonArray();
+		dogs.add(snoop).add(snowy);
+		sendJSON("/inject/readBodyAsJsonArray", dogs, response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals(dogs, new JsonArray(buff.toString("UTF-8")));
+				async.complete();
+			});
+		});
+	}
+	
+	@Test
+	public void testWrongBodyAsJsonArray(TestContext context) {
+		Async async = context.async();
+		sendJSON("/inject/readBodyAsJsonArray", "{}", response -> {
+			context.assertEquals(400, response.statusCode());
+			async.complete();
+		});
+	}
+	
+	@Test
+	public void testWrongBodyAsJsonObject(TestContext context) {
+		Async async = context.async();
+		sendJSON("/inject/readBodyAsJsonObject", "[]", response -> {
+			context.assertEquals(400, response.statusCode());
+			async.complete();
+		});
+	}
 }
