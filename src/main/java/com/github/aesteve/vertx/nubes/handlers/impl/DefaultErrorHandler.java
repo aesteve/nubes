@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
 import io.vertx.core.Handler;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -51,7 +52,8 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 	public void handle(RoutingContext context) {
 		Throwable cause = context.failure();
 		HttpServerResponse response = context.response();
-		PayloadMarshaller marshaller = marshallers.get(ContentTypeProcessor.getContentType(context));
+		String contentType = ContentTypeProcessor.getContentType(context);
+		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (cause != null) {
 			int statusCode = 500;
 			String statusMsg = errorMessages.get(500);
@@ -68,6 +70,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 				renderViewError(tplFile, context, cause);
 			} else {
 				if (marshaller != null) {
+					response.putHeader(CONTENT_TYPE, contentType);
 					if (statusCode == 500) {
 						response.end(marshaller.marshallUnexpectedError(cause, config.displayErrors));
 					} else {

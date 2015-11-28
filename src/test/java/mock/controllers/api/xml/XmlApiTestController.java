@@ -26,5 +26,10 @@ public class XmlApiTestController {
 	public void readDog(@RequestBody Dog dog, Payload<Dog> payload) {
 		payload.set(dog); // echo back
 	}
+	
+	@GET("exception")
+	public void sendException() {
+		throw new RuntimeException("Manually thrown exception");
+	}
 
 }

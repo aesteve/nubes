@@ -44,7 +44,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/jsonobject", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -60,7 +60,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/jsonarray", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -76,7 +76,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/map", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -93,7 +93,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/array", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -110,7 +110,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/dog", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals(response.getHeader(CONTENT_TYPE.toString()), "application/json");
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -127,7 +127,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		getJSON("/json/dogs", response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				JsonArray json = new JsonArray(buffer.toString("UTF-8"));
 				context.assertNotNull(json);
@@ -150,12 +150,28 @@ public class JsonApiTest extends VertxNubesTestBase {
 		Async async = context.async();
 		sendJSON("/json/postdog", dogJson, response -> {
 			context.assertEquals(200, response.statusCode());
-			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE.toString()));
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
 			response.bodyHandler(buffer -> {
 				String json = buffer.toString("UTF-8");
 				JsonObject receivedDog = new JsonObject(json);
 				context.assertEquals(dog.getName(), receivedDog.getString("name"));
 				context.assertEquals(dog.getBreed(), receivedDog.getString("breed"));
+				async.complete();
+			});
+		});
+	}
+	
+	@Test
+	public void testMarshalledError(TestContext context) {
+		Async async = context.async();
+		getJSON("/json/exception", response -> {
+			context.assertEquals(500, response.statusCode());
+			context.assertEquals("application/json", response.getHeader(CONTENT_TYPE));
+			response.bodyHandler(buff -> {
+				JsonObject json = new JsonObject(buff.toString());
+				String msg = json.getJsonObject("error").getString("message");
+				context.assertNotNull(msg);
+				context.assertTrue(msg.startsWith("Exception : Manually thrown exception"));
 				async.complete();
 			});
 		});

@@ -83,5 +83,10 @@ public class JsonApiTestController {
 	public void sendStatusCode(RoutingContext context, @Param("statusCode") Integer statusCode) {
 		context.fail(statusCode);
 	}
+	
+	@GET("exception")
+	public void sendException() {
+		throw new RuntimeException("Manually thrown exception");
+	}
 
 }
