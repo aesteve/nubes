@@ -2,15 +2,6 @@ package integration;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.onSuccessOnly;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,16 +9,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import com.github.aesteve.vertx.nubes.VertxNubes;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
 import mock.auth.MockAuthProvider;
 import mock.domains.Dog;
 import mock.services.DogService;
 import mock.services.impl.ParrotServiceImpl;
 
-import com.github.aesteve.vertx.nubes.VertxNubes;
-
 public class TestVerticle extends AbstractVerticle {
-
-	private static final Logger log = LoggerFactory.getLogger(TestVerticle.class);
 
 	public static final String HOST = "localhost";
 	public static final int PORT = 8000;
@@ -42,7 +38,7 @@ public class TestVerticle extends AbstractVerticle {
 	public static final String DOG_SERVICE_NAME = "dogService";
 	public static final String SNOOPY_SERVICE_NAME = "snoopy";
 
-	private VertxNubes mvc;
+	private VertxNubes nubes;
 
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
@@ -51,38 +47,37 @@ public class TestVerticle extends AbstractVerticle {
 		options.setHost(HOST);
 		HttpServer server = vertx.createHttpServer(options);
 		JsonObject config = createTestConfig();
-		mvc = new VertxNubes(vertx, config);
-		mvc.registerService(DOG_SERVICE_NAME, dogService);
-		mvc.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
-		mvc.registerServiceProxy(new ParrotServiceImpl());
+		nubes = new VertxNubes(vertx, config);
+		nubes.registerService(DOG_SERVICE_NAME, dogService);
+		nubes.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
+		nubes.registerServiceProxy(new ParrotServiceImpl());
 		List<Locale> locales = new ArrayList<>();
 		locales.add(Locale.FRENCH);
 		locales.add(Locale.US);
 		locales.add(Locale.JAPANESE);
 		locales.add(Locale.ENGLISH);
-		mvc.setAvailableLocales(locales);
-		mvc.setDefaultLocale(Locale.GERMAN);
-		mvc.setAuthProvider(new MockAuthProvider());
-		mvc.registerInterceptor("setDateBefore", context -> {
+		nubes.setAvailableLocales(locales);
+		nubes.setDefaultLocale(Locale.GERMAN);
+		nubes.setAuthProvider(new MockAuthProvider());
+		nubes.registerInterceptor("setDateBefore", context -> {
 			context.response().headers().add("X-Date-Before", Long.toString(new Date().getTime()));
 			context.next();
 		});
-		mvc.registerInterceptor("setDateAfter", context -> {
+		nubes.registerInterceptor("setDateAfter", context -> {
 			context.response().headers().add("X-Date-After", Long.toString(new Date().getTime()));
 			context.next();
 		});
-		mvc.registerTemplateEngine("hbs", HandlebarsTemplateEngine.create());
-		mvc.bootstrap(onSuccessOnly(startFuture, router -> {
+		nubes.registerTemplateEngine("hbs", HandlebarsTemplateEngine.create());
+		nubes.bootstrap(onSuccessOnly(startFuture, router -> {
 			server.requestHandler(router::accept);
 			server.listen();
-			log.info("Server listening on port : " + PORT);
 			startFuture.complete();
 		}));
 	}
 
 	@Override
 	public void stop(Future<Void> stopFuture) throws Exception {
-		mvc.stop(completeOrFail(stopFuture));
+		nubes.stop(completeOrFail(stopFuture));
 	}
 
 	private static JsonObject createTestConfig() {
@@ -100,7 +95,6 @@ public class TestVerticle extends AbstractVerticle {
 		throttling.put("time-unit", TimeUnit.SECONDS.toString());
 		throttling.put("count", 2); // 2 request per 10 seconds
 		config.put("throttling", throttling);
-		log.info("Config : " + config.toString());
 		return config;
 	}
 
