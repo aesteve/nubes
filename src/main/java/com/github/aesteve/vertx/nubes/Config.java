@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -114,7 +115,10 @@ public class Config {
 			instance.verticlePackage = instance.srcPackage + ".verticles";
 		}
 
-		instance.domainPackage = json.getString("domain-package", instance.srcPackage + ".domains");
+		instance.domainPackage = json.getString("domain-package");
+		if (instance.domainPackage == null && instance.srcPackage != null) {
+			instance.domainPackage = instance.srcPackage + ".domains";
+		}
 		JsonArray fixtures = json.getJsonArray("fixture-packages");
 		if (fixtures == null) {
 			fixtures = new JsonArray();
@@ -175,10 +179,8 @@ public class Config {
 					instance.authProvider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
 					break;
 				case "JDBC":
-					String dbName = json.getString("db-name", "nubes-db");
-					if (dbName == null) {
-						throw new IllegalArgumentException("You cannot use JDBC authentification without a DB");
-					}
+					String dbName = json.getString("db-name");
+					Objects.requireNonNull(dbName);
 					JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
 					instance.authProvider = JDBCAuth.create(client);
 					break;
