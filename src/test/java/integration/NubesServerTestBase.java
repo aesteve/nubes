@@ -26,6 +26,8 @@ import com.github.aesteve.vertx.nubes.NubesServer;
 public abstract class NubesServerTestBase {
 
 	protected final static int NB_INSTANCES = 4; // to make sure it works well in a multiple-instance environment
+	protected final static String HOST = "localhost";
+	protected final static int PORT = 8000;
 
 	protected Vertx vertx;
 	private JsonObject config = new JsonObject();
@@ -75,16 +77,16 @@ public abstract class NubesServerTestBase {
 
 	private HttpClientOptions options() {
 		HttpClientOptions options = new HttpClientOptions();
-		options.setDefaultHost(config.getString("host", "localhost"));
-		options.setDefaultPort(config.getInteger("port", 8000));
+		options.setDefaultHost(config.getString("host", HOST));
+		options.setDefaultPort(config.getInteger("port", PORT));
 		options.setKeepAlive(false);
 		return options;
 	}
 
 	private static JsonObject createConfig() {
 		JsonObject config = new JsonObject();
-		config.put("host", "localhost");
-		config.put("port", 8000);
+		config.put("host", HOST);
+		config.put("port", PORT);
 		config.put("src-package", "mock");
 		JsonObject services = new JsonObject();
 		services.put("dogService", "mock.services.DogService");
