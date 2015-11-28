@@ -95,6 +95,7 @@ public class TestVerticle extends AbstractVerticle {
 		throttling.put("time-unit", TimeUnit.SECONDS.toString());
 		throttling.put("count", 2); // 2 request per 10 seconds
 		config.put("throttling", throttling);
+		config.put("display-errors", true);
 		return config;
 	}
 
