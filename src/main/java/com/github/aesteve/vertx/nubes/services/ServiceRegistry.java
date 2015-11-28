@@ -92,7 +92,11 @@ public class ServiceRegistry {
 		}
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		futures.addAll(services(), obj -> {
-			introspectService(obj);
+			try {
+				introspectService(obj);
+			} catch(Exception e) {
+				return res -> res.fail(e);
+			}
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
 				service.init(vertx, config.json);
@@ -132,8 +136,7 @@ public class ServiceRegistry {
 			PeriodicTask periodicTask = method.getAnnotation(PeriodicTask.class);
 			if (periodicTask != null) {
 				if (method.getParameterTypes().length > 0) {
-					log.error("Periodic tasks should not have parameters");
-					return;
+					throw new RuntimeException("Periodic tasks should not have parameters");
 				}
 				vertx.setPeriodic(periodicTask.value(), timerId -> {
 					timerIds.add(timerId);
@@ -148,9 +151,9 @@ public class ServiceRegistry {
 			if (consumes != null) {
 				Class<?>[] parameterTypes = method.getParameterTypes();
 				if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
-					log.error("Cannot register consumer on method : " + getFullName(service, method));
-					log.error("Method should only declare one parameter of io.vertx.core.eventbus.Message type.");
-					return;
+					String msg = "Cannot register consumer on method : " + getFullName(service, method);
+					msg += " .Method should only declare one parameter of io.vertx.core.eventbus.Message type.";
+					throw new RuntimeException(msg);
 				}
 				vertx.eventBus().consumer(consumes.value(), message -> {
 					try {

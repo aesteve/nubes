@@ -105,8 +105,11 @@ public class Config {
 			instance.i18nDir = instance.i18nDir + "/";
 		}
 		JsonArray controllers = json.getJsonArray("controller-packages");
-		if (instance.srcPackage != null && controllers == null) {
-			controllers = new JsonArray().add(instance.srcPackage + ".controllers");
+		if (controllers == null) {
+			controllers = new JsonArray();
+			if (instance.srcPackage != null) {
+				controllers.add(instance.srcPackage + ".controllers");
+			}
 		}
 		instance.controllerPackages = controllers.getList();
 
