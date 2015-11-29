@@ -67,6 +67,7 @@ public abstract class CustomNubesTestBase {
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
 		nubes.setAvailableLocales(Arrays.asList(Locale.CANADA));
 		nubes.addLocaleResolver(new CustomLocaleResolver());
+		nubes.setDefaultLocale(Locale.CANADA);
 		nubes.registerHandler(DateUtils.class, ctx -> {
 			ctx.response().putHeader("X-Handler-Called", "true");
 			ctx.next();
