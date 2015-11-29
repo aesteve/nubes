@@ -140,6 +140,9 @@ public class PaginationContext {
 
 	public void setNbItems(Integer nbTotalItems) {
 		this.totalPages = (int) (nbTotalItems / itemsPerPage);
+		if (totalPages == 0) {
+			totalPages = 1;
+		}
 		int modulo = (int) (nbTotalItems % itemsPerPage);
 		if (modulo > 0) {
 			this.totalPages = this.totalPages + 1;
