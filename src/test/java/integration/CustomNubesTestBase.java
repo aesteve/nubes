@@ -40,7 +40,7 @@ import mock.custom.handlers.SimpleAnnotParamInjector;
 
 
 @RunWith(VertxUnitRunner.class)
-public class CustomNubesTestBase {
+public abstract class CustomNubesTestBase {
 	
 	protected final static String HOST = "localhost";
 	protected final static int PORT = 8000;
