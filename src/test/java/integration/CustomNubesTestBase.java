@@ -65,9 +65,9 @@ public abstract class CustomNubesTestBase {
 		nubes.registerTypeParamInjector(CustomObject.class, new ResolveCustomObject());
 		nubes.registerAnnotatedParamInjector(SimpleAnnot.class, new SimpleAnnotParamInjector());
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
+		nubes.setDefaultLocale(Locale.CANADA);
 		nubes.setAvailableLocales(Arrays.asList(Locale.CANADA));
 		nubes.addLocaleResolver(new CustomLocaleResolver());
-		nubes.setDefaultLocale(Locale.CANADA);
 		nubes.registerHandler(DateUtils.class, ctx -> {
 			ctx.response().putHeader("X-Handler-Called", "true");
 			ctx.next();
