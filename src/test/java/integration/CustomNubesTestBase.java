@@ -27,6 +27,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.Router;
 import mock.custom.annotations.InjectCustomObject;
 import mock.custom.annotations.InjectCustomObjectByName;
+import mock.custom.annotations.SimpleAnnot;
 import mock.custom.domains.CustomObject;
 import mock.custom.handlers.CustomLocaleResolver;
 import mock.custom.handlers.CustomObjectAdapter;
@@ -34,6 +35,7 @@ import mock.custom.handlers.InjectObjectByNameFactory;
 import mock.custom.handlers.InjectObjectProcessor;
 import mock.custom.handlers.MessageErrorHandler;
 import mock.custom.handlers.ResolveCustomObject;
+import mock.custom.handlers.SimpleAnnotParamInjector;
 
 
 
@@ -61,6 +63,7 @@ public class CustomNubesTestBase {
 		nubes.registerAnnotationProcessor(InjectCustomObject.class, new InjectObjectProcessor());
 		nubes.registerAnnotationProcessor(InjectCustomObjectByName.class, new InjectObjectByNameFactory());
 		nubes.registerTypeParamInjector(CustomObject.class, new ResolveCustomObject());
+		nubes.registerAnnotatedParamInjector(SimpleAnnot.class, new SimpleAnnotParamInjector());
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
 		nubes.setAvailableLocales(Arrays.asList(Locale.CANADA));
 		nubes.addLocaleResolver(new CustomLocaleResolver());

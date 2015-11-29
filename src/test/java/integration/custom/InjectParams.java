@@ -34,4 +34,16 @@ public class InjectParams extends CustomNubesTestBase {
 			});
 		});
 	}
+	
+	@Test
+	public void annotatedParam(TestContext context) {
+		Async async = context.async();
+		client().get("/custom/params/annotated", response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				context.assertEquals("something", buff.toString("UTF-8"));
+				async.complete();
+			});
+		}).end();
+	}
 }
