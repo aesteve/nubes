@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
+import com.github.aesteve.vertx.nubes.exceptions.ValidationException;
 import com.github.aesteve.vertx.nubes.exceptions.http.HttpException;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
@@ -55,12 +56,18 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		String contentType = ContentTypeProcessor.getContentType(context);
 		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (cause != null) {
+			System.out.println("cause");
+			cause.printStackTrace();
 			int statusCode = 500;
 			String statusMsg = errorMessages.get(500);
 			if (cause instanceof HttpException) {
 				HttpException he = (HttpException) cause;
 				statusCode = he.status;
 				statusMsg = he.getMessage();
+			} else  if (cause instanceof ValidationException) {
+				ValidationException he = (ValidationException) cause;
+				statusCode = 400;
+				statusMsg = he.getValidationMsg();
 			} else {
 				log.error("Error caught by default error handler", cause);
 			}

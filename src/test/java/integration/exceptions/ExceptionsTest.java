@@ -28,6 +28,11 @@ public class ExceptionsTest extends VertxNubesTestBase {
 		testException("unauthorized", 401, context);
 	}
 
+	@Test
+	public void testValidated(TestContext context) {
+		testException("validation", 400, context);
+	}
+
 	private void testException(String path, int expectedStatus, TestContext context) {
 		Async async = context.async();
 		getJSON("/exceptions/" + path, response -> {
