@@ -11,7 +11,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SEND;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CLOSED;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CREATED;
 
-@EventBusBridge("/eventbus/default/*")
+@EventBusBridge("/eventbus/default/")
 public class EBBridgeDefaultController {
 
 	@SOCKET_CREATED
