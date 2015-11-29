@@ -3,6 +3,9 @@ package integration;
 import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -24,6 +27,7 @@ import io.vertx.ext.web.Router;
 import mock.custom.annotations.InjectCustomObject;
 import mock.custom.annotations.InjectCustomObjectByName;
 import mock.custom.domains.CustomObject;
+import mock.custom.handlers.CustomLocaleResolver;
 import mock.custom.handlers.CustomObjectAdapter;
 import mock.custom.handlers.InjectObjectByNameFactory;
 import mock.custom.handlers.InjectObjectProcessor;
@@ -37,7 +41,7 @@ public class CustomNubesTestBase {
 	
 	protected final static String HOST = "localhost";
 	protected final static int PORT = 8000;
-
+	
 	protected Vertx vertx;
 	protected JsonObject config = new JsonObject();
 	protected VertxNubes nubes;
@@ -57,6 +61,8 @@ public class CustomNubesTestBase {
 		nubes.registerAnnotationProcessor(InjectCustomObjectByName.class, new InjectObjectByNameFactory());
 		nubes.registerTypeParamInjector(CustomObject.class, new ResolveCustomObject());
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
+		nubes.setAvailableLocales(Arrays.asList(Locale.CANADA));
+		nubes.addLocaleResolver(new CustomLocaleResolver());
 		if (hideErrors()) {
 			nubes.setFailureHandler(new MessageErrorHandler());
 		}

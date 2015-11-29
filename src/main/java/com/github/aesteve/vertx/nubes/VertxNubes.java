@@ -2,19 +2,6 @@ package com.github.aesteve.vertx.nubes;
 
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeFinally;
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.templ.TemplateEngine;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -85,8 +72,22 @@ import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-public class VertxNubes {
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.templ.TemplateEngine;
 
+public class VertxNubes {
+	
 	protected Config config;
 	protected Vertx vertx;
 
@@ -202,9 +203,8 @@ public class VertxNubes {
 			locResolver.addResolver(new AcceptLanguageLocaleResolver());
 			registerTypeParamInjector(Locale.class, new LocaleParamInjector());
 			addGlobalHandler(new LocaleHandler(locResolver));
-		} else {
-			locResolver.addLocales(availableLocales);
-		}
+		} 
+		locResolver.addLocales(availableLocales);
 	}
 
 	public void setDefaultLocale(Locale defaultLocale) {
@@ -294,7 +294,9 @@ public class VertxNubes {
 		router.route().failureHandler(failureHandler);
 		if (locResolver != null) {
 			locResolver.getAvailableLocales().forEach(this::loadResourceBundle);
-			loadResourceBundle(locResolver.getDefaultLocale());
+			if (locResolver.getDefaultLocale() != null) {
+				loadResourceBundle(locResolver.getDefaultLocale());
+			}
 		}
 		if (config.authProvider != null) {
 			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());

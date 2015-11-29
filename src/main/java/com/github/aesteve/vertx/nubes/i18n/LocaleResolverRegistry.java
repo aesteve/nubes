@@ -19,7 +19,8 @@ public class LocaleResolverRegistry {
 
 	public LocaleResolverRegistry(List<Locale> availableLocales) {
 		resolvers = new ArrayList<>();
-		this.availableLocales = availableLocales;
+		this.availableLocales = new ArrayList<>();
+		this.availableLocales.addAll(availableLocales);
 	}
 
 	public void addLocales(List<Locale> locales) {

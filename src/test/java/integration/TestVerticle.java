@@ -51,6 +51,10 @@ public class TestVerticle extends AbstractVerticle {
 		nubes.registerService(DOG_SERVICE_NAME, dogService);
 		nubes.registerService(SNOOPY_SERVICE_NAME, SNOOPY);
 		nubes.registerServiceProxy(new ParrotServiceImpl());
+		if (nubes.getService(DOG_SERVICE_NAME) == null) {
+			startFuture.fail("Services should not be null");
+			return;
+		}
 		List<Locale> locales = new ArrayList<>();
 		locales.add(Locale.FRENCH);
 		locales.add(Locale.US);
