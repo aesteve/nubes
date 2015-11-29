@@ -27,6 +27,7 @@ import mock.custom.domains.CustomObject;
 import mock.custom.handlers.CustomObjectAdapter;
 import mock.custom.handlers.InjectObjectByNameFactory;
 import mock.custom.handlers.InjectObjectProcessor;
+import mock.custom.handlers.MessageErrorHandler;
 import mock.custom.handlers.ResolveCustomObject;
 
 
@@ -41,7 +42,11 @@ public class CustomNubesTestBase {
 	protected JsonObject config = new JsonObject();
 	protected VertxNubes nubes;
 	protected HttpServer server;
-
+	
+	protected boolean hideErrors() {
+		return false;
+	}
+	
 	@Before
 	public void setUp(TestContext context) throws Exception {
 		Async async = context.async();
@@ -52,6 +57,9 @@ public class CustomNubesTestBase {
 		nubes.registerAnnotationProcessor(InjectCustomObjectByName.class, new InjectObjectByNameFactory());
 		nubes.registerTypeParamInjector(CustomObject.class, new ResolveCustomObject());
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
+		if (hideErrors()) {
+			nubes.setFailureHandler(new MessageErrorHandler());
+		}
 		nubes.bootstrap(res -> {
 			Router router = res.result();
 			context.assertNotNull(router);
