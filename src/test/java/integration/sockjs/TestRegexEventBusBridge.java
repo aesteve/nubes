@@ -2,8 +2,10 @@ package integration.sockjs;
 
 import io.vertx.ext.unit.TestContext;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class TestRegexEventBusBridge extends EventBusBridgeTestBase {
 
 	private final static String WS_ADDRESS = "/eventbus/regex/websocket";

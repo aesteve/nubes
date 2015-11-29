@@ -1,6 +1,5 @@
 package integration.sockjs;
 
-import static org.junit.Assert.assertEquals;
 import integration.VertxNubesTestBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.WebSocket;
@@ -44,11 +43,13 @@ public abstract class EventBusBridgeTestBase extends VertxNubesTestBase {
 
 	protected void testOutboundPermitted(TestContext context, String wsAddress, String address) {
 		Async async = context.async();
+		async.await(10000);
 		String msg = "It was a dark stormy night";
 		client().websocket(wsAddress, socket -> {
 			socket.handler(buffer -> {
+				System.out.println("message received through socket");
 				JsonObject json = new JsonObject(buffer.toString("UTF-8"));
-				assertEquals(msg, json.getString("body"));
+				context.assertEquals(msg, json.getString("body"));
 				async.complete();
 			});
 			registerThroughBridge(socket, address, msg);

@@ -63,6 +63,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 			if (method != null) {
 				tryToInvoke(instance, method, be);
 			} else {
+				System.out.println("complete bridge event");
 				be.complete(true);
 			}
 		});
