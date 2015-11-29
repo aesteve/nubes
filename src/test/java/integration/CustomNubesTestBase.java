@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import com.github.aesteve.vertx.nubes.VertxNubes;
+import com.github.aesteve.vertx.nubes.utils.DateUtils;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -63,6 +64,10 @@ public class CustomNubesTestBase {
 		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
 		nubes.setAvailableLocales(Arrays.asList(Locale.CANADA));
 		nubes.addLocaleResolver(new CustomLocaleResolver());
+		nubes.registerHandler(DateUtils.class, ctx -> {
+			ctx.response().putHeader("X-Handler-Called", "true");
+			ctx.next();
+		});
 		if (hideErrors()) {
 			nubes.setFailureHandler(new MessageErrorHandler());
 		}
