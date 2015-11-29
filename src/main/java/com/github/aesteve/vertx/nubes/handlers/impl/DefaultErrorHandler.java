@@ -56,7 +56,6 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		String contentType = ContentTypeProcessor.getContentType(context);
 		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (cause != null) {
-			System.out.println("cause");
 			cause.printStackTrace();
 			int statusCode = 500;
 			String statusMsg = errorMessages.get(500);
