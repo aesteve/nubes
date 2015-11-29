@@ -20,23 +20,39 @@ public class ExceptionController {
 		throw new BadRequestException();
 	}
 
+	@GET("/badrequest2")
+	public void badRequest2() throws BadRequestException {
+		throw new BadRequestException("I can't understand");
+	}
+	
 	@GET("/forbidden")
 	public void forbidden() throws ForbiddenException {
 		throw new ForbiddenException();
 	}
 
+	@GET("/forbidden2")
+	public void forbidden2() throws ForbiddenException {
+		throw new ForbiddenException("Sorry :(");
+	}
+	
 	@GET("/notfound")
 	public void notFound() throws NotFoundException {
 		throw new NotFoundException();
 	}
 
+	@GET("/notfound2")
+	public void notFound2() throws NotFoundException {
+		throw new NotFoundException("Some resource");
+	}
+	
 	@GET("/unauthorized")
 	public void unauthorized() throws UnauthorizedException {
 		throw new UnauthorizedException();
 	}
 	
 	@GET("/validation")
-	public void validated() throws ValidationException {
-		throw new ValidationException(Arrays.asList("field1 is missing", "field2 is missing"));
+	public void validated() throws BadRequestException {
+		ValidationException ve = new ValidationException(Arrays.asList("field1 is missing", "field2 is missing"));
+		throw new BadRequestException(ve);
 	}
 }

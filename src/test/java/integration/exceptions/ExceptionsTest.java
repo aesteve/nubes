@@ -14,13 +14,28 @@ public class ExceptionsTest extends VertxNubesTestBase {
 	}
 
 	@Test
+	public void testBadRequest2(TestContext context) {
+		testException("badrequest2", 400, context);
+	}
+	
+	@Test
 	public void testForbidden(TestContext context) {
 		testException("forbidden", 403, context);
 	}
 
 	@Test
+	public void testForbidden2(TestContext context) {
+		testException("forbidden2", 403, context);
+	}
+
+	@Test
 	public void testNotFound(TestContext context) {
 		testException("notfound", 404, context);
+	}
+	
+	@Test
+	public void testNotFound2(TestContext context) {
+		testException("notfound2", 404, context);
 	}
 
 	@Test
