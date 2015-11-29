@@ -24,6 +24,7 @@ import io.vertx.ext.web.Router;
 import mock.custom.annotations.InjectCustomObject;
 import mock.custom.annotations.InjectCustomObjectByName;
 import mock.custom.domains.CustomObject;
+import mock.custom.handlers.CustomObjectAdapter;
 import mock.custom.handlers.InjectObjectByNameFactory;
 import mock.custom.handlers.InjectObjectProcessor;
 import mock.custom.handlers.ResolveCustomObject;
@@ -50,6 +51,7 @@ public class CustomNubesTestBase {
 		nubes.registerAnnotationProcessor(InjectCustomObject.class, new InjectObjectProcessor());
 		nubes.registerAnnotationProcessor(InjectCustomObjectByName.class, new InjectObjectByNameFactory());
 		nubes.registerTypeParamInjector(CustomObject.class, new ResolveCustomObject());
+		nubes.registerAdapter(CustomObject.class, new CustomObjectAdapter());
 		nubes.bootstrap(res -> {
 			Router router = res.result();
 			context.assertNotNull(router);

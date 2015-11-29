@@ -107,13 +107,14 @@ public class VertxNubes {
 		this.vertx = vertx;
 		config = Config.fromJsonObject(json, vertx);
 		deploymentIds = new ArrayList<>();
+		registry = new ParameterAdapterRegistry();
 		config.annotationHandlers = new HashMap<>();
 		config.paramHandlers = new HashMap<>();
 		config.typeProcessors = new HashMap<>();
 		config.apRegistry = new AnnotationProcessorRegistry();
 		marshallers = new HashMap<>();
 		config.typeInjectors = new TypedParamInjectorRegistry(config);
-		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, new ParameterAdapterRegistry());
+		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
 		config.aopHandlerRegistry = new HashMap<>();
 		config.marshallers = marshallers;
 
