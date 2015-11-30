@@ -95,7 +95,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 		Object instance;
 		try {
 			instance = controller.newInstance();
-			injectServicesIntoController(instance);
+			injectServicesIntoController(router, instance);
 		} catch (InstantiationException | IllegalAccessException ie) {
 			throw new RuntimeException("Could not instanciate controller : ", ie);
 		}

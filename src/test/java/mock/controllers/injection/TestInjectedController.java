@@ -3,6 +3,7 @@ package mock.controllers.injection;
 import integration.TestVerticle;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import mock.domains.Dog;
 import mock.services.DogService;
 
@@ -25,6 +26,8 @@ public class TestInjectedController {
 	@Service(TestVerticle.SNOOPY_SERVICE_NAME)
 	private Dog snoop; // a simple object registered as a service should be injected, too
 
+	private Router router;
+
 	@GET("/service")
 	public void getDog(@Param("idx") Integer i, Payload<Dog> payload) {
 		payload.set(dogService.getDog(i));
@@ -34,14 +37,19 @@ public class TestInjectedController {
 	public void getSimpleClass(Payload<Dog> payload) {
 		payload.set(snoop);
 	}
-	
+
 	@POST("/readBodyAsJsonObject")
 	public JsonObject readBodyAsJsonObject(@RequestBody JsonObject json) {
 		return json;
 	}
-	
+
 	@POST("/readBodyAsJsonArray")
 	public JsonArray readBodyAsJsonArray(@RequestBody JsonArray json) {
 		return json;
+	}
+
+	@GET("/router")
+	public JsonObject getRouter() {
+		return new JsonObject().put("router", router.toString());
 	}
 }

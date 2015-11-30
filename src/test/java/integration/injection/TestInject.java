@@ -52,11 +52,24 @@ public class TestInject extends VertxNubesTestBase {
 			sock.write(Buffer.buffer("something"));
 		});
 	}
-	
+
+	@Test
+	public void testInjectRouter(TestContext context) {
+		Async async = context.async();
+		getJSON("/inject/router", response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buff -> {
+				JsonObject json = new JsonObject(buff.toString("UTF-8"));
+				context.assertNotNull(json.getString("router"));
+				async.complete();
+			});
+		});
+	}
+
 	@Test
 	public void testReadBodyAsJsonObject(TestContext context) {
 		Async async = context.async();
-		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed","Beagle");
+		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed", "Beagle");
 		sendJSON("/inject/readBodyAsJsonObject", snoop, response -> {
 			context.assertEquals(200, response.statusCode());
 			response.bodyHandler(buff -> {
@@ -69,8 +82,8 @@ public class TestInject extends VertxNubesTestBase {
 	@Test
 	public void testReadBodyAsJsonArray(TestContext context) {
 		Async async = context.async();
-		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed","Beagle");
-		JsonObject snowy = new JsonObject().put("name", "Snowy").put("breed","Terrier");
+		JsonObject snoop = new JsonObject().put("name", "Snoopy").put("breed", "Beagle");
+		JsonObject snowy = new JsonObject().put("name", "Snowy").put("breed", "Terrier");
 		JsonArray dogs = new JsonArray();
 		dogs.add(snoop).add(snowy);
 		sendJSON("/inject/readBodyAsJsonArray", dogs, response -> {
@@ -81,7 +94,7 @@ public class TestInject extends VertxNubesTestBase {
 			});
 		});
 	}
-	
+
 	@Test
 	public void testWrongBodyAsJsonArray(TestContext context) {
 		Async async = context.async();
@@ -90,7 +103,7 @@ public class TestInject extends VertxNubesTestBase {
 			async.complete();
 		});
 	}
-	
+
 	@Test
 	public void testWrongBodyAsJsonObject(TestContext context) {
 		Async async = context.async();

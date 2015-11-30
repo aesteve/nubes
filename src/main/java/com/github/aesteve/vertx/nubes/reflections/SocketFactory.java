@@ -53,7 +53,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 		Object ctrlInstance = null;
 		try {
 			ctrlInstance = controller.newInstance();
-			injectServicesIntoController(ctrlInstance);
+			injectServicesIntoController(router, ctrlInstance);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instanciate socket controller : " + controller.getName(), e);
 		}
