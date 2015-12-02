@@ -1,18 +1,29 @@
 # Vert.x Nubes
 
-Provides an annotation layer on top of vertx-web. Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way. Automatically injects method parameters at runtime so that you can express your routes in a declarative manner. By reading the signature of the method, you should be able to have a quick glimpse at what your route uses (query parameters, request body, ...) and produces (void => status 204, object => marshalled).
+Provides an annotation layer on top of vertx-web. 
+
+Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way. 
+
+Nubes automatically injects method parameters at runtime so that you can express your routes in a declarative manner. By reading the signature of the method, you should be able to have a quick glimpse at what your route uses (query parameters, request body, ...) and produces (void => status 204, object => marshalled).
+
+`public PeanutsCharacter get(@Param CharacterType type)` lets us know that the method uses a request parameter named `type` and that the response will contain a marshalled `PeanutsCharacter` POJO.
 
 Nubes comes with a controller layer, but also a service layer. You can declare services as simple POJOS and they'll be injected within your controllers, you can also declare your services as async, they'll be started when your application starts, stopped when the application stops.
 
-/!\ Important note : It's a work in progress. Nubes hasn't been benchmarked yet. /!\
+The framework is designed to be fully extensible so that you can register and use your own annotations, whether it's an interceptor, a type-adapter, ... 
 
-The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... A good example on how to extend the framework is [Nubes Hibernate](http://github.com/aesteve/nubes-hibernate), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Hibernate/JPA on top of Nubes. You can also have a look at [nubes-mongo](http://github.com/aesteve/nubes-mongo), a Mongo ORM on top of Nubes.
+A good example on how to extend the framework is [Nubes Mongo](http://github.com/aesteve/nubes-mongo), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Mongo on top of Nubes. 
+For example, nubes-mongo registers a `@Create` annotation against Nubes framework, meaning that the result of the method should be saved against the Mongo database.
 
-Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. You just have a set of additional utilities at your disposal to declare your web routes in another way (a SpringMVC-ish way), to declare and inject services if you don't have a DI framework at your disposal, or to write Verticles differently. The `Router` can also be injected as a field within your controllers as an easy way to deal with it, and maybe register routes at runtime if you need to. 
+Basically, an annotation will be tied to a set of Vert.x's Handlers, executed before and/or after the 'route' method is executed. 
+
+IMPORTANT : Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. 
+
+You just have a set of additional utilities at your disposal to declare your web routes in another way (a SpringMVC-ish way), to declare and inject services if you don't have a DI framework at your disposal, or to write Verticles differently. 
+
+The `Router` can also be injected as a field within your controllers as an easy way to deal with it, and maybe register routes at runtime if you need to. 
 
 If you're interested in how a real-life project built with Nubes would look like, you can have a look at [Nubes Chat](http://github.com/aesteve/nubes-chat) a very simple chat relying on a REST API and Vert.x's event-bus bridge which shows both REST and Socket controllers in action. On top of that, it uses a MongoDB as a persistent store so you can get a nice view of the service layer.
-
-An even more "real-life" example is [Projuice](http:/github.com/aesteve/projuice) : a simple project manager built with Nubes framework and Mongo. You'll see how real-life REST API controllers look like, how to deal with a MongoDB database very easily, how to handle authentication in your own way, and how to write unit-testing.
 
 ## For the impatient, here's a basic example :
 
@@ -150,13 +161,13 @@ You'll notice the constructor takes two arguments :
 * a Vertx instance
 * a JsonObject containing the configuration
 
-Please take a look at [the configuration documentation](docs/CONFIG.md) for the available, mandatory or not, options.
+Please take a look at [the configuration documentation](/blob/master/docs/CONFIG.md) for the available, mandatory or not, options.
 
 Once you've created the VertxNubes instance, you need to `bootstrap` it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Web routes/handlers and attach it to a vertx-web `Router`.
 
-You can provide your own `Router`, if you want to keep to add custom routes and stuff in the standard vertx way. 
+You can provide your own `Router`, if you want to to add custom routes and stuff in the standard vertx way. 
 
-You can also let `VertxNubes` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping.
+You can also let `VertxNubes` instanciate a `Router`. It's gonna return it to you once it's done bootstrapping. And you'll be able to do pretty much whatever you need with it.
 
 ```java
 VertxNubes nubes = new VertxNubes(vertx, config);
@@ -174,24 +185,24 @@ nubes.bootstrap(res -> {
 
 You'll find a ton of examples in the tests of the project.
 
-If you take a look at [the mock controllers](src/test/java/mock/controllers), you'll pretty much find everything that's possible to do with Nubes out of the box.
+If you take a look at [the mock controllers](/blob/master/src/test/java/mock/controllers), you'll pretty much find everything that's possible to do with Nubes out of the box.
 
 ## The Controller layer
 
 ### What is a `@Controller` ?
 
-A controller is a Java singleton defining a set of methods which will be translated into vertx-web handlers. (~= express middlewares).
+A controller is a Java singleton (per Nubes instance) defining a set of methods which will be translated into vertx-web handlers. (~= express middlewares).
 
 It's important that your controller defines a no-argument constructor, VertxNubes expect that.
 
-In a controller you'll find routes, annotated with `@GET`, `@POST`, `@PUT`, but also filters of two differents types : `@BeforeFilter` and `@AfterFilter`.
+In a controller you'll find routes, annotated with `@GET`, `@POST`, `@PUT`, ... but also filters of two differents types : `@BeforeFilter` and `@AfterFilter`.
 
 For each route in your controller, before filters will be executed before your actual route method, and after filters, well... after.
 
 
 ### Annotations
 
-Nubes provides some default annotations. [Here's the list]().
+Nubes provides some default annotations. [Here's the list](/blob/master/docs/ANNOTATIONS.md#framework-default-annotations).
 
 But you can also define your own annotations, and attach vertx-web handlers to it.
 
@@ -200,24 +211,24 @@ In this case, you can register what Nubes calls "Annotation processors" which wi
 Nubes itself registers its own annotations using this API. For example, the `@ContentType({"application/json", "application/xml"})` annotation is bound to a `ContentTypeProcessor` which will : 
 
 - check the `Accept` header of the request, and if it doesn't matches the MIME type you're handling, return a 406 status to the client
-- find the most suitable MIME among the one the client specified in its `Accept` header and the one you specified in the body of the `ContentType` annotation
-- inject this ContentType as a variable in the RoutingContext so that you can benefit from it
+- find the most suitable MIME among the ones the client specified in its `Accept` header and the ones you specified in the body of the `ContentType` annotation
+- inject this ContentType as a variable in the RoutingContext so that you can also benefit from it
 - position the `Content-Type` response header so that you don't have to care about it
 
 
-[Read the annotations document](docs/ANNOTATIONS.md)
+[Read the annotations document](/blob/master/docs/ANNOTATIONS.md)
 
 ### Parameters
 
 Parameters are automatically injected into every method at runtime, depending on the context of the request (parameters, body, ...).
 
-For a complete list of available parameters (by default), see [the parameters documentation](docs/PARAMETERS.md).
+For a complete list of available parameters (by default), see [the parameters documentation](/blob/master/docs/PARAMETERS.md).
 
 But you can also register your own parameter resolvers by telling nubes : "When you find this type of parameter, resolve it like this".
 
 Parameters can be resolved simply by their types (that's how Nubes injects the `RoutingContext` or the `EventBus` parameters if your method asks for it) or by a custom annotation you define.
 
-[Read the parameters injection documentation](docs/PARAMETERS.MD)
+[Read the parameters injection documentation](/blob/master/docs/PARAMETERS.MD)
 
 
 ## The View Layer
@@ -238,7 +249,7 @@ In some case, services take time to startup or to be closed. If you want your se
 
 ### RPC and service proxies
 
-TODO : add `@ServiceProxy("address")` annotation. And explain how to use vertx's service proxy.
+TODO : Explain how to use vertx's service proxy.
 
 ## SockJS
 
