@@ -4,11 +4,20 @@ Provides an annotation layer on top of vertx-web.
 
 Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way. 
 
+
+## Declarative
+
+
 Nubes automatically injects method parameters at runtime so that you can express your routes in a declarative manner. By reading the signature of the method, you should be able to have a quick glimpse at what your route uses (query parameters, request body, ...) and produces (void => status 204, object => marshalled).
+
 
 `public PeanutsCharacter get(@Param CharacterType type)` lets us know that the method uses a request parameter named `type` and that the response will contain a marshalled `PeanutsCharacter` POJO.
 
+
 Nubes comes with a controller layer, but also a service layer. You can declare services as simple POJOS and they'll be injected within your controllers, you can also declare your services as async, they'll be started when your application starts, stopped when the application stops.
+
+
+## Extensible
 
 The framework is designed to be fully extensible so that you can register and use your own annotations, whether it's an interceptor, a type-adapter, ... 
 
@@ -17,15 +26,21 @@ For example, nubes-mongo registers a `@Create` annotation against Nubes framewor
 
 Basically, an annotation will be tied to a set of Vert.x's Handlers, executed before and/or after the 'route' method is executed. 
 
-IMPORTANT : Keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. 
+## Non-blocking (obviously) but also non-stumbling
+
+Even though Nubes looks opinionated (declaring your routes in a single way : the controller/method way), keep in mind that at the end of the day, vertx-web's router is still there and fully accessible if you find yourself stuck in an edge case Nubes isn't designed to handle. This way, you should never, ever be stucked. 
 
 You just have a set of additional utilities at your disposal to declare your web routes in another way (a SpringMVC-ish way), to declare and inject services if you don't have a DI framework at your disposal, or to write Verticles differently. 
 
 The `Router` can also be injected as a field within your controllers as an easy way to deal with it, and maybe register routes at runtime if you need to. 
 
+## Examples
+
+(Work in Progress)
+
 If you're interested in how a real-life project built with Nubes would look like, you can have a look at [Nubes Chat](http://github.com/aesteve/nubes-chat) a very simple chat relying on a REST API and Vert.x's event-bus bridge which shows both REST and Socket controllers in action. On top of that, it uses a MongoDB as a persistent store so you can get a nice view of the service layer.
 
-## For the impatient, here's a basic example :
+## Basic example :
 
 ### A controller : 
 
