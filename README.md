@@ -1,10 +1,10 @@
 # Vert.x Nubes
 
-## Provides an annotation layer on top of vertx-web
+Provides an annotation layer on top of vertx-web. Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way. Automatically injects method parameters at runtime so that you can express your routes in a declarative manner. By reading the signature of the method, you should be able to have a quick glimpse at what your route uses (query parameters, request body, ...) and produces (void => status 204, object => marshalled).
+
+Nubes comes with a controller layer, but also a service layer. You can declare services as simple POJOS and they'll be injected within your controllers, you can also declare your services as async, they'll be started when your application starts, stopped when the application stops.
 
 /!\ Important note : It's a work in progress. Nubes hasn't been benchmarked yet. /!\
-
-The main idea is to provide a different way to declare your routes than you'd do in a standard vertx-web project by providing a set of hopefully useful annotations / utilities on top of vertx-web.
 
 The framework is designed to be fully extensible so that you can register and use your own annotations, types, marshallers, ... A good example on how to extend the framework is [Nubes Hibernate](http://github.com/aesteve/nubes-hibernate), a set of additionnal utilities (annotations, interceptors, ...) designed to help you deal with Hibernate/JPA on top of Nubes. You can also have a look at [nubes-mongo](http://github.com/aesteve/nubes-mongo), a Mongo ORM on top of Nubes.
 
@@ -30,7 +30,7 @@ public class PeanutsPages {
   
   @GET("/character")
   @View
-  public String getCharacter(@ContextData Map<String, Object> data, @Param("type") CharacterType type) {
+  public String getCharacter(@ContextData Map<String, Object> data, @Param CharacterType type) {
     switch(type) {
       case DOG: 
         data.put("name", "Snoopy");
@@ -73,8 +73,11 @@ package com.peanuts.controllers;
 @ContentType("application/json")
 public class CharactersController {
   
+  @Service("mongo")
+  private MongoService mongo;
+  
   @GET("/character")
-  public PeanutsCharacter getCharacter(@Param("type") CharacterType type) {
+  public PeanutsCharacter getCharacter(@Param CharacterType type) {
     switch(type) {
       case DOG: 
         return new PeanutsCharacter(CharacterType.DOG, "Snoopy", snoopysBirthDate);
@@ -82,9 +85,9 @@ public class CharactersController {
     }
   }
   
-  @POST("/character")
+  @POST("/character") // declaring RoutingContext as parameter means your method is async
   public void createCharacter(RoutingContext context, @RequestBody PeanutsCharacter character) {
-    yourDatabaseService.save(character, handler -> {
+    mongo.save(character, handler -> {
       context.next();  
     }); // save it using JDBC service, mongo service, hibernate service, etc.
   }
