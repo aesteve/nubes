@@ -176,7 +176,7 @@ You'll notice the constructor takes two arguments :
 * a Vertx instance
 * a JsonObject containing the configuration
 
-Please take a look at [the configuration documentation](/blob/master/docs/CONFIG.md) for the available, mandatory or not, options.
+Please take a look at [the configuration documentation](/docs/CONFIG.md) for the available, mandatory or not, options.
 
 Once you've created the VertxNubes instance, you need to `bootstrap` it. What it's gonna do is scanning your application classes (annotated with `@Controller`) in order to create the approriate Web routes/handlers and attach it to a vertx-web `Router`.
 
@@ -200,7 +200,7 @@ nubes.bootstrap(res -> {
 
 You'll find a ton of examples in the tests of the project.
 
-If you take a look at [the mock controllers](/blob/master/src/test/java/mock/controllers), you'll pretty much find everything that's possible to do with Nubes out of the box.
+If you take a look at [the mock controllers](/src/test/java/mock/controllers), you'll pretty much find everything that's possible to do with Nubes out of the box.
 
 ## The Controller layer
 
@@ -217,7 +217,7 @@ For each route in your controller, before filters will be executed before your a
 
 ### Annotations
 
-Nubes provides some default annotations. [Here's the list](/blob/master/docs/ANNOTATIONS.md#framework-default-annotations).
+Nubes provides some default annotations. [Here's the list](/docs/ANNOTATIONS.md#framework-default-annotations).
 
 But you can also define your own annotations, and attach vertx-web handlers to it.
 
@@ -231,19 +231,19 @@ Nubes itself registers its own annotations using this API. For example, the `@Co
 - position the `Content-Type` response header so that you don't have to care about it
 
 
-[Read the annotations document](/blob/master/docs/ANNOTATIONS.md)
+[Read the annotations document](/docs/ANNOTATIONS.md)
 
 ### Parameters
 
 Parameters are automatically injected into every method at runtime, depending on the context of the request (parameters, body, ...).
 
-For a complete list of available parameters (by default), see [the parameters documentation](/blob/master/docs/PARAMETERS.md).
+For a complete list of available parameters (by default), see [the parameters documentation](/docs/PARAMETERS.md).
 
 But you can also register your own parameter resolvers by telling nubes : "When you find this type of parameter, resolve it like this".
 
 Parameters can be resolved simply by their types (that's how Nubes injects the `RoutingContext` or the `EventBus` parameters if your method asks for it) or by a custom annotation you define.
 
-[Read the parameters injection documentation](/blob/master/docs/PARAMETERS.MD)
+[Read the parameters injection documentation](/docs/PARAMETERS.MD)
 
 
 ## The View Layer
