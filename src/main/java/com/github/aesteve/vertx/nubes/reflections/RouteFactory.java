@@ -60,7 +60,11 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 	private void createReturnHandlers() {
 		returnHandlers = new HashMap<>();
 		returnHandlers.put(View.class, (context, res) -> {
-			ViewResolver.resolve(context, (String) res);
+			if (res instanceof String) {
+				ViewResolver.resolve(context, (String) res);
+			} else if (res instanceof Map) {
+				context.data().putAll((Map)res);
+			}
 		});
 		returnHandlers.put(File.class, (context, res) -> {
 			FileResolver.resolve(context, (String) res);

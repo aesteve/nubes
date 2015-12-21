@@ -70,6 +70,20 @@ public class ViewsTest extends VertxNubesTestBase {
 	}
 
 	@Test
+	public void testDynamicMap(TestContext context) {
+		Dog dog = TestVerticle.dogService.someDog();
+		Async async = context.async();
+		client().getNow("/views/dynamic/map?name=" + dog.getName() + "&breed=" + dog.getBreed(), response -> {
+			context.assertEquals(200, response.statusCode());
+			response.bodyHandler(buffer -> {
+				String result = buffer.toString("UTF-8");
+				context.assertEquals("Hello! I'm a dog and my name is " + dog.getName(), result);
+				async.complete();
+			});
+		});
+	}
+
+	@Test
 	@Ignore
 	// it's failing because we need a prefixed template engine for MVEL
 	public void testMvel(TestContext context) {

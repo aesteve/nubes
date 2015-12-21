@@ -2,6 +2,7 @@ package mock.controllers.views;
 
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import mock.domains.Dog;
@@ -47,6 +48,14 @@ public class ViewTestController {
 	public String dynamicSyncViewName(@ContextData Map<String, Object> data, @Params Dog dog) {
 		data.put("dog", dog);
 		return "dog-name.hbs";
+	}
+
+	@GET("/dynamic/map")
+	@View("dog-name.hbs")
+	public Map<String, Object> returnMap(@Params Dog dog) {
+		Map<String, Object> data = new HashMap<>();
+		data.put("dog", dog);
+		return data;
 	}
 
 }
