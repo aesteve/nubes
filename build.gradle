@@ -4,10 +4,12 @@ plugins {
 	id 'idea'
 	id 'maven'
 	id 'jacoco'
+	id 'maven-publish'
+	id 'com.jfrog.bintray' version '1.4'
 }
 
 group='com.github.aesteve'
-version='0.1-SNAPSHOT'
+version='1.0'
 
 repositories {
 	mavenCentral()
@@ -79,7 +81,37 @@ clean {
 	delete += generatedSrcDir
 }
 
+bintray {
+	user = 'aesteve'
+	key = System.getenv('BINTRAY_KEY')
+	pkg {
+		repo = 'maven'
+		name = project.name
+		licenses = ['Apache-2.0']
+		vcsUrl = 'https://github.com/aesteve/nubes'
+		labels = ['vertx', 'vert.x', 'annotations', 'jax-rs', 'resteasy']
+		publicDownloadNumbers = true
+		version {
+			name = project.version
+			description = 'Nubes stratus'
+		}
+		publications = ['maven']
+	}
+}
 
+publishing {
+	publications {
+		maven(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+		}
+	}
+}
+
+task sourcesJar(type: Jar) {
+	classifier 'sources'
+	from sourceSets.main.allJava
+}
 
 
 test.outputs.upToDateWhen { false }
