@@ -2,7 +2,17 @@
 
 Provides an annotation layer on top of vertx-web. 
 
-Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way. 
+Declare your Vert.x routes with annotated methods and controllers, in a Spring MVC-ish way.
+
+```groovy
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile 'com.github.aesteve:nubes:1.0'
+}
+```
 
 
 ## Declarative
