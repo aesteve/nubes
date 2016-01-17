@@ -42,8 +42,9 @@ public class MVCRoute {
 	private Config config;
 	private boolean disabled;
 	private BiConsumer<RoutingContext, ?> returnHandler;
+	private boolean usesSession;
 
-	public MVCRoute(Object instance, String path, HttpMethod method, Config config, Handler<RoutingContext> authHandler, boolean disabled) {
+	public MVCRoute(Object instance, String path, HttpMethod method, Config config, Handler<RoutingContext> authHandler, boolean disabled, final boolean usesSession) {
 		this.instance = instance;
 		this.config = config;
 		this.path = path;
@@ -54,6 +55,7 @@ public class MVCRoute {
 		this.processors = new LinkedHashSet<>();
 		this.authHandler = authHandler;
 		this.disabled = disabled;
+		this.usesSession = usesSession;
 	}
 
 	public boolean isEnabled() {
@@ -151,6 +153,8 @@ public class MVCRoute {
 				router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
 				router.post(loginRedirect).handler(FormLoginHandler.create(config.authProvider));
 			}
+		} else if (usesSession) {
+			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
 		}
 		handlers.forEach(handler -> {
 			if (isRedirect) {

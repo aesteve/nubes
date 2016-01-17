@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.typed;
 
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.*;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerRequest;
@@ -15,16 +16,7 @@ import java.util.ResourceBundle;
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.EventBusParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.HttpVersionParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.PaginationContextParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.PayloadParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.RequestParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.ResourceBundleParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.ResponseParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.RoutingContextParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.SocketAddressParamInjector;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl.VertxParamInjector;
+import io.vertx.ext.web.Session;
 
 public class TypedParamInjectorRegistry {
 
@@ -34,6 +26,7 @@ public class TypedParamInjectorRegistry {
 	public TypedParamInjectorRegistry(Config config) {
 		map = new HashMap<>();
 		registerInjector(Vertx.class, new VertxParamInjector());
+		registerInjector(Session.class, new SessionParamInjector());
 		registerInjector(RoutingContext.class, new RoutingContextParamInjector());
 		registerInjector(Payload.class, new PayloadParamInjector());
 		registerInjector(PaginationContext.class, new PaginationContextParamInjector());

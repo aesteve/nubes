@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
 
+import io.vertx.ext.web.Session;
 import org.reflections.Reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
@@ -110,6 +111,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 		final String basePath = trBasePath; // java 8...
 		for (Method method : controller.getDeclaredMethods()) {
 			if (HttpMethodFactory.isRouteMethod(method)) {
+				boolean usesSession = false;
 				Auth trAuth = method.getAnnotation(Auth.class);
 				if (trAuth == null) {
 					trAuth = controller.getAnnotation(Auth.class);
@@ -121,6 +123,9 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 
 				for (int i = 0; i < parameterClasses.length; i++) {
 					Class<?> parameterClass = parameterClasses[i];
+					if (Session.class.isAssignableFrom(parameterClass)) {
+						usesSession = true;
+					}
 					Processor typeProcessor = config.typeProcessors.get(parameterClass);
 					if (typeProcessor != null) {
 						processors.add(typeProcessor);
@@ -141,6 +146,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 				}
 
 				Map<HttpMethod, String> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
+				final boolean doesUseSession = usesSession;
 				httpMethods.forEach((httpMethod, path) -> {
 					Handler<RoutingContext> authHandler = null;
 					String redirectURL = null;
@@ -151,7 +157,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 						}
 					}
 					boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
-					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled);
+					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled, doesUseSession);
 					route.setLoginRedirect(redirectURL);
 					for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
 						Class<? extends Annotation> annotClass = methodAnnotation.annotationType();
