@@ -6,10 +6,10 @@ import io.vertx.core.json.JsonObject;
 
 public interface Service {
 
-	public void init(Vertx vertx, JsonObject config);
+	void init(Vertx vertx, JsonObject config);
 
-	public void start(Future<Void> future);
+	void start(Future<Void> future);
 
-	public void stop(Future<Void> future);
+	void stop(Future<Void> future);
 
 }

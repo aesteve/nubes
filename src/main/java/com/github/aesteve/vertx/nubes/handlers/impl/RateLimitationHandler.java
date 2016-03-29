@@ -12,13 +12,13 @@ import com.github.aesteve.vertx.nubes.context.RateLimit;
 
 public class RateLimitationHandler implements Handler<RoutingContext> {
 
-	private RateLimit rateLimit;
+	private final RateLimit rateLimit;
 
 	public static RateLimitationHandler create(Config config) {
 		return new RateLimitationHandler(config.rateLimit);
 	}
 
-	public RateLimitationHandler(RateLimit rateLimit) {
+	private RateLimitationHandler(RateLimit rateLimit) {
 		this.rateLimit = rateLimit;
 	}
 

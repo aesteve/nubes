@@ -12,7 +12,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 
 public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
 
-	private ParameterAdapterRegistry registry;
+	private final ParameterAdapterRegistry registry;
 
 	public HeaderParamInjector(ParameterAdapterRegistry registry) {
 		this.registry = registry;

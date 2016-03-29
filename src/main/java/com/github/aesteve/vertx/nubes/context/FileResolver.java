@@ -4,7 +4,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class FileResolver {
 
-	private static String CONTEXT_FILE_NAME = "file-name";
+	private static final String CONTEXT_FILE_NAME = "file-name";
 
 	public static void resolve(RoutingContext context, String fileName) {
 		context.put(CONTEXT_FILE_NAME, fileName);

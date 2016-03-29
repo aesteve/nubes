@@ -15,7 +15,7 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 
 	private static final Logger log = LoggerFactory.getLogger(RequestBodyParamInjector.class);
 
-	private Map<String, PayloadMarshaller> marshallers;
+	private final Map<String, PayloadMarshaller> marshallers;
 
 	public RequestBodyParamInjector(Map<String, PayloadMarshaller> marshallers) {
 		this.marshallers = marshallers;

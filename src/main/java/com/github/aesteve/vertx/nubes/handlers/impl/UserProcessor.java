@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.handlers.Processor;
 
 public class UserProcessor extends NoopAfterAllProcessor implements Processor {
 
-	private UserSessionHandler handler;
+	private final UserSessionHandler handler;
 
 	public UserProcessor(AuthProvider provider) {
 		handler = UserSessionHandler.create(provider);

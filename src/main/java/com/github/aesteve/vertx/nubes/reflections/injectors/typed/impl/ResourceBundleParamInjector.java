@@ -10,7 +10,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 public class ResourceBundleParamInjector implements ParamInjector<ResourceBundle> {
 
-	private Config config;
+	private final Config config;
 
 	public ResourceBundleParamInjector(Config config) {
 		this.config = config;

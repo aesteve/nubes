@@ -6,30 +6,29 @@ import java.lang.reflect.Field;
 
 import com.github.aesteve.vertx.nubes.Config;
 
-public abstract class AbstractInjectionFactory {
+abstract class AbstractInjectionFactory {
 
-	protected Config config;
+	Config config;
 
-	protected void injectServicesIntoController(Router router, Object instance) throws IllegalAccessException {
+	void injectServicesIntoController(Router router, Object instance) throws IllegalAccessException {
 		for (Field field : instance.getClass().getDeclaredFields()) {
 			Object service = config.serviceRegistry.get(field);
-			if (service != null) {
-				field.setAccessible(true);
-				field.set(instance, service);
-			} else if (field.getType().equals(Router.class)) {
-				field.setAccessible(true);
-				field.set(instance, router);
-			}
+			setFieldAccessible(router, instance, service, field);
 		}
 		for (Field field : instance.getClass().getSuperclass().getDeclaredFields()) {
 			Object service = config.serviceRegistry.get(field);
-			if (service != null) {
-				field.setAccessible(true);
-				field.set(instance, service);
-			} else if (field.getType().equals(Router.class)) {
-				field.setAccessible(true);
-				field.set(instance, router);
-			}
+			setFieldAccessible(router, instance, service, field);
 		}
+	}
+
+	private void setFieldAccessible(Router router, Object instance, Object service, Field field) throws IllegalAccessException {
+		if (service != null) {
+			field.setAccessible(true);
+			field.set(instance, service);
+		} else if (field.getType().equals(Router.class)) {
+			field.setAccessible(true);
+			field.set(instance, router);
+		}
+
 	}
 }

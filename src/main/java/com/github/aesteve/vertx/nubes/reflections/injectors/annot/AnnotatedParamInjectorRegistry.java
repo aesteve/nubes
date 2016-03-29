@@ -29,7 +29,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.impl.UserParam
 
 public class AnnotatedParamInjectorRegistry {
 
-	private Map<Class<?>, AnnotatedParamInjector<?>> map;
+	private final Map<Class<?>, AnnotatedParamInjector<?>> map;
 
 	public AnnotatedParamInjectorRegistry(Map<String, PayloadMarshaller> marshallers, ParameterAdapterRegistry adapters) {
 		map = new HashMap<>();

@@ -83,8 +83,7 @@ public class PaginationContext {
 		if (links == null) {
 			return null;
 		}
-		String s = String.join(", ", links);
-		return s;
+		return String.join(", ", links);
 	}
 
 	public List<String> getNavLinks(HttpServerRequest request) {
@@ -107,7 +106,7 @@ public class PaginationContext {
 	private String pageUrl(HttpServerRequest request, int pageNum, String rel) {
 		StringBuilder sb = new StringBuilder("<");
 		String url = request.absoluteURI();
-		if (url.indexOf("?") == -1) { // can't rely on params() 'cause we might have injected some stuff (routing)
+		if (!url.contains("?")) { // can't rely on params() 'cause we might have injected some stuff (routing)
 			url += "?" + CURRENT_PAGE_QUERY_PARAM + "=" + pageNum;
 			url += "&" + PER_PAGE_QUERY_PARAM + "=" + itemsPerPage;
 		} else {
@@ -116,18 +115,14 @@ public class PaginationContext {
 			} else {
 				url += "&" + CURRENT_PAGE_QUERY_PARAM + "=" + pageNum;
 			}
-			if (url.indexOf("&" + PER_PAGE_QUERY_PARAM) == -1 && url.indexOf("?" + PER_PAGE_QUERY_PARAM) == -1) {
+			if (!url.contains("&" + PER_PAGE_QUERY_PARAM) && !url.contains("?" + PER_PAGE_QUERY_PARAM)) {
 				url += "&" + PER_PAGE_QUERY_PARAM + "=" + itemsPerPage;
 			}
 		}
 		sb.append(url);
 		sb.append(">; ");
-		sb.append("rel=\"" + rel + "\"");
+		sb.append("rel=\"").append(rel).append("\"");
 		return sb.toString();
-	}
-
-	public Integer getPageAsked() {
-		return pageAsked;
 	}
 
 	public Integer getItemsPerPage() {
@@ -139,11 +134,11 @@ public class PaginationContext {
 	}
 
 	public void setNbItems(Integer nbTotalItems) {
-		this.totalPages = (int) (nbTotalItems / itemsPerPage);
+		this.totalPages = nbTotalItems / itemsPerPage;
 		if (totalPages == 0) {
 			totalPages = 1;
 		}
-		int modulo = (int) (nbTotalItems % itemsPerPage);
+		int modulo = nbTotalItems % itemsPerPage;
 		if (modulo > 0) {
 			this.totalPages = this.totalPages + 1;
 		}

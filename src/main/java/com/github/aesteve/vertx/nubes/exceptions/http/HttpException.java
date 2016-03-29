@@ -4,10 +4,10 @@ public abstract class HttpException extends Throwable {
 
 	private static final long serialVersionUID = 7595158960102835228L;
 
-	public int status;
-	public String msg;
+	public final int status;
+	private final String msg;
 
-	public HttpException(int status, String msg) {
+	protected HttpException(int status, String msg) {
 		this.status = status;
 		this.msg = msg;
 	}

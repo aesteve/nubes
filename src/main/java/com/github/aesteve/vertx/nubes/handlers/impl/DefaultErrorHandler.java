@@ -20,15 +20,15 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class DefaultErrorHandler implements Handler<RoutingContext> {
 
-	public final static String ERROR_DETAILS = "nubes-error-details";
+	private final static String ERROR_DETAILS = "nubes-error-details";
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultErrorHandler.class);
 
-	private Config config;
-	private Map<Integer, String> errorTemplates;
-	private Map<Integer, String> errorMessages;
-	private TemplateEngineManager templManager;
-	private Map<String, PayloadMarshaller> marshallers;
+	private final Config config;
+	private final Map<Integer, String> errorTemplates;
+	private final Map<Integer, String> errorMessages;
+	private final TemplateEngineManager templManager;
+	private final Map<String, PayloadMarshaller> marshallers;
 
 	public DefaultErrorHandler(Config config, TemplateEngineManager templManager, Map<String, PayloadMarshaller> marshallers) {
 		this.config = config;
@@ -40,7 +40,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		addDefaultErrorMessages();
 	}
 
-	public static void setErrorDetails(RoutingContext context, String msg) {
+	private static void setErrorDetails(RoutingContext context, String msg) {
 		context.put(ERROR_DETAILS, msg);
 	}
 
@@ -103,7 +103,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		}
 	}
 
-	protected void addDefaultErrorPages() {
+	private void addDefaultErrorPages() {
 		errorTemplates.put(401, "web/views/errors/401.html");
 		errorTemplates.put(403, "web/views/errors/403.html");
 		errorTemplates.put(404, "web/views/errors/404.html");
@@ -111,7 +111,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		errorTemplates.put(500, "web/views/errors/500.html");
 	}
 
-	protected void addDefaultErrorMessages() {
+	private void addDefaultErrorMessages() {
 		errorMessages.put(400, "Bad request");
 		errorMessages.put(401, "Unauthorized");
 		errorMessages.put(403, "Forbidden");

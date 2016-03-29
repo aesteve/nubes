@@ -11,7 +11,7 @@ public class ClientRedirectProcessor extends NoopAfterAllProcessor implements An
 
 	private final static String LOCATION_DATA = "client-redirect-location";
 
-	private Redirect annotation;
+	private final Redirect annotation;
 
 	public ClientRedirectProcessor(Redirect annotation) {
 		this.annotation = annotation;

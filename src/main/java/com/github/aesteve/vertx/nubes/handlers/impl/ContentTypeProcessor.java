@@ -16,7 +16,7 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
 
 	public final static String BEST_CONTENT_TYPE = "nubes-best-content-type";
 
-	private ContentType annotation;
+	private final ContentType annotation;
 
 	public ContentTypeProcessor(ContentType annotation) {
 		this.annotation = annotation;
@@ -31,9 +31,7 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
 			return;
 		}
 		List<String> acceptableTypes = Utils.getSortedAcceptableMimeTypes(accept);
-		Optional<String> bestType = acceptableTypes.stream().filter(type -> {
-			return contentTypes.contains(type);
-		}).findFirst();
+		Optional<String> bestType = acceptableTypes.stream().filter(contentTypes::contains).findFirst();
 		if (bestType.isPresent()) {
 			ContentTypeProcessor.setContentType(context, bestType.get());
 			context.next();
@@ -52,7 +50,7 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
 		return context.get(BEST_CONTENT_TYPE);
 	}
 
-	public static void setContentType(RoutingContext context, String contentType) {
+	private static void setContentType(RoutingContext context, String contentType) {
 		context.put(BEST_CONTENT_TYPE, contentType);
 	}
 

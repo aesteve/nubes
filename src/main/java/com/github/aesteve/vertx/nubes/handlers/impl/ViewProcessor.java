@@ -9,8 +9,8 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class ViewProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<View> {
 
-	private TemplateEngineManager templateHandler;
-	private View annotation;
+	private final TemplateEngineManager templateHandler;
+	private final View annotation;
 
 	public ViewProcessor(TemplateEngineManager templateHandler, View annotation) {
 		this.templateHandler = templateHandler;

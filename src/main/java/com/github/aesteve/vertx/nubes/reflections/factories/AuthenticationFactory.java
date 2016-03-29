@@ -13,7 +13,7 @@ import com.github.aesteve.vertx.nubes.handlers.impl.CheckTokenHandler;
 
 public class AuthenticationFactory {
 
-	private Config config;
+	private final Config config;
 
 	public AuthenticationFactory(Config config) {
 		this.config = config;

@@ -11,7 +11,7 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 public class PathParametersTestController {
 
 	public enum Animal {
-		CAT, DOG, LIZARD;
+		CAT, DOG, LIZARD
 	}
 
 	@GET("string/:parameter")

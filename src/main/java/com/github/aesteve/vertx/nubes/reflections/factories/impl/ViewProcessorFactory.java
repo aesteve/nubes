@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
 public class ViewProcessorFactory implements AnnotationProcessorFactory<View> {
 
-	private TemplateEngineManager tplEngineMgr;
+	private final TemplateEngineManager tplEngineMgr;
 
 	public ViewProcessorFactory(TemplateEngineManager tplEngineMgr) {
 		this.tplEngineMgr = tplEngineMgr;

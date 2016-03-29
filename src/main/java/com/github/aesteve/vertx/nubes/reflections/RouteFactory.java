@@ -45,9 +45,9 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 
 	private static final Logger log = LoggerFactory.getLogger(RouteFactory.class);
 
-	private Router router;
-	private RouteRegistry routeRegistry;
-	private AuthenticationFactory authFactory;
+	private final Router router;
+	private final RouteRegistry routeRegistry;
+	private final AuthenticationFactory authFactory;
 	private Map<Class<? extends Annotation>, BiConsumer<RoutingContext, ?>> returnHandlers;
 
 	public RouteFactory(Router router, Config config) {
@@ -67,28 +67,20 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 				context.data().putAll((Map)res);
 			}
 		});
-		returnHandlers.put(File.class, (context, res) -> {
-			FileResolver.resolve(context, (String) res);
-		});
+		returnHandlers.put(File.class, (context, res) -> FileResolver.resolve(context, (String) res));
 	}
 
 	public void createHandlers() {
 		List<MVCRoute> routes = extractRoutesFromControllers();
-		routes.stream().filter(route -> {
-			return route.isEnabled();
-		}).forEach(route -> {
-			route.attachHandlersToRouter(router, null, null);
-		});
+		routes.stream().filter(MVCRoute::isEnabled).forEach(route -> route.attachHandlersToRouter(router, null, null));
 	}
 
-	public List<MVCRoute> extractRoutesFromControllers() {
+	private List<MVCRoute> extractRoutesFromControllers() {
 		List<MVCRoute> routes = new ArrayList<>();
 		config.controllerPackages.forEach(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
-			controllers.forEach(controller -> {
-				routes.addAll(extractRoutesFromController(controller));
-			});
+			controllers.forEach(controller -> routes.addAll(extractRoutesFromController(controller)));
 		});
 		return routes;
 	}
@@ -96,7 +88,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 	private List<MVCRoute> extractRoutesFromController(Class<?> controller) {
 		List<MVCRoute> routes = new ArrayList<>();
 		Set<Processor> processors = new LinkedHashSet<>();
-		Controller base = (Controller) controller.getAnnotation(Controller.class);
+		Controller base = controller.getAnnotation(Controller.class);
 		Object instance;
 		try {
 			instance = controller.newInstance();

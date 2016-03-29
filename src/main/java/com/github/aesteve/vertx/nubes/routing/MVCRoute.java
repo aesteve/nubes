@@ -29,20 +29,20 @@ public class MVCRoute {
 	private final String path;
 	private final HttpMethod httpMethod;
 	private final Object instance;
-	private Set<Filter> beforeFilters;
-	private Set<Filter> afterFilters;
+	private final Set<Filter> beforeFilters;
+	private final Set<Filter> afterFilters;
 	private Method mainHandler;
-	private Set<Handler<RoutingContext>> handlers;
+	private final Set<Handler<RoutingContext>> handlers;
 	private Set<Processor> processors;
 	private MVCRoute redirectRoute;
-	private Handler<RoutingContext> authHandler;
+	private final Handler<RoutingContext> authHandler;
 	private String loginRedirect;
 	private Handler<RoutingContext> preInterceptor;
 	private Handler<RoutingContext> postInterceptor;
-	private Config config;
-	private boolean disabled;
+	private final Config config;
+	private final boolean disabled;
 	private BiConsumer<RoutingContext, ?> returnHandler;
-	private boolean usesSession;
+	private final boolean usesSession;
 
 	public MVCRoute(Object instance, String path, HttpMethod method, Config config, Handler<RoutingContext> authHandler, boolean disabled, final boolean usesSession) {
 		this.instance = instance;
@@ -136,9 +136,7 @@ public class MVCRoute {
 		final HttpMethod httpMethodFinal = httpMethod;
 		final String pathFinal = path;
 		if (!isRedirect) {
-			config.globalHandlers.forEach(handler -> {
-				router.route(httpMethodFinal, pathFinal).handler(handler);
-			});
+			config.globalHandlers.forEach(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
 		}
 		if (authHandler != null) {
 			router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
@@ -166,9 +164,7 @@ public class MVCRoute {
 			}
 
 		});
-		processors.forEach(processor -> {
-			router.route(httpMethodFinal, pathFinal).handler(processor::preHandle);
-		});
+		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::preHandle));
 		int i = 0;
 		boolean beforeFiltersHaveNext = mainHandler != null;
 		for (Filter filter : beforeFilters) {
@@ -199,12 +195,8 @@ public class MVCRoute {
 		if (!mainHandler.getReturnType().equals(Void.TYPE) && returnHandler == null) { // try to set as payload
 			processors.add(new PayloadTypeProcessor(config.marshallers));
 		}
-		processors.forEach(processor -> {
-			router.route(httpMethodFinal, pathFinal).handler(processor::postHandle);
-		});
-		processors.forEach(processor -> {
-			router.route(httpMethodFinal, pathFinal).handler(processor::afterAll);
-		});
+		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::postHandle));
+		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::afterAll));
 	}
 
 	private void setHandler(Router router, Method method, HttpMethod httpMethod, String path, boolean hasNext) {

@@ -7,6 +7,6 @@ import io.vertx.core.Handler;
 @ProxyGen
 public interface ParrotService {
 
-	public void echo(String original, Handler<AsyncResult<String>> handler);
+	void echo(String original, Handler<AsyncResult<String>> handler);
 
 }

@@ -7,8 +7,8 @@ import com.github.aesteve.vertx.nubes.annotations.filters.BeforeFilter;
 
 public class Filter implements Comparable<Filter> {
 
-	private int order;
-	private Method method;
+	private final int order;
+	private final Method method;
 
 	public Filter(Method method, AfterFilter annot) {
 		this.method = method;

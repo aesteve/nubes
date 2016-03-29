@@ -12,8 +12,8 @@ import com.github.aesteve.vertx.nubes.routing.MVCRoute;
  */
 public class RouteRegistry {
 
-	private Map<String, MVCRoute> discovered;
-	private Map<String, MVCRoute> waiting;
+	private final Map<String, MVCRoute> discovered;
+	private final Map<String, MVCRoute> waiting;
 
 	public RouteRegistry() {
 		discovered = new HashMap<>();
@@ -49,7 +49,7 @@ public class RouteRegistry {
 		return discovered.get(buildKey(controller, handler)) != null;
 	}
 
-	public MVCRoute get(Forward annotation) {
+	private MVCRoute get(Forward annotation) {
 		return discovered.get(buildKey(annotation));
 	}
 

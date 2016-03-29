@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public class FileProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<File> {
 
-	private File annotation;
+	private final File annotation;
 
 	public FileProcessor(File annotation) {
 		this.annotation = annotation;

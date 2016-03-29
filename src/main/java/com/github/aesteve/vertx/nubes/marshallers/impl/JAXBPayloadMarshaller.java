@@ -22,7 +22,7 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 	protected Marshaller marshaller;
 	protected Unmarshaller unmarshaller;
 
-	public JAXBPayloadMarshaller(Set<Class<? extends Object>> classes) throws JAXBException {
+	public JAXBPayloadMarshaller(Set<Class<?>> classes) throws JAXBException {
 		JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class<?>[0]));
 		marshaller = jc.createMarshaller();
 		unmarshaller = jc.createUnmarshaller();
@@ -69,13 +69,11 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 		if (message == null && error != null) {
 			message = StackTracePrinter.asLineString(null, error).toString();
 		}
-		StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-		sb.append("<error>\n");
-		sb.append("\t<code>500</code>\n");
-		sb.append("\t<message>\n<![CDATA[");
-		sb.append(message);
-		sb.append("]]>\n\t</message>\n");
-		sb.append("</error>");
-		return sb.toString();
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + "<error>\n" +
+				"\t<code>500</code>\n" +
+				"\t<message>\n<![CDATA[" +
+				message +
+				"]]>\n\t</message>\n" +
+				"</error>";
 	}
 }

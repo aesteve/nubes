@@ -11,7 +11,7 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 @Controller("/filters")
 public class AOPFilter {
 
-	public static final long EXECUTION_TIME = 100; // ms
+	private static final long EXECUTION_TIME = 100; // ms
 
 	@GET("/aop")
 	@Before(name = "setDateBefore")

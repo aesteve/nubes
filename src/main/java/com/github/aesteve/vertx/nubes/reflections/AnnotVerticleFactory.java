@@ -17,7 +17,7 @@ public class AnnotVerticleFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnotVerticleFactory.class);
 
-	private Config config;
+	private final Config config;
 
 	public AnnotVerticleFactory(Config config) {
 		this.config = config;

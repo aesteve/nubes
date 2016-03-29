@@ -8,7 +8,7 @@ import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
 public class CheckAuthorityProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<Auth> {
 
-	private Auth annotation;
+	private final Auth annotation;
 
 	public CheckAuthorityProcessor(Auth annotation) {
 		this.annotation = annotation;

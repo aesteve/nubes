@@ -13,8 +13,8 @@ import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
 
 public class BoonPayloadMarshaller implements PayloadMarshaller {
 
-	protected JsonSerializer serializer;
-	protected ObjectMapper mapper;
+	protected final JsonSerializer serializer;
+	protected final ObjectMapper mapper;
 
 	public BoonPayloadMarshaller() {
 		this.serializer = new JsonSerializerFactory().useAnnotations().create();

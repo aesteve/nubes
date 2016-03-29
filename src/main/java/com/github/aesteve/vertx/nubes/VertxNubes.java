@@ -4,14 +4,7 @@ import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeFina
 import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFail;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 import javax.xml.bind.JAXBException;
@@ -88,16 +81,16 @@ import io.vertx.ext.web.templ.TemplateEngine;
 
 public class VertxNubes {
 	
-	protected Config config;
-	protected Vertx vertx;
+	protected final Config config;
+	protected final Vertx vertx;
 
 	private Router router;
 	private FixtureLoader fixtureLoader;
 	private Handler<RoutingContext> failureHandler;
-	private ParameterAdapterRegistry registry;
-	private Map<String, PayloadMarshaller> marshallers;
+	private final ParameterAdapterRegistry registry;
+	private final Map<String, PayloadMarshaller> marshallers;
 	private LocaleResolverRegistry locResolver;
-	private List<String> deploymentIds;
+	private final List<String> deploymentIds;
 
 	/**
 	 * TODO check config
@@ -151,7 +144,7 @@ public class VertxNubes {
 		setUpRouter(paramRouter);
 		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
 		Map<String, DeploymentOptions> verticles = new AnnotVerticleFactory(config).scan();
-		MultipleFutures<String> vertFutures = new MultipleFutures<String>(verticles, this::deployVerticle);
+		MultipleFutures<String> vertFutures = new MultipleFutures<>(verticles, this::deployVerticle);
 		AsyncUtils.chainOnSuccess(
 				handler,
 				vertFutures,
@@ -198,23 +191,22 @@ public class VertxNubes {
 	}
 
 	public void setAvailableLocales(List<Locale> availableLocales) {
-		if (locResolver == null) {
-			locResolver = new LocaleResolverRegistry(availableLocales);
-			locResolver.addResolver(new AcceptLanguageLocaleResolver());
-			registerTypeParamInjector(Locale.class, new LocaleParamInjector());
-			addGlobalHandler(new LocaleHandler(locResolver));
-		} 
+		initLocale(availableLocales.toArray(new Locale[0]));
 		locResolver.addLocales(availableLocales);
 	}
 
 	public void setDefaultLocale(Locale defaultLocale) {
+		initLocale(defaultLocale);
+		locResolver.setDefaultLocale(defaultLocale);
+	}
+
+	private void initLocale(Locale... loc) {
 		if (locResolver == null) {
-			locResolver = new LocaleResolverRegistry(defaultLocale);
+			locResolver = new LocaleResolverRegistry(Arrays.asList(loc));
 			locResolver.addResolver(new AcceptLanguageLocaleResolver());
 			registerTypeParamInjector(Locale.class, new LocaleParamInjector());
 			addGlobalHandler(new LocaleHandler(locResolver));
 		}
-		locResolver.setDefaultLocale(defaultLocale);
 	}
 
 	public void addLocaleResolver(LocaleResolver resolver) {
@@ -251,7 +243,7 @@ public class VertxNubes {
 	public void registerAnnotationHandler(Class<? extends Annotation> annotation, Handler<RoutingContext> handler) {
 		Set<Handler<RoutingContext>> handlers = config.annotationHandlers.get(annotation);
 		if (handlers == null) {
-			handlers = new LinkedHashSet<Handler<RoutingContext>>();
+			handlers = new LinkedHashSet<>();
 		}
 		if (!handlers.contains(handler)) {
 			handlers.add(handler);

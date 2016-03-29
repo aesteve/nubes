@@ -22,7 +22,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CL
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CREATED;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.UNREGISTER;
 
-public class BridgeEventFactory {
+class BridgeEventFactory {
 
 	private static final Map<Class<? extends Annotation>, BridgeEventType> types = new HashMap<>();
 	static {

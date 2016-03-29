@@ -14,7 +14,7 @@ public class TemplateEngineManager implements TemplateHandler {
 
 	private final static Logger log = LoggerFactory.getLogger(TemplateEngineManager.class);
 
-	private Config config;
+	private final Config config;
 
 	public TemplateEngineManager(Config config) {
 		this.config = config;
@@ -32,6 +32,8 @@ public class TemplateEngineManager implements TemplateHandler {
 		TemplateEngine engine = fromViewName(tplName);
 		if (engine == null) {
 			log.error("No template handler found for " + tplName);
+			context.fail(500);
+			return;
 		}
 		engine.render(context, tplName, res -> {
 			if (res.succeeded()) {

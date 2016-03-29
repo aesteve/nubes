@@ -26,7 +26,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 
 	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
 
-	private Router router;
+	private final Router router;
 
 	public SocketFactory(Router router, Config config) {
 		this.router = router;
@@ -37,9 +37,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 		config.controllerPackages.forEach(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(SockJS.class);
-			controllers.forEach(controller -> {
-				createSocketHandlers(controller);
-			});
+			controllers.forEach(this::createSocketHandlers);
 		});
 	}
 
@@ -50,7 +48,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 		List<Method> openHandlers = new ArrayList<>();
 		List<Method> messageHandlers = new ArrayList<>();
 		List<Method> closeHandlers = new ArrayList<>();
-		Object ctrlInstance = null;
+		Object ctrlInstance;
 		try {
 			ctrlInstance = controller.newInstance();
 			injectServicesIntoController(router, ctrlInstance);
@@ -73,19 +71,11 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 			}
 		}
 		sockJSHandler.socketHandler(ws -> {
-			openHandlers.forEach(handler -> {
-				tryToInvoke(instance, handler, ws, null);
-			});
-			ws.handler(buff -> {
-				messageHandlers.forEach(messageHandler -> {
-					tryToInvoke(instance, messageHandler, ws, buff);
-				});
-			});
-			ws.endHandler(voidz -> {
-				closeHandlers.forEach(closeHandler -> {
-					tryToInvoke(instance, closeHandler, ws, null);
-				});
-			});
+			openHandlers.forEach(handler -> tryToInvoke(instance, handler, ws, null));
+			ws.handler(buff -> messageHandlers.forEach(messageHandler -> tryToInvoke(instance, messageHandler, ws, buff)));
+			ws.endHandler(voidz -> closeHandlers.forEach(closeHandler -> {
+				tryToInvoke(instance, closeHandler, ws, null);
+			}));
 		});
 		if (!path.endsWith("/*")) {
 			if (path.endsWith("/")) {

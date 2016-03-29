@@ -19,14 +19,12 @@ import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 
 public class FixtureLoader {
 
-	public Vertx vertx;
-	public Config config;
-	public ServiceRegistry serviceRegistry;
-	private Set<Fixture> fixtures;
+	private final Vertx vertx;
+	private final Config config;
+	private final ServiceRegistry serviceRegistry;
+	private final Set<Fixture> fixtures;
 
-	public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> {
-		return Integer.compare(f1.executionOrder(), f2.executionOrder());
-	};
+	public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> Integer.compare(f1.executionOrder(), f2.executionOrder());
 
 	public FixtureLoader(Vertx vertx, Config config, ServiceRegistry serviceRegistry) {
 		this.vertx = vertx;
@@ -56,14 +54,10 @@ public class FixtureLoader {
 		fixtures.stream().sorted().forEach(fixture -> {
 			switch (methodName) {
 				case "startUp":
-					list.add(fut -> {
-						fixture.startUp(vertx, fut);
-					});
+					list.add(fut -> fixture.startUp(vertx, fut));
 					break;
 				case "tearDown":
-					list.add(fut -> {
-						fixture.tearDown(vertx, fut);
-					});
+					list.add(fut -> fixture.tearDown(vertx, fut));
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown method : " + methodName);

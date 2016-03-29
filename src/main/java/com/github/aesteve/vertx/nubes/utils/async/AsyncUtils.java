@@ -16,9 +16,7 @@ public class AsyncUtils {
 	private static final Logger log = LoggerFactory.getLogger(AsyncUtils.class);
 
 	public static <T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
-		return (res -> {
-			fut.complete();
-		});
+		return (res -> fut.complete());
 	}
 
 	public static <T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {

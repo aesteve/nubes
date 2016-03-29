@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class ClientAccesses {
 
-	List<Long> history;
+	private List<Long> history;
 
 	public ClientAccesses() {
 		history = new ArrayList<>();
@@ -21,16 +21,12 @@ public class ClientAccesses {
 
 	public boolean isOverLimit(RateLimit limit) {
 		long minBound = System.currentTimeMillis() - limit.getTimeUnit().toMillis(limit.getValue());
-		long count = history.stream().filter(access -> {
-			return access > minBound;
-		}).count();
+		long count = history.stream().filter(access -> access > minBound).count();
 		return count > limit.getCount();
 	}
 
 	public void clearHistory(Long keepAfter) {
-		history = history.stream().filter(access -> {
-			return access > keepAfter;
-		}).collect(Collectors.toList());
+		history = history.stream().filter(access -> access > keepAfter).collect(Collectors.toList());
 	}
 
 	public boolean noAccess() {

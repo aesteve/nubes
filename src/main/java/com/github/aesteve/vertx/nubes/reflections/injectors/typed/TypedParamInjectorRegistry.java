@@ -20,7 +20,7 @@ import io.vertx.ext.web.Session;
 
 public class TypedParamInjectorRegistry {
 
-	private Map<Class<?>, ParamInjector<?>> map;
+	private final Map<Class<?>, ParamInjector<?>> map;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TypedParamInjectorRegistry(Config config) {

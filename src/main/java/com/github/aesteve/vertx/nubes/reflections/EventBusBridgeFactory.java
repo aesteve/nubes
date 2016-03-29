@@ -27,7 +27,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.OutboundPermitte
 public class EventBusBridgeFactory extends AbstractInjectionFactory implements HandlerFactory {
 	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
 
-	private Router router;
+	private final Router router;
 
 	public EventBusBridgeFactory(Router router, Config config) {
 		this.router = router;
@@ -38,9 +38,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 		config.controllerPackages.forEach(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(EventBusBridge.class);
-			controllers.forEach(controller -> {
-				createSocketHandlers(controller);
-			});
+			controllers.forEach(this::createSocketHandlers);
 		});
 	}
 
@@ -49,7 +47,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 		EventBusBridge annot = controller.getAnnotation(EventBusBridge.class);
 		BridgeOptions bridge = createBridgeOptions(controller);
 		String path = annot.value();
-		Object ctrlInstance = null;
+		Object ctrlInstance;
 		try {
 			ctrlInstance = controller.newInstance();
 			injectServicesIntoController(router, ctrlInstance);

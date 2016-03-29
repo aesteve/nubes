@@ -2,13 +2,13 @@ package com.github.aesteve.vertx.nubes.exceptions.params;
 
 public class WrongParameterException extends Exception {
 
-	public static enum ParamType {
+	public enum ParamType {
 		HEADER("header"),
 		REQUEST_PARAM("request parameter");
 
-		private String name;
+		private final String name;
 
-		private ParamType(String name) {
+		ParamType(String name) {
 			this.name = name;
 		}
 
@@ -20,8 +20,8 @@ public class WrongParameterException extends Exception {
 
 	private static final long serialVersionUID = -2242939508622290913L;
 
-	protected String paramName;
-	protected ParamType type;
+	protected final String paramName;
+	protected final ParamType type;
 
 	public WrongParameterException(ParamType type, String paramName) {
 		super();

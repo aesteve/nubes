@@ -9,10 +9,10 @@ import com.github.aesteve.vertx.nubes.reflections.adapters.impl.DefaultParameter
 
 public class ParameterAdapterRegistry {
 
-	private Map<Class<?>, ParameterAdapter<?>> adapters;
-	private ParameterAdapter<Object> defaultParameterAdapter;
+	private final Map<Class<?>, ParameterAdapter<?>> adapters;
+	private final ParameterAdapter<Object> defaultParameterAdapter;
 
-	public ParameterAdapterRegistry(ParameterAdapter<Object> defaultParameterAdapter) {
+	private ParameterAdapterRegistry(ParameterAdapter<Object> defaultParameterAdapter) {
 		adapters = new HashMap<>();
 		this.defaultParameterAdapter = defaultParameterAdapter;
 	}
@@ -26,7 +26,7 @@ public class ParameterAdapterRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> ParameterAdapter<T> getAdapter(Class<T> parameterClass) {
+	private <T> ParameterAdapter<T> getAdapter(Class<T> parameterClass) {
 		return (ParameterAdapter<T>) adapters.get(parameterClass);
 	}
 

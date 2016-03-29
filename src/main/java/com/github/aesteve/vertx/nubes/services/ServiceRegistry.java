@@ -29,12 +29,12 @@ public class ServiceRegistry {
 
 	private final static Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
 
-	private Map<String, Object> services;
-	private Map<String, Object> serviceProxies;
-	private Set<Long> timerIds;
-	private Config config;
+	private final Map<String, Object> services;
+	private final Map<String, Object> serviceProxies;
+	private final Set<Long> timerIds;
+	private final Config config;
 
-	private Vertx vertx;
+	private final Vertx vertx;
 
 	public ServiceRegistry(Vertx vertx, Config config) {
 		this.vertx = vertx;
@@ -112,9 +112,7 @@ public class ServiceRegistry {
 			future.complete();
 			return;
 		}
-		timerIds.forEach(timerId -> {
-			vertx.cancelTimer(timerId);
-		});
+		timerIds.forEach(timerId -> vertx.cancelTimer(timerId));
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		futures.addAll(services(), obj -> {
 			if (obj instanceof Service) {

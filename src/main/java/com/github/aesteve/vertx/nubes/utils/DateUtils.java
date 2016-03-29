@@ -22,7 +22,7 @@ public enum DateUtils {
 
 	private DatatypeFactory factory;
 
-	private DateUtils() {
+	DateUtils() {
 		try {
 			factory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException dtce) {
@@ -30,7 +30,7 @@ public enum DateUtils {
 		}
 	}
 
-	public Date parseIso8601(String date) throws ParseException {
+	public Date parseIso8601(String date) {
 		XMLGregorianCalendar cal = factory.newXMLGregorianCalendar(date);
 		return cal.toGregorianCalendar().getTime();
 	}

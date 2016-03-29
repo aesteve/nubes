@@ -8,8 +8,8 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class AnnotationProcessorRegistry {
 
-	private Map<Class<? extends Annotation>, AnnotationProcessorFactory<? extends Annotation>> factoryMap;
-	private Map<Class<? extends Annotation>, AnnotationProcessor<? extends Annotation>> processorMap;
+	private final Map<Class<? extends Annotation>, AnnotationProcessorFactory<? extends Annotation>> factoryMap;
+	private final Map<Class<? extends Annotation>, AnnotationProcessor<? extends Annotation>> processorMap;
 
 	public AnnotationProcessorRegistry() {
 		factoryMap = new HashMap<>();

@@ -11,7 +11,7 @@ import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 
 public class PayloadTypeProcessor extends NoopAfterAllProcessor implements Processor {
 
-	private Map<String, PayloadMarshaller> marshallers;
+	private final Map<String, PayloadMarshaller> marshallers;
 
 	public PayloadTypeProcessor(Map<String, PayloadMarshaller> marshallers) {
 		this.marshallers = marshallers;

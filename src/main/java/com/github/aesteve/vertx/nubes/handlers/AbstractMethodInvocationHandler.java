@@ -18,17 +18,17 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 
 public abstract class AbstractMethodInvocationHandler<T> implements Handler<RoutingContext> {
 
-	protected Method method;
-	protected Object instance;
-	protected Config config;
-	protected Parameter[] parameters;
+	protected final Method method;
+	protected final Object instance;
+	private final Config config;
+	private final Parameter[] parameters;
 	protected boolean usesRoutingContext;
 	protected boolean usesHttpResponse;
-	protected boolean hasNext;
-	protected BiConsumer<RoutingContext, T> returnHandler;
-	protected boolean returnsSomething;
+	protected final boolean hasNext;
+	protected final BiConsumer<RoutingContext, T> returnHandler;
+	protected final boolean returnsSomething;
 
-	public AbstractMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
+	protected AbstractMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
 		this.method = method;
 		returnsSomething = !method.getReturnType().equals(Void.TYPE);
 		this.hasNext = hasNext;
@@ -60,7 +60,7 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass, String paramName) throws WrongParameterException {
+	private Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass, String paramName) throws WrongParameterException {
 		if (annotations.length == 0) { // rely on type
 			ParamInjector<?> injector = config.typeInjectors.getInjector(parameterClass);
 			if (injector == null) {

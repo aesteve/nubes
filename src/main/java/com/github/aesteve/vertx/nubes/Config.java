@@ -1,6 +1,15 @@
 
 package com.github.aesteve.vertx.nubes;
 
+import com.github.aesteve.vertx.nubes.auth.AuthMethod;
+import com.github.aesteve.vertx.nubes.context.RateLimit;
+import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
+import com.github.aesteve.vertx.nubes.handlers.Processor;
+import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
+import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
@@ -11,37 +20,16 @@ import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.jdbc.JDBCAuth;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.shiro.ShiroAuth;
-import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
+import io.vertx.ext.auth.shiro.ShiroAuthOptions;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
-import io.vertx.ext.web.templ.HandlebarsTemplateEngine;
-import io.vertx.ext.web.templ.JadeTemplateEngine;
-import io.vertx.ext.web.templ.MVELTemplateEngine;
-import io.vertx.ext.web.templ.TemplateEngine;
-import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
+import io.vertx.ext.web.templ.*;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import com.github.aesteve.vertx.nubes.auth.AuthMethod;
-import com.github.aesteve.vertx.nubes.context.RateLimit;
-import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
-import com.github.aesteve.vertx.nubes.handlers.Processor;
-import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
-import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
-import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
-import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 
 public class Config {
 
@@ -56,7 +44,7 @@ public class Config {
 	}
 
 	public JsonObject json;
-	public String srcPackage;
+	private String srcPackage;
 	public List<String> controllerPackages;
 	public List<String> fixturePackages;
 	public String verticlePackage;
@@ -77,13 +65,12 @@ public class Config {
 	public TypedParamInjectorRegistry typeInjectors;
 	public AnnotatedParamInjectorRegistry annotInjectors;
 	public ServiceRegistry serviceRegistry;
-	public RouteRegistry routeRegistry;
 	public Map<Class<?>, Handler<RoutingContext>> paramHandlers;
 	public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
-	public Map<Locale, ResourceBundle> bundlesByLocale;
-	public List<Handler<RoutingContext>> globalHandlers;
-	public Map<String, TemplateEngine> templateEngines;
-	public SockJSHandlerOptions sockJSOptions;
+	public final Map<Locale, ResourceBundle> bundlesByLocale;
+	public final List<Handler<RoutingContext>> globalHandlers;
+	public final Map<String, TemplateEngine> templateEngines;
+	public final SockJSHandlerOptions sockJSOptions;
 	public Map<String, PayloadMarshaller> marshallers;
 
 	/**
@@ -180,7 +167,7 @@ public class Config {
 					instance.authProvider = JWTAuth.create(vertx, authProperties);
 					break;
 				case "Shiro":
-					instance.authProvider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, authProperties);
+					ShiroAuth.create(vertx, new ShiroAuthOptions(authProperties));
 					break;
 				case "JDBC":
 					String dbName = json.getString("db-name");

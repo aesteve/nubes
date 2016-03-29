@@ -4,7 +4,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class ViewResolver {
 
-	private static String CONTEXT_TPL_NAME = "tpl-name";
+	private static final String CONTEXT_TPL_NAME = "tpl-name";
 
 	public static void resolve(RoutingContext context, String viewName) {
 		context.put(CONTEXT_TPL_NAME, viewName);

@@ -13,7 +13,7 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 public class FormParametersTestController {
 
 	public enum Animal {
-		CAT, DOG, LIZARD;
+		CAT, DOG, LIZARD
 	}
 
 	@GET("string")

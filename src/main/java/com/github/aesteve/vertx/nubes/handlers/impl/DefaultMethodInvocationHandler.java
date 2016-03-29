@@ -26,7 +26,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 		if (routingContext.failed()) {
 			return;
 		}
-		Object[] parameters = null;
+		Object[] parameters;
 		try {
 			parameters = getParameters(routingContext);
 		} catch (WrongParameterException e) {
@@ -67,10 +67,8 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 		} catch (InvocationTargetException ite) {
 			ite.printStackTrace();
 			routingContext.fail(ite.getCause());
-			return;
 		} catch (Throwable others) {
 			routingContext.fail(others);
-			return;
 		}
 	}
 }

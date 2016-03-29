@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Inherited
 @Target({ ElementType.METHOD, ElementType.TYPE })
 public @interface ContentType {
-	public String[] value();
+	String[] value();
 }

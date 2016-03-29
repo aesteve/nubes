@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class LocaleResolverRegistry {
-	private List<LocaleResolver> resolvers;
+	private final List<LocaleResolver> resolvers;
 	private final List<Locale> availableLocales;
 	private Locale defaultLocale;
 

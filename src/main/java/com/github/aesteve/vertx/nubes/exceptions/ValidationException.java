@@ -7,9 +7,9 @@ public class ValidationException extends Exception {
 
 	private static final long serialVersionUID = 7605372874231630986L;
 
-	private List<String> validationMsgs;
+	private final List<String> validationMsgs;
 
-	public ValidationException() {
+	private ValidationException() {
 		super();
 		validationMsgs = new ArrayList<>();
 	}
@@ -26,7 +26,7 @@ public class ValidationException extends Exception {
 	}
 	public String getValidationMsg() {
 		StringBuilder sb = new StringBuilder("Invalid data.");
-		validationMsgs.forEach(msg -> sb.append(msg + ".\n"));
+		validationMsgs.forEach(msg -> sb.append(msg).append(".\n"));
 		return sb.toString();
 	}
 }

@@ -19,7 +19,7 @@ public class MockUser implements User {
 
 	@Override
 	public User isAuthorised(String authority, Handler<AsyncResult<Boolean>> resultHandler) {
-		Boolean authorized = authority.equals("") ? true : login.equals("tim");
+		Boolean authorized = "".equals(authority) || login.equals("tim");
 		resultHandler.handle(Future.succeededFuture(authorized));
 		return this;
 	}

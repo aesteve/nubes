@@ -10,7 +10,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParam
 
 public class ParamsInjector implements AnnotatedParamInjector<Params> {
 
-	private ParameterAdapterRegistry adapters;
+	private final ParameterAdapterRegistry adapters;
 
 	public ParamsInjector(ParameterAdapterRegistry adapters) {
 		this.adapters = adapters;

@@ -56,9 +56,7 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 			return this;
 		}
 		Future<T> future = Future.future();
-		future.setHandler(futureHandler -> {
-			checkCallHandler();
-		});
+		future.setHandler(futureHandler -> checkCallHandler());
 		consumers.put(handler, future);
 		return this;
 	}
@@ -68,9 +66,7 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 			complete();
 			return this;
 		}
-		consumers.forEach((consumer, future) -> {
-			consumer.handle(future);
-		});
+		consumers.forEach(Handler::handle);
 		return this;
 	}
 
@@ -97,16 +93,12 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 
 	@Override
 	public boolean succeeded() {
-		return consumers.values().stream().allMatch(future -> {
-			return future.succeeded();
-		});
+		return consumers.values().stream().allMatch(Future::succeeded);
 	}
 
 	@Override
 	public boolean failed() {
-		return consumers.values().stream().anyMatch(future -> {
-			return future.failed();
-		});
+		return consumers.values().stream().anyMatch(Future::failed);
 	}
 
 	@Override
@@ -114,12 +106,8 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 		if (super.isComplete()) { // has been marked explicitly
 			return true;
 		}
-		if (consumers.isEmpty()) {
-			return false;
-		}
-		return consumers.values().stream().allMatch(future -> {
-			return future.isComplete();
-		});
+		return !consumers.isEmpty() &&
+				consumers.values().stream().allMatch(Future::isComplete);
 	}
 
 	public MultipleFutures<T> join(Future<T> future) {
@@ -133,18 +121,12 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 	}
 
 	public <L> MultipleFutures<T> addAll(Collection<L> list, BiConsumer<L, Future<T>> transform) {
-		list.forEach(element -> {
-			add(res -> {
-				transform.accept(element, res);
-			});
-		});
+		list.forEach(element -> add(res -> transform.accept(element, res)));
 		return this;
 	}
 
 	public <L> MultipleFutures<T> addAll(Collection<L> list, Function<L, Handler<Future<T>>> transform) {
-		list.forEach(element -> {
-			add(transform.apply(element));
-		});
+		list.forEach(element -> add(transform.apply(element)));
 		return this;
 	}
 
@@ -155,11 +137,9 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 	}
 
 	public <K, V> MultipleFutures<T> addAll(Map<K, V> map, TriConsumer<K, V, Future<T>> transform) {
-		map.forEach((key, value) -> {
-			add(res -> {
-				transform.accept(key, value, res);
-			});
-		});
+		map.forEach((key, value) -> add(res -> {
+			transform.accept(key, value, res);
+		}));
 		return this;
 	}
 

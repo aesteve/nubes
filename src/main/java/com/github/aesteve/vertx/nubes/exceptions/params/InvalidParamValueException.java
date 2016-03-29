@@ -4,7 +4,7 @@ public class InvalidParamValueException extends WrongParameterException {
 
 	private static final long serialVersionUID = -8469141240265252774L;
 
-	private Object paramValue;
+	private final Object paramValue;
 
 	public InvalidParamValueException(ParamType type, String paramName, Object paramValue) {
 		super(type, paramName);
