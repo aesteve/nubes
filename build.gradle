@@ -113,7 +113,6 @@ task sourcesJar(type: Jar) {
 	from sourceSets.main.allJava
 }
 
-
 test.outputs.upToDateWhen { false }
 
 task wrapper(type: Wrapper) {
