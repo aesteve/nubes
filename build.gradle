@@ -83,7 +83,7 @@ clean {
 
 bintray {
 	user = 'aesteve'
-	key = System.getenv('BINTRAY_KEY')
+	key = System.getenv 'BINTRAY_KEY'
 	pkg {
 		repo = 'maven'
 		name = project.name
