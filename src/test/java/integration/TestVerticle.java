@@ -74,8 +74,13 @@ public class TestVerticle extends AbstractVerticle {
 		nubes.registerTemplateEngine("hbs", HandlebarsTemplateEngine.create());
 		nubes.bootstrap(onSuccessOnly(startFuture, router -> {
 			server.requestHandler(router::accept);
-			server.listen();
-			startFuture.complete();
+			server.listen(res -> {
+				if (res.failed()) {
+					startFuture.fail(res.cause());
+					return;
+				}
+				startFuture.complete();
+			});
 		}));
 	}
 
