@@ -30,7 +30,7 @@ public abstract class VertxNubesTestBase {
 		options.setInstances(NB_INSTANCES);
 		vertx.deployVerticle("integration.TestVerticle", options, context.asyncAssertSuccess(handler -> {
 			context.assertTrue(TestVerticle.dogService.size() > 0);
-			context.assertEquals(NB_INSTANCES * 1, AnnotatedVerticle.nbInstances.get());
+			context.assertEquals(NB_INSTANCES, AnnotatedVerticle.nbInstances.get());
 			context.assertTrue(AnnotatedVerticle.isStarted.get());
 		}));
 	}
