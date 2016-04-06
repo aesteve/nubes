@@ -114,6 +114,9 @@ task sourcesJar(type: Jar) {
 }
 
 test.outputs.upToDateWhen { false }
+test {
+	finalizedBy jacocoTestReport
+}
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.9'
