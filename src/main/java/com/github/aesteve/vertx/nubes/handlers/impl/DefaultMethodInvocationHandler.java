@@ -1,6 +1,8 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +15,8 @@ import com.github.aesteve.vertx.nubes.handlers.AbstractMethodInvocationHandler;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationHandler<T> {
+
+	private final Logger log = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
 
 	public DefaultMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
 		super(instance, method, config, hasNext, returnHandler);
@@ -65,10 +69,14 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 				}
 			}
 		} catch (InvocationTargetException ite) {
-			ite.printStackTrace();
+			log.error(ite);
 			routingContext.fail(ite.getCause());
-		} catch (Throwable others) {
-			routingContext.fail(others);
+		} catch(IllegalAccessException iae) {
+			log.error(iae);
+			routingContext.fail(iae.getCause());
 		}
+		/* catch (Throwable others) {
+			routingContext.fail(others);
+		} */
 	}
 }
