@@ -119,13 +119,6 @@ test {
 	finalizedBy jacocoTestReport
 }
 
-sonar {
-	server {
-		url = 'http://ec2-52-50-27-7.eu-west-1.compute.amazonaws.com/'
-	}
-}
-
-
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.9'
 }
