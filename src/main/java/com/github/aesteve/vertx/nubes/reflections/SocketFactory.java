@@ -34,7 +34,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 	}
 
 	public void createHandlers() {
-		config.controllerPackages.forEach(controllerPackage -> {
+		config.forEachControllerPackage(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(SockJS.class);
 			controllers.forEach(this::createSocketHandlers);
@@ -42,7 +42,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 	}
 
 	private void createSocketHandlers(Class<?> controller) {
-		SockJSHandler sockJSHandler = SockJSHandler.create(config.vertx, config.sockJSOptions);
+		SockJSHandler sockJSHandler = SockJSHandler.create(config.getVertx(), config.getSockJSOptions());
 		SockJS annot = controller.getAnnotation(SockJS.class);
 		String path = annot.value();
 		List<Method> openHandlers = new ArrayList<>();
@@ -89,15 +89,16 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 
 	private void tryToInvoke(Object instance, Method method, SockJSSocket socket, Buffer msg) {
 		List<Object> paramInstances = new ArrayList<>();
+		final Vertx vertx = config.getVertx();
 		for (Class<?> parameterClass : method.getParameterTypes()) {
 			if (parameterClass.equals(SockJSSocket.class)) {
 				paramInstances.add(socket);
 			} else if (Buffer.class.isAssignableFrom(parameterClass)) {
 				paramInstances.add(msg);
 			} else if (parameterClass.equals(EventBus.class)) {
-				paramInstances.add(config.vertx.eventBus());
+				paramInstances.add(vertx.eventBus());
 			} else if (parameterClass.equals(Vertx.class)) {
-				paramInstances.add(config.vertx);
+				paramInstances.add(vertx);
 			}
 		}
 		try {

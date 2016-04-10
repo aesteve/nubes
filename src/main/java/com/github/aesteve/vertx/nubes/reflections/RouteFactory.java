@@ -77,7 +77,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 
 	private List<MVCRoute> extractRoutesFromControllers() {
 		List<MVCRoute> routes = new ArrayList<>();
-		config.controllerPackages.forEach(controllerPackage -> {
+		config.forEachControllerPackage(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
 			controllers.forEach(controller -> routes.addAll(extractRoutesFromController(controller)));
@@ -118,18 +118,18 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					if (Session.class.isAssignableFrom(parameterClass)) {
 						usesSession = true;
 					}
-					Processor typeProcessor = config.typeProcessors.get(parameterClass);
+					Processor typeProcessor = config.getTypeProcessor(parameterClass);
 					if (typeProcessor != null) {
 						processors.add(typeProcessor);
 					}
-					Handler<RoutingContext> handler = config.paramHandlers.get(parameterClass);
+					Handler<RoutingContext> handler = config.getParamHandler(parameterClass);
 					if (handler != null) {
 						paramsHandlers.add(handler);
 					}
 					Annotation[] paramAnnotations = parametersAnnotations[i];
 					if (paramAnnotations != null) {
 						for (Annotation annotation : paramAnnotations) {
-							Set<Handler<RoutingContext>> paramHandler = config.annotationHandlers.get(annotation.annotationType());
+							Set<Handler<RoutingContext>> paramHandler = config.getAnnotationHandler(annotation.annotationType());
 							if (paramHandler != null) {
 								paramsHandlers.addAll(paramHandler);
 							}
@@ -153,11 +153,11 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					route.setLoginRedirect(redirectURL);
 					for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
 						Class<? extends Annotation> annotClass = methodAnnotation.annotationType();
-						Set<Handler<RoutingContext>> handler = config.annotationHandlers.get(annotClass);
+						Set<Handler<RoutingContext>> handler = config.getAnnotationHandler(annotClass);
 						if (handler != null) {
 							route.attachHandlers(handler);
 						}
-						AnnotationProcessor<?> annProcessor = config.apRegistry.getProcessor(methodAnnotation);
+						AnnotationProcessor<?> annProcessor = config.getAnnotationProcessor(methodAnnotation);
 						if (annProcessor != null) {
 							route.addProcessor(annProcessor);
 						}
@@ -169,7 +169,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					Before before = method.getAnnotation(Before.class);
 					After after = method.getAnnotation(After.class);
 					if (before != null) {
-						Handler<RoutingContext> beforeHandler = config.aopHandlerRegistry.get(before.name());
+						Handler<RoutingContext> beforeHandler = config.getAopHandler(before.name());
 						if (beforeHandler == null) {
 							LOG.warn("The interceptor with name" + (before.name()) + " could not be found");
 						} else {
@@ -177,7 +177,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 						}
 					}
 					if (after != null) {
-						Handler<RoutingContext> afterHandler = config.aopHandlerRegistry.get(after.name());
+						Handler<RoutingContext> afterHandler = config.getAopHandler(after.name());
 						if (afterHandler == null) {
 							LOG.warn("The interceptor with name" + (after.name()) + " could not be found");
 						} else {
@@ -212,7 +212,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 		}
 		Set<Processor> controllerProcessors = new LinkedHashSet<>();
 		for (Annotation annotation : controller.getDeclaredAnnotations()) {
-			AnnotationProcessor<?> controllerProcessor = config.apRegistry.getProcessor(annotation);
+			AnnotationProcessor<?> controllerProcessor = config.getAnnotationProcessor(annotation);
 			if (controllerProcessor != null) {
 				controllerProcessors.add(controllerProcessor);
 			}

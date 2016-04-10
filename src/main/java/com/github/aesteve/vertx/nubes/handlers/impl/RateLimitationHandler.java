@@ -15,7 +15,7 @@ public class RateLimitationHandler implements Handler<RoutingContext> {
 	private final RateLimit rateLimit;
 
 	public static RateLimitationHandler create(Config config) {
-		return new RateLimitationHandler(config.rateLimit);
+		return new RateLimitationHandler(config.getRateLimit());
 	}
 
 	private RateLimitationHandler(RateLimit rateLimit) {

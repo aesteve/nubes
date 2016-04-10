@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import io.vertx.ext.web.Router;
 
 import java.lang.reflect.Field;
@@ -11,12 +12,13 @@ abstract class AbstractInjectionFactory {
 	Config config;
 
 	void injectServicesIntoController(Router router, Object instance) throws IllegalAccessException {
+		final ServiceRegistry serviceRegistry = config.getServiceRegistry();
 		for (Field field : instance.getClass().getDeclaredFields()) {
-			Object service = config.serviceRegistry.get(field);
+			Object service = serviceRegistry.get(field);
 			setFieldAccessible(router, instance, service, field);
 		}
 		for (Field field : instance.getClass().getSuperclass().getDeclaredFields()) {
-			Object service = config.serviceRegistry.get(field);
+			Object service = serviceRegistry.get(field);
 			setFieldAccessible(router, instance, service, field);
 		}
 	}

@@ -3,10 +3,15 @@ package com.github.aesteve.vertx.nubes;
 
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
+import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
+import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
+import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorFactory;
+import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import io.vertx.core.Handler;
@@ -40,37 +45,43 @@ public class Config {
 		templateEngines = new HashMap<>();
 		sockJSOptions = new SockJSHandlerOptions();
 		marshallers = new HashMap<>();
+		annotationHandlers = new HashMap<>();
+		paramHandlers = new HashMap<>();
+		typeProcessors = new HashMap<>();
+		apRegistry = new AnnotationProcessorRegistry();
+		typeInjectors = new TypedParamInjectorRegistry(this);
+		aopHandlerRegistry = new HashMap<>();
 	}
 
-	public JsonObject json;
+	private JsonObject json;
 	private String srcPackage;
-	public List<String> controllerPackages;
-	public List<String> fixturePackages;
-	public String verticlePackage;
-	public String domainPackage;
-	public RateLimit rateLimit;
-	public String webroot;
-	public String assetsPath;
-	public String tplDir;
-	public boolean displayErrors;
-	public Vertx vertx;
-	public AuthProvider authProvider;
-	public AuthMethod authMethod;
-	public String i18nDir;
+	private List<String> controllerPackages;
+	private List<String> fixturePackages;
+	private String verticlePackage;
+	private String domainPackage;
+	private RateLimit rateLimit;
+	private String webroot;
+	private String assetsPath;
+	private String tplDir;
+	private boolean displayErrors;
+	private Vertx vertx;
+	private AuthProvider authProvider;
+	private AuthMethod authMethod;
+	private String i18nDir;
 
-	public AnnotationProcessorRegistry apRegistry;
-	public Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
-	public Map<Class<?>, Processor> typeProcessors;
-	public TypedParamInjectorRegistry typeInjectors;
-	public AnnotatedParamInjectorRegistry annotInjectors;
-	public ServiceRegistry serviceRegistry;
-	public Map<Class<?>, Handler<RoutingContext>> paramHandlers;
-	public Map<String, Handler<RoutingContext>> aopHandlerRegistry;
-	public final Map<Locale, ResourceBundle> bundlesByLocale;
-	public final List<Handler<RoutingContext>> globalHandlers;
-	public final Map<String, TemplateEngine> templateEngines;
-	public final SockJSHandlerOptions sockJSOptions;
-	public Map<String, PayloadMarshaller> marshallers;
+	private AnnotationProcessorRegistry apRegistry;
+	private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
+	private Map<Class<?>, Processor> typeProcessors;
+	private TypedParamInjectorRegistry typeInjectors;
+	private AnnotatedParamInjectorRegistry annotInjectors;
+	private ServiceRegistry serviceRegistry;
+	private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
+	private Map<String, Handler<RoutingContext>> aopHandlerRegistry;
+	private final Map<Locale, ResourceBundle> bundlesByLocale;
+	private final List<Handler<RoutingContext>> globalHandlers;
+	private final Map<String, TemplateEngine> templateEngines;
+	private final SockJSHandlerOptions sockJSOptions;
+	private Map<String, PayloadMarshaller> marshallers;
 
 	/**
 	 * TODO : check config instead of throwing exceptions
@@ -193,5 +204,178 @@ public class Config {
 
 	public ResourceBundle getResourceBundle(Locale loc) {
 		return bundlesByLocale.get(loc);
+	}
+
+	public JsonObject json() {
+		return json;
+	}
+
+	public List<String> getFixturePackages() {
+		return fixturePackages;
+	}
+
+	public TypedParamInjectorRegistry getTypeInjectors() {
+		return typeInjectors;
+	}
+
+	public AnnotatedParamInjectorRegistry getAnnotatedInjectors() {
+		return annotInjectors;
+	}
+
+	public boolean isDisplayErrors() {
+		return displayErrors;
+	}
+
+	public Map<String, TemplateEngine> getTemplateEngines() {
+		return templateEngines;
+	}
+
+	public String getTplDir() {
+		return tplDir;
+	}
+
+	public RateLimit getRateLimit() {
+		return rateLimit;
+	}
+
+	public void setMarshallers(Map<String, PayloadMarshaller> marshallers) {
+		this.marshallers = marshallers;
+	}
+
+	void createAnnotInjectors(ParameterAdapterRegistry registry) {
+		annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
+	}
+
+	public String getDomainPackage() {
+		return domainPackage;
+	}
+
+	public ServiceRegistry getServiceRegistry() {
+		return serviceRegistry;
+	}
+
+	void registerTemplateEngine(String extension, TemplateEngine engine) {
+		templateEngines.put(extension, engine);
+	}
+
+	void setAuthProvider(AuthProvider authProvider) {
+		this.authProvider = authProvider;
+	}
+
+	void setAuthMethod(AuthMethod authMethod) {
+		this.authMethod = authMethod;
+	}
+
+	void registerInterceptor(String name, Handler<RoutingContext> handler) {
+		aopHandlerRegistry.put(name, handler);
+	}
+
+	void registerService(String name, Object service) {
+		serviceRegistry.registerService(name, service);
+	}
+
+	Object getService(String name) {
+		return serviceRegistry.get(name);
+	}
+
+	void registerParamHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
+		paramHandlers.put(parameterClass, handler);
+	}
+
+	public Set<Handler<RoutingContext>> getAnnotationHandler(Class<? extends Annotation> annotation) {
+		return annotationHandlers.get(annotation);
+	}
+
+	void registerAnnotationHandler(Class<? extends Annotation> annotation, Set<Handler<RoutingContext>> handlers) {
+		annotationHandlers.put(annotation, handlers);
+	}
+
+	void registerTypeProcessor(Class<?> type, Processor processor) {
+		typeProcessors.put(type, processor);
+	}
+
+	<T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
+		apRegistry.registerProcessor(annotation, processor);
+	}
+
+	<T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
+		apRegistry.registerProcessor(annotation, processor);
+	}
+
+	<T> void registerInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
+		typeInjectors.registerInjector(clazz, injector);
+	}
+
+	<T extends Annotation> void registerInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
+		annotInjectors.registerInjector(clazz, injector);
+	}
+
+	void addHandler(Handler<RoutingContext> handler) {
+		globalHandlers.add(handler);
+	}
+
+	String getWebroot() {
+		return webroot;
+	}
+
+	String getAssetsPath() {
+		return assetsPath;
+	}
+
+	public AuthProvider getAuthProvider() {
+		return authProvider;
+	}
+
+	String getI18nDir() {
+		return i18nDir;
+	}
+
+	void createBundle(Locale loc, ResourceBundle bundle) {
+		bundlesByLocale.put(loc, bundle);
+	}
+
+	public String getVerticlePackage() {
+		return verticlePackage;
+	}
+
+	public void forEachControllerPackage(Handler<? super String> consumer) {
+		controllerPackages.forEach(consumer::handle);
+	}
+
+	public Vertx getVertx() {
+		return vertx;
+	}
+
+	public SockJSHandlerOptions getSockJSOptions() {
+		return sockJSOptions;
+	}
+
+
+	public Processor getTypeProcessor(Class<?> parameterClass) {
+		return typeProcessors.get(parameterClass);
+	}
+
+	public Handler<RoutingContext> getParamHandler(Class<?> parameterClass) {
+		return paramHandlers.get(parameterClass);
+	}
+
+	public AnnotationProcessor<?> getAnnotationProcessor(Annotation methodAnnotation) {
+		return apRegistry.getProcessor(methodAnnotation);
+	}
+
+	public Handler<RoutingContext> getAopHandler(String name) {
+		return aopHandlerRegistry.get(name);
+	}
+
+	public void forEachGlobalHandler(Handler<Handler<RoutingContext>> handler) {
+		globalHandlers.forEach(handler::handle);
+	}
+
+	public Map<String, PayloadMarshaller> getMarshallers() {
+		return marshallers;
+	}
+
+	public List<String> getControllerPackages() {
+		return controllerPackages;
 	}
 }

@@ -1,5 +1,7 @@
 package com.github.aesteve.vertx.nubes.handlers;
 
+import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -61,8 +63,9 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Object getParameterInstance(RoutingContext context, Annotation[] annotations, Class<?> parameterClass, String paramName) throws WrongParameterException {
+		final TypedParamInjectorRegistry typeInjectors = config.getTypeInjectors();
 		if (annotations.length == 0) { // rely on type
-			ParamInjector<?> injector = config.typeInjectors.getInjector(parameterClass);
+			final ParamInjector<?> injector = typeInjectors.getInjector(parameterClass);
 			if (injector == null) {
 				return null;
 			}
@@ -71,8 +74,9 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 		if (annotations.length > 1) {
 			throw new IllegalArgumentException("Every parameter should only have ONE annotation");
 		}
-		Annotation annotation = annotations[0]; // rely on annotation
-		AnnotatedParamInjector injector = (AnnotatedParamInjector) config.annotInjectors.getInjector(annotation.annotationType());
+		final Annotation annotation = annotations[0]; // rely on annotation
+		final AnnotatedParamInjectorRegistry annotatedInjectors = config.getAnnotatedInjectors();
+		final AnnotatedParamInjector injector = (AnnotatedParamInjector) annotatedInjectors.getInjector(annotation.annotationType());
 		if (injector != null) {
 			return injector.resolve(context, annotation, paramName, parameterClass);
 		}

@@ -44,6 +44,7 @@ public class TypedParamInjectorRegistry {
 
 	@SuppressWarnings("unchecked")
 	public <T> ParamInjector<T> getInjector(Class<? extends T> clazz) {
+
 		return (ParamInjector<T>) map.get(clazz);
 	}
 }

@@ -77,7 +77,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 				if (marshaller != null) {
 					response.putHeader(CONTENT_TYPE, contentType);
 					if (statusCode == 500) {
-						response.end(marshaller.marshallUnexpectedError(cause, config.displayErrors));
+						response.end(marshaller.marshallUnexpectedError(cause, config.isDisplayErrors()));
 					} else {
 						response.end(marshaller.marshallHttpStatus(statusCode, statusMsg));
 					}
@@ -133,7 +133,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 				response.sendFile(tpl);
 				return;
 			}
-			if (config.displayErrors) {
+			if (config.isDisplayErrors()) {
 				context.put("stackTrace", StackTracePrinter.asHtml(null, cause).toString());
 			}
 			templManager.fromViewName(tpl).render(context, tpl, res -> {

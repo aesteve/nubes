@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.reflections.factories;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BasicAuthHandler;
 import io.vertx.ext.web.handler.JWTAuthHandler;
@@ -20,26 +21,24 @@ public class AuthenticationFactory {
 	}
 
 	public Handler<RoutingContext> create(Auth auth) {
-		if (config.authProvider == null) {
+		final AuthProvider authProvider = config.getAuthProvider();
+		if (authProvider == null) {
 			return null;
 		}
-		AuthMethod authMethod = config.authMethod;
-		if (auth.method() != null) {
-			authMethod = auth.method();
-		}
+		final AuthMethod authMethod = auth.method();
 		switch (authMethod) {
 			case BASIC:
-				return BasicAuthHandler.create(config.authProvider);
+				return BasicAuthHandler.create(authProvider);
 			case JWT:
-				return JWTAuthHandler.create(config.authProvider);
+				return JWTAuthHandler.create(authProvider);
 			case REDIRECT:
 				final String redirect = auth.redirectURL();
 				if ("".equals(redirect)) {
 					throw new IllegalArgumentException("You must specify a redirectURL if you're using Redirect Auth");
 				}
-				return RedirectAuthHandler.create(config.authProvider, redirect);
+				return RedirectAuthHandler.create(authProvider, redirect);
 			case API_TOKEN:
-				return new CheckTokenHandler(config.authProvider);
+				return new CheckTokenHandler(authProvider);
 			default:
 				throw new UnsupportedOperationException();
 		}

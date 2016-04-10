@@ -24,7 +24,9 @@ public class FixtureLoader {
 	private final ServiceRegistry serviceRegistry;
 	private final Set<Fixture> fixtures;
 
-	public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> Integer.compare(f1.executionOrder(), f2.executionOrder());
+	public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> {
+		return Integer.compare(f1.executionOrder(), f2.executionOrder());
+	};
 
 	public FixtureLoader(Vertx vertx, Config config, ServiceRegistry serviceRegistry) {
 		this.vertx = vertx;
@@ -77,10 +79,11 @@ public class FixtureLoader {
 	}
 
 	private void instanciateFixtures(Future<Void> future) {
-		if (config.fixturePackages == null || config.fixturePackages.isEmpty()) {
+		List<String> fixturePackages = config.getFixturePackages();
+		if (fixturePackages == null || fixturePackages.isEmpty()) {
 			return;
 		}
-		for (String fixturePackage : config.fixturePackages) {
+		for (String fixturePackage : fixturePackages) {
 			Reflections reflections = new Reflections(fixturePackage);
 			Set<Class<? extends Fixture>> fixtureClasses = reflections.getSubTypesOf(Fixture.class);
 			for (Class<? extends Fixture> fixtureClass : fixtureClasses) {

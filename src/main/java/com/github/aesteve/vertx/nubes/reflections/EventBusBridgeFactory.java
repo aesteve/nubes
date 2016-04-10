@@ -35,7 +35,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 	}
 
 	public void createHandlers() {
-		config.controllerPackages.forEach(controllerPackage -> {
+		config.forEachControllerPackage(controllerPackage -> {
 			Reflections reflections = new Reflections(controllerPackage);
 			Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(EventBusBridge.class);
 			controllers.forEach(this::createSocketHandlers);
@@ -43,7 +43,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 	}
 
 	private void createSocketHandlers(Class<?> controller) {
-		SockJSHandler sockJSHandler = SockJSHandler.create(config.vertx, config.sockJSOptions);
+		SockJSHandler sockJSHandler = SockJSHandler.create(config.getVertx(), config.getSockJSOptions());
 		EventBusBridge annot = controller.getAnnotation(EventBusBridge.class);
 		BridgeOptions bridge = createBridgeOptions(controller);
 		String path = annot.value();
@@ -131,12 +131,13 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 	private void tryToInvoke(Object instance, Method method, BridgeEvent be) {
 		List<Object> paramInstances = new ArrayList<>();
 		for (Class<?> parameterClass : method.getParameterTypes()) {
+			final Vertx vertx = config.getVertx();
 			if (parameterClass.equals(BridgeEvent.class)) {
 				paramInstances.add(be);
 			} else if (parameterClass.equals(EventBus.class)) {
-				paramInstances.add(config.vertx.eventBus());
+				paramInstances.add(vertx.eventBus());
 			} else if (parameterClass.equals(Vertx.class)) {
-				paramInstances.add(config.vertx);
+				paramInstances.add(vertx);
 			}
 		}
 		try {

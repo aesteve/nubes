@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import javax.xml.bind.JAXBException;
 
+import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -102,15 +103,9 @@ public class VertxNubes {
 		config = Config.fromJsonObject(json, vertx);
 		deploymentIds = new ArrayList<>();
 		registry = new ParameterAdapterRegistry();
-		config.annotationHandlers = new HashMap<>();
-		config.paramHandlers = new HashMap<>();
-		config.typeProcessors = new HashMap<>();
-		config.apRegistry = new AnnotationProcessorRegistry();
 		marshallers = new HashMap<>();
-		config.typeInjectors = new TypedParamInjectorRegistry(config);
-		config.annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
-		config.aopHandlerRegistry = new HashMap<>();
-		config.marshallers = marshallers;
+		config.setMarshallers(marshallers);
+		config.createAnnotInjectors(registry);
 
 		// marshalling
 		TemplateEngineManager templManager = new TemplateEngineManager(config);
@@ -118,9 +113,10 @@ public class VertxNubes {
 		registerAnnotationProcessor(File.class, new FileProcessorFactory());
 		registerMarshaller("text/plain", new PlainTextMarshaller());
 		registerMarshaller("application/json", new BoonPayloadMarshaller());
-		if (config.domainPackage != null) {
+		String domainPackage = config.getDomainPackage();
+		if (domainPackage != null) {
 			try {
-				Reflections reflections = new Reflections(config.domainPackage, new SubTypesScanner(false));
+				Reflections reflections = new Reflections(domainPackage, new SubTypesScanner(false));
 				registerMarshaller("application/xml", new JAXBPayloadMarshaller(reflections.getSubTypesOf(Object.class)));
 			} catch (JAXBException je) {
 				throw new RuntimeException(je);
@@ -142,13 +138,14 @@ public class VertxNubes {
 
 	public void bootstrap(Handler<AsyncResult<Router>> handler, Router paramRouter) {
 		setUpRouter(paramRouter);
-		fixtureLoader = new FixtureLoader(vertx, config, config.serviceRegistry);
+		final ServiceRegistry serviceRegistry = config.getServiceRegistry();
+		fixtureLoader = new FixtureLoader(vertx, config, serviceRegistry);
 		Map<String, DeploymentOptions> verticles = new AnnotVerticleFactory(config).scan();
 		MultipleFutures<String> vertFutures = new MultipleFutures<>(verticles, this::deployVerticle);
 		AsyncUtils.chainOnSuccess(
 				handler,
 				vertFutures,
-				config.serviceRegistry::startAll,
+				serviceRegistry::startAll,
 				fixtureLoader::setUp,
 				res -> {
 					vertx.setPeriodic(60000, this::cleanHistoryMap);
@@ -163,9 +160,10 @@ public class VertxNubes {
 
 	public void stop(Handler<AsyncResult<Void>> handler) {
 		router.clear();
+		final ServiceRegistry serviceRegistry = config.getServiceRegistry();
 		MultipleFutures<Void> futures = new MultipleFutures<>(handler);
 		futures.add(fixtureLoader::tearDown);
-		futures.add(config.serviceRegistry::stopAll);
+		futures.add(serviceRegistry::stopAll);
 		futures.add(this::stopDeployments);
 		futures.start();
 	}
@@ -175,19 +173,19 @@ public class VertxNubes {
 	}
 
 	public void registerTemplateEngine(String extension, TemplateEngine engine) {
-		config.templateEngines.put(extension, engine);
+		config.registerTemplateEngine(extension, engine);
 	}
 
 	public void setAuthProvider(AuthProvider authProvider) {
-		config.authProvider = authProvider;
+		config.setAuthProvider(authProvider);
 	}
 
 	public void setAuthMethod(AuthMethod authMethod) {
-		config.authMethod = authMethod;
+		config.setAuthMethod(authMethod);
 	}
 
 	public void registerInterceptor(String name, Handler<RoutingContext> handler) {
-		config.aopHandlerRegistry.put(name, handler);
+		config.registerInterceptor(name, handler);
 	}
 
 	public void setAvailableLocales(List<Locale> availableLocales) {
@@ -221,19 +219,19 @@ public class VertxNubes {
 	}
 
 	public void registerService(String name, Object service) {
-		config.serviceRegistry.registerService(name, service);
+		config.registerService(name, service);
 	}
 
 	public Service getService(String name) {
-		return (Service) config.serviceRegistry.get(name);
+		return (Service) config.getService(name);
 	}
 
 	public void registerServiceProxy(Object service) {
-		config.serviceRegistry.registerService("$nubes-proxy$__" + service.getClass().getName(), service);
+		config.registerService("$nubes-proxy$__" + service.getClass().getName(), service);
 	}
 
 	public void registerHandler(Class<?> parameterClass, Handler<RoutingContext> handler) {
-		config.paramHandlers.put(parameterClass, handler);
+		config.registerParamHandler(parameterClass, handler);
 	}
 
 	public <T> void registerAdapter(Class<T> parameterClass, ParameterAdapter<T> adapter) {
@@ -241,26 +239,26 @@ public class VertxNubes {
 	}
 
 	public void registerAnnotationHandler(Class<? extends Annotation> annotation, Handler<RoutingContext> handler) {
-		Set<Handler<RoutingContext>> handlers = config.annotationHandlers.get(annotation);
+		Set<Handler<RoutingContext>> handlers = config.getAnnotationHandler(annotation);
 		if (handlers == null) {
 			handlers = new LinkedHashSet<>();
 		}
 		if (!handlers.contains(handler)) {
 			handlers.add(handler);
 		}
-		config.annotationHandlers.put(annotation, handlers);
+		config.registerAnnotationHandler(annotation, handlers);
 	}
 
 	public void registerTypeProcessor(Class<?> type, Processor processor) {
-		config.typeProcessors.put(type, processor);
+		config.registerTypeProcessor(type, processor);
 	}
 
 	public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessorFactory<T> processor) {
-		config.apRegistry.registerProcessor(annotation, processor);
+		config.registerAnnotationProcessor(annotation, processor);
 	}
 
 	public <T extends Annotation> void registerAnnotationProcessor(Class<T> annotation, AnnotationProcessor<T> processor) {
-		config.apRegistry.registerProcessor(annotation, processor);
+		config.registerAnnotationProcessor(annotation, processor);
 	}
 
 	public void registerMarshaller(String contentType, PayloadMarshaller marshaller) {
@@ -268,15 +266,15 @@ public class VertxNubes {
 	}
 
 	public <T> void registerTypeParamInjector(Class<? extends T> clazz, ParamInjector<T> injector) {
-		config.typeInjectors.registerInjector(clazz, injector);
+		config.registerInjector(clazz, injector);
 	}
 
 	public <T extends Annotation> void registerAnnotatedParamInjector(Class<? extends T> clazz, AnnotatedParamInjector<T> injector) {
-		config.annotInjectors.registerInjector(clazz, injector);
+		config.registerInjector(clazz, injector);
 	}
 
 	public void addGlobalHandler(Handler<RoutingContext> handler) {
-		config.globalHandlers.add(handler);
+		config.addHandler(handler);
 	}
 
 	// private methods
@@ -290,19 +288,20 @@ public class VertxNubes {
 				loadResourceBundle(locResolver.getDefaultLocale());
 			}
 		}
-		if (config.authProvider != null) {
+		if (config.getAuthProvider() != null) {
 			registerAnnotationProcessor(Auth.class, new AuthProcessorFactory());
 		}
 		new RouteFactory(router, config).createHandlers();
 		new SocketFactory(router, config).createHandlers();
 		new EventBusBridgeFactory(router, config).createHandlers();
 		StaticHandler staticHandler;
-		if (config.webroot != null) {
-			staticHandler = StaticHandler.create(config.webroot);
+		final String webroot = config.getWebroot();
+		if (webroot != null) {
+			staticHandler = StaticHandler.create(webroot);
 		} else {
 			staticHandler = StaticHandler.create();
 		}
-		router.route(config.assetsPath + "/*").handler(staticHandler);
+		router.route(config.getAssetsPath() + "/*").handler(staticHandler);
 	}
 
 	private void cleanHistoryMap(Long timerId) {
@@ -316,7 +315,7 @@ public class VertxNubes {
 	}
 
 	private Predicate<String> clientsWithNoAccessPredicate(LocalMap<String, ClientAccesses> rateLimitations) {
-		RateLimit rateLimit = config.rateLimit;
+		RateLimit rateLimit = config.getRateLimit();
 		return (clientIp -> {
 			ClientAccesses accesses = rateLimitations.get(clientIp);
 			long keepAfter = rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
@@ -326,8 +325,8 @@ public class VertxNubes {
 	}
 
 	private void loadResourceBundle(Locale loc) {
-		ResourceBundle bundle = ResourceBundle.getBundle(config.i18nDir + "messages", loc);
-		config.bundlesByLocale.put(loc, bundle);
+		ResourceBundle bundle = ResourceBundle.getBundle(config.getI18nDir() + "messages", loc);
+		config.createBundle(loc, bundle);
 	}
 
 	private void deployVerticle(String vertName, DeploymentOptions options, Future<String> future) {

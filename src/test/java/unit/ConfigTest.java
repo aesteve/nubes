@@ -21,10 +21,10 @@ public class ConfigTest {
 		JsonObject json = new JsonObject();
 		json.put("src-package", SRC);
 		Config conf = Config.fromJsonObject(json, Vertx.vertx());
-		assertEquals(Arrays.asList(SRC + ".controllers"), conf.controllerPackages);
-		assertEquals(SRC + ".verticles", conf.verticlePackage);
-		assertEquals(Arrays.asList(SRC + ".fixtures"), conf.fixturePackages);
-		assertEquals(SRC + ".domains", conf.domainPackage);
+		assertEquals(Arrays.asList(SRC + ".controllers"), conf.getControllerPackages());
+		assertEquals(SRC + ".verticles", conf.getVerticlePackage());
+		assertEquals(Arrays.asList(SRC + ".fixtures"), conf.getFixturePackages());
+		assertEquals(SRC + ".domains", conf.getDomainPackage());
 	}
 	
 	
@@ -41,10 +41,10 @@ public class ConfigTest {
 		json.put("fixture-packages", fixturePackages);
 		json.put("domain-package", domainPackage);
 		Config conf = Config.fromJsonObject(json, Vertx.vertx());
-		assertEquals(controllerPackages.getList(), conf.controllerPackages);
-		assertEquals(verticlePackage, conf.verticlePackage);
-		assertEquals(fixturePackages.getList(), conf.fixturePackages);
-		assertEquals(domainPackage, conf.domainPackage);
+		assertEquals(controllerPackages.getList(), conf.getControllerPackages());
+		assertEquals(verticlePackage, conf.getVerticlePackage());
+		assertEquals(fixturePackages.getList(), conf.getFixturePackages());
+		assertEquals(domainPackage, conf.getDomainPackage());
 	}
 	
 }

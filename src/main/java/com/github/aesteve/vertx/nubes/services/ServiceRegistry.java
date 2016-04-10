@@ -99,7 +99,7 @@ public class ServiceRegistry {
 			}
 			if (obj instanceof Service) {
 				Service service = (Service) obj;
-				service.init(vertx, config.json);
+				service.init(vertx, config.json());
 				return service::start;
 			}
 			return null;
@@ -112,7 +112,7 @@ public class ServiceRegistry {
 			future.complete();
 			return;
 		}
-		timerIds.forEach(timerId -> vertx.cancelTimer(timerId));
+		timerIds.forEach(vertx::cancelTimer);
 		MultipleFutures<Void> futures = new MultipleFutures<>(future);
 		futures.addAll(services(), obj -> {
 			if (obj instanceof Service) {

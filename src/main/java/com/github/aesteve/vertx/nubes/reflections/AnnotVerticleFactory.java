@@ -25,7 +25,7 @@ public class AnnotVerticleFactory {
 
 	public Map<String, DeploymentOptions> scan() {
 		Map<String, DeploymentOptions> map = new HashMap<>();
-		String verticlePackage = config.verticlePackage;
+		String verticlePackage = config.getVerticlePackage();
 		if (verticlePackage == null) {
 			return map;
 		}
@@ -45,7 +45,7 @@ public class AnnotVerticleFactory {
 	private DeploymentOptions getDeploymentOptions(Verticle annot) {
 		DeploymentOptions options = new DeploymentOptions();
 		if (annot.inheritsConfig()) {
-			options.setConfig(config.json);
+			options.setConfig(config.json());
 		}
 		if (annot.instances() > 0) {
 			options.setInstances(annot.instances());

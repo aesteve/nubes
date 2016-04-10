@@ -23,12 +23,12 @@ public class TemplateEngineManager implements TemplateHandler {
 	public TemplateEngine fromViewName(String tplName) {
 		int pointIdx = tplName.lastIndexOf(".");
 		String extension = tplName.substring(pointIdx + 1, tplName.length());
-		return config.templateEngines.get(extension);
+		return config.getTemplateEngines().get(extension);
 	}
 
 	@Override
 	public void handle(RoutingContext context) {
-		String tplName = normalize(config.tplDir) + ViewResolver.getViewName(context);
+		String tplName = normalize(config.getTplDir()) + ViewResolver.getViewName(context);
 		TemplateEngine engine = fromViewName(tplName);
 		if (engine == null) {
 			LOG.error("No template handler found for " + tplName);

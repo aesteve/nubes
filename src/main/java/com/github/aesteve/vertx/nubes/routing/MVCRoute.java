@@ -1,7 +1,10 @@
 package com.github.aesteve.vertx.nubes.routing;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -136,23 +139,25 @@ public class MVCRoute {
 		final HttpMethod httpMethodFinal = httpMethod;
 		final String pathFinal = path;
 		if (!isRedirect) {
-			config.globalHandlers.forEach(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
+			config.forEachGlobalHandler(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
 		}
+		final Vertx vertx = config.getVertx();
 		if (authHandler != null) {
+			final AuthProvider authProvider = config.getAuthProvider();
 			router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
 			// router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
-			router.route(httpMethodFinal, pathFinal).handler(UserSessionHandler.create(config.authProvider));
-			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
+			router.route(httpMethodFinal, pathFinal).handler(UserSessionHandler.create(authProvider));
+			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 			router.route(httpMethodFinal, pathFinal).handler(authHandler);
 			if (loginRedirect != null && !"".equals(loginRedirect)) {
 				router.post(loginRedirect).handler(CookieHandler.create());
 				router.post(loginRedirect).handler(BodyHandler.create());
-				router.post(loginRedirect).handler(UserSessionHandler.create(config.authProvider));
-				router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
-				router.post(loginRedirect).handler(FormLoginHandler.create(config.authProvider));
+				router.post(loginRedirect).handler(UserSessionHandler.create(authProvider));
+				router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+				router.post(loginRedirect).handler(FormLoginHandler.create(authProvider));
 			}
 		} else if (usesSession) {
-			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(config.vertx)));
+			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 		}
 		handlers.forEach(handler -> {
 			if (isRedirect) {
@@ -193,7 +198,7 @@ public class MVCRoute {
 			i++;
 		}
 		if (!mainHandler.getReturnType().equals(Void.TYPE) && returnHandler == null) { // try to set as payload
-			processors.add(new PayloadTypeProcessor(config.marshallers));
+			processors.add(new PayloadTypeProcessor(config.getMarshallers()));
 		}
 		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::postHandle));
 		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::afterAll));
