@@ -20,23 +20,23 @@ public class AsyncUtils {
 	}
 
 	public static <T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				fut.fail(res.cause());
 			} else {
 				fut.complete(res.result());
 			}
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> ignoreResult(Future<Void> future) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				future.fail(res.cause());
 			} else {
 				future.complete();
 			}
-		});
+		};
 	}
 
 	public static <T> AsyncResult<Void> withoutResult(AsyncResult<T> res) {
@@ -48,51 +48,51 @@ public class AsyncUtils {
 	}
 
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(Future<Void> future, Handler<T> handler) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				future.fail(res.cause());
 				return;
 			}
 			handler.handle(res.result());
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(NoArgHandler block) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
 				return;
 			}
 			block.handle();
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(Handler<T> handler) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
 				return;
 			}
 			handler.handle(res.result());
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> onFailureOnly(Handler<T> handler) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				handler.handle(res.result());
 			}
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> nextOrFail(RoutingContext context) {
-		return (res -> {
+		return res -> {
 			if (res.failed()) {
 				context.fail(res.cause());
 			} else {
 				context.next();
 			}
-		});
+		};
 	}
 
 	public static <T> Handler<AsyncResult<T>> failOr(RoutingContext context, Handler<AsyncResult<T>> handler) {
@@ -179,13 +179,13 @@ public class AsyncUtils {
 		return AsyncUtils.chainOnSuccess(globalHandler, future, list);
 	}
 
-	public static <T> Handler<AsyncResult<T>> logIfFailed(String msg, Logger logger) {
+	public static <T> Handler<AsyncResult<T>> logIfFailed(final String msg, final Logger LOG) {
 		return res -> {
 			if (res.failed()) {
 				if (msg != null) {
-					logger.error(msg, res.cause());
+					LOG.error(msg, res.cause());
 				} else {
-					logger.error(res.cause());
+					LOG.error(res.cause());
 				}
 			}
 		};
