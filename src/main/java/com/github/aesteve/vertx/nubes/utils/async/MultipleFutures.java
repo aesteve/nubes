@@ -18,7 +18,7 @@ import com.github.aesteve.vertx.nubes.utils.functional.TriConsumer;
 public class MultipleFutures<T> extends SimpleFuture<T> {
 
 	private final Map<Handler<Future<T>>, Future<T>> consumers;
-	private static final Logger log = LoggerFactory.getLogger(MultipleFutures.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MultipleFutures.class);
 
 	public MultipleFutures() {
 		consumers = new HashMap<>();
@@ -80,7 +80,7 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
 		Exception e = new Exception("At least one future failed");
 		consumers.forEach((consumer, future) -> {
 			if (future.cause() != null) {
-				log.error(future.cause());
+				LOG.error(future.cause());
 				if (e.getCause() == null) {
 					e.initCause(future.cause());
 				} else {

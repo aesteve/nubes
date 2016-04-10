@@ -6,7 +6,6 @@ import com.github.aesteve.vertx.nubes.context.RateLimit;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
-import com.github.aesteve.vertx.nubes.reflections.RouteRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInjectorRegistry;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Config {
 
-	private static final Logger log = LoggerFactory.getLogger(Config.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
 	private Config() {
 		bundlesByLocale = new HashMap<>();
@@ -176,10 +175,10 @@ public class Config {
 					instance.authProvider = JDBCAuth.create(client);
 					break;
 				default:
-					log.warn("Unknown type of auth : " + auth + " . Ignoring.");
+					LOG.warn("Unknown type of auth : " + auth + " . Ignoring.");
 			}
 		} else if (auth != null) {
-			log.warn("You have defined " + auth + " as auth type, but didn't provide any configuration, can't create authProvider");
+			LOG.warn("You have defined " + auth + " as auth type, but didn't provide any configuration, can't create authProvider");
 		}
 
 		instance.webroot = json.getString("webroot", "web/assets");

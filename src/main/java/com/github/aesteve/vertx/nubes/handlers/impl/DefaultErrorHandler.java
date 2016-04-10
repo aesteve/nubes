@@ -22,7 +22,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 
 	private final static String ERROR_DETAILS = "nubes-error-details";
 
-	private final static Logger log = LoggerFactory.getLogger(DefaultErrorHandler.class);
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultErrorHandler.class);
 
 	private final Config config;
 	private final Map<Integer, String> errorTemplates;
@@ -56,7 +56,6 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 		String contentType = ContentTypeProcessor.getContentType(context);
 		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (cause != null) {
-			cause.printStackTrace();
 			int statusCode = 500;
 			String statusMsg = errorMessages.get(500);
 			if (cause instanceof HttpException) {
@@ -68,7 +67,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 				statusCode = 400;
 				statusMsg = he.getValidationMsg();
 			} else {
-				log.error("Error caught by default error handler", cause);
+				LOG.error("Error caught by default error handler", cause);
 			}
 			response.setStatusCode(statusCode);
 			if (isView(context)) {
@@ -141,7 +140,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
 				if (res.succeeded()) {
 					response.end(res.result());
 				} else {
-					log.error("Could not read error template : " + tpl, res.cause());
+					LOG.error("Could not read error template : " + tpl, res.cause());
 					response.end(errorMessages.get(500));
 				}
 			});

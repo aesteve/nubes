@@ -12,7 +12,7 @@ import com.github.aesteve.vertx.nubes.context.ViewResolver;
 
 public class TemplateEngineManager implements TemplateHandler {
 
-	private final static Logger log = LoggerFactory.getLogger(TemplateEngineManager.class);
+	private final static Logger LOG = LoggerFactory.getLogger(TemplateEngineManager.class);
 
 	private final Config config;
 
@@ -31,7 +31,7 @@ public class TemplateEngineManager implements TemplateHandler {
 		String tplName = normalize(config.tplDir) + ViewResolver.getViewName(context);
 		TemplateEngine engine = fromViewName(tplName);
 		if (engine == null) {
-			log.error("No template handler found for " + tplName);
+			LOG.error("No template handler found for " + tplName);
 			context.fail(500);
 			return;
 		}

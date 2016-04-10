@@ -24,7 +24,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
 public class SocketFactory extends AbstractInjectionFactory implements HandlerFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SocketFactory.class);
 
 	private final Router router;
 
@@ -103,7 +103,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 		try {
 			method.invoke(instance, paramInstances.toArray());
 		} catch (Exception e) {
-			log.error("Error while handling websocket", e);
+			LOG.error("Error while handling websocket", e);
 			socket.close();
 		}
 	}

@@ -16,7 +16,7 @@ import com.github.aesteve.vertx.nubes.marshallers.Payload;
 
 public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationHandler<T> {
 
-	private final Logger log = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
 
 	public DefaultMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
 		super(instance, method, config, hasNext, returnHandler);
@@ -68,12 +68,9 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 					routingContext.next();
 				}
 			}
-		} catch (InvocationTargetException ite) {
-			log.error(ite);
+		} catch (InvocationTargetException | IllegalAccessException ite) {
+			LOG.error(ite);
 			routingContext.fail(ite.getCause());
-		} catch(IllegalAccessException iae) {
-			log.error(iae);
-			routingContext.fail(iae.getCause());
 		}
 		/* catch (Throwable others) {
 			routingContext.fail(others);

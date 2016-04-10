@@ -25,7 +25,7 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.InboundPermitted
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.OutboundPermitted;
 
 public class EventBusBridgeFactory extends AbstractInjectionFactory implements HandlerFactory {
-	private static final Logger log = LoggerFactory.getLogger(SocketFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SocketFactory.class);
 
 	private final Router router;
 
@@ -142,7 +142,7 @@ public class EventBusBridgeFactory extends AbstractInjectionFactory implements H
 		try {
 			method.invoke(instance, paramInstances.toArray());
 		} catch (Exception e) {
-			log.error("Error while handling websocket", e);
+			LOG.error("Error while handling websocket", e);
 			if (!be.failed() && !be.succeeded()) {
 				be.fail(e);
 			}

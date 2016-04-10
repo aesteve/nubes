@@ -15,7 +15,7 @@ import io.vertx.core.logging.LoggerFactory;
 
 public class NubesServer extends AbstractVerticle {
 
-	private static final Logger log = LoggerFactory.getLogger(NubesServer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NubesServer.class);
 
 	protected HttpServer server;
 	protected HttpServerOptions options;
@@ -37,7 +37,7 @@ public class NubesServer extends AbstractVerticle {
 		nubes.bootstrap(onSuccessOnly(future, router -> {
 			server.requestHandler(router::accept);
 			server.listen(ignoreResult(future));
-			log.info("Server listening on port : " + options.getPort());
+			LOG.info("Server listening on port : " + options.getPort());
 		}));
 	}
 
@@ -48,7 +48,7 @@ public class NubesServer extends AbstractVerticle {
 
 	private void closeServer(Future<Void> future) {
 		if (server != null) {
-			log.info("Closing HTTP server");
+			LOG.info("Closing HTTP server");
 			server.close(completeOrFail(future));
 		} else {
 			future.complete();

@@ -43,7 +43,7 @@ import com.github.aesteve.vertx.nubes.routing.MVCRoute;
 
 public class RouteFactory extends AbstractInjectionFactory implements HandlerFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(RouteFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RouteFactory.class);
 
 	private final Router router;
 	private final RouteRegistry routeRegistry;
@@ -171,7 +171,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					if (before != null) {
 						Handler<RoutingContext> beforeHandler = config.aopHandlerRegistry.get(before.name());
 						if (beforeHandler == null) {
-							log.warn("The interceptor with name" + (before.name()) + " could not be found");
+							LOG.warn("The interceptor with name" + (before.name()) + " could not be found");
 						} else {
 							route.attachInterceptor(beforeHandler, true);
 						}
@@ -179,7 +179,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 					if (after != null) {
 						Handler<RoutingContext> afterHandler = config.aopHandlerRegistry.get(after.name());
 						if (afterHandler == null) {
-							log.warn("The interceptor with name" + (after.name()) + " could not be found");
+							LOG.warn("The interceptor with name" + (after.name()) + " could not be found");
 						} else {
 							route.attachInterceptor(afterHandler, false);
 						}

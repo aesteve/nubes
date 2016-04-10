@@ -15,7 +15,7 @@ import com.github.aesteve.vertx.nubes.annotations.services.Verticle;
 
 public class AnnotVerticleFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(AnnotVerticleFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AnnotVerticleFactory.class);
 
 	private final Config config;
 
@@ -33,7 +33,7 @@ public class AnnotVerticleFactory {
 		Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Verticle.class);
 		classes.forEach(clazz -> {
 			if (!io.vertx.core.Verticle.class.isAssignableFrom(clazz)) {
-				log.error("Cannot create verticle " + clazz.getName() + " since it's not a subclass of io.vertx.core.Verticle");
+				LOG.error("Cannot create verticle " + clazz.getName() + " since it's not a subclass of io.vertx.core.Verticle");
 			} else {
 				Verticle annot = clazz.getAnnotation(Verticle.class);
 				map.put(clazz.getName(), getDeploymentOptions(annot));

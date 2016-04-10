@@ -13,7 +13,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestBody> {
 
-	private static final Logger log = LoggerFactory.getLogger(RequestBodyParamInjector.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RequestBodyParamInjector.class);
 
 	private final Map<String, PayloadMarshaller> marshallers;
 
@@ -29,12 +29,12 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
 		}
 		String contentType = ContentTypeProcessor.getContentType(context);
 		if (contentType == null) {
-			log.error("No suitable Content-Type found, request body can't be read");
+			LOG.error("No suitable Content-Type found, request body can't be read");
 			return null;
 		}
 		PayloadMarshaller marshaller = marshallers.get(contentType);
 		if (marshaller == null) {
-			log.error("No marshaller found for Content-Type : " + contentType + ", request body can't be read");
+			LOG.error("No marshaller found for Content-Type : " + contentType + ", request body can't be read");
 			return null;
 		}
 		try {

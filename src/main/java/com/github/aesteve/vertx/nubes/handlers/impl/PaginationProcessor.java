@@ -10,7 +10,7 @@ import com.google.common.net.HttpHeaders;
 
 public class PaginationProcessor extends NoopAfterAllProcessor implements Processor {
 
-	private static final Logger log = LoggerFactory.getLogger(PaginationProcessor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PaginationProcessor.class);
 
 	@Override
 	public void preHandle(RoutingContext context) {
@@ -25,7 +25,7 @@ public class PaginationProcessor extends NoopAfterAllProcessor implements Proces
 		if (linkHeader != null) {
 			context.response().headers().add(HttpHeaders.LINK, linkHeader);
 		} else {
-			log.warn("You did not set the total count on PaginationContext, response won't be paginated");
+			LOG.warn("You did not set the total count on PaginationContext, response won't be paginated");
 		}
 		context.next();
 	}

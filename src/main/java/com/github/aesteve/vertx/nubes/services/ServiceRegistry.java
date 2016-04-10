@@ -27,7 +27,7 @@ import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 
 public class ServiceRegistry {
 
-	private final static Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
+	private final static Logger LOG = LoggerFactory.getLogger(ServiceRegistry.class);
 
 	private final Map<String, Object> services;
 	private final Map<String, Object> serviceProxies;
@@ -63,7 +63,7 @@ public class ServiceRegistry {
 		}
 		Class<?> serviceInterface = getInterface(field.getType());
 		if (serviceInterface == null) {
-			log.error("Could not inject service for : " + field.getName() + " could not find the matching proxified service using @ProxyGen");
+			LOG.error("Could not inject service for : " + field.getName() + " could not find the matching proxified service using @ProxyGen");
 			return null;
 		}
 		String address = proxyAnnot.value();
@@ -141,7 +141,7 @@ public class ServiceRegistry {
 					try {
 						method.invoke(service);
 					} catch (Exception e) {
-						log.error("Error while running periodic task", e);
+						LOG.error("Error while running periodic task", e);
 					}
 				});
 			}
@@ -157,7 +157,7 @@ public class ServiceRegistry {
 					try {
 						method.invoke(service, message);
 					} catch (Exception e) {
-						log.error("Exception happened during message handling on method : " + getFullName(service, method), e);
+						LOG.error("Exception happened during message handling on method : " + getFullName(service, method), e);
 					}
 				});
 			}
@@ -171,7 +171,7 @@ public class ServiceRegistry {
 	private <T> void createServiceProxy(String address, T service) {
 		Class<T> serviceClass = getInterface(service.getClass());
 		if (serviceClass == null) {
-			log.error("Could not find a @ProxyGen super interface for class : " + service.getClass().getName() + " cannot proxy it ver the eventBus");
+			LOG.error("Could not find a @ProxyGen super interface for class : " + service.getClass().getName() + " cannot proxy it ver the eventBus");
 			return;
 		}
 		ProxyHelper.registerService(serviceClass, vertx, service, address);

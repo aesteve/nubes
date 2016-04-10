@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AsyncUtils {
 
-	private static final Logger log = LoggerFactory.getLogger(AsyncUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AsyncUtils.class);
 
 	public static <T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
 		return (res -> fut.complete());
@@ -60,7 +60,7 @@ public class AsyncUtils {
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(NoArgHandler block) {
 		return (res -> {
 			if (res.failed()) {
-				log.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
+				LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
 				return;
 			}
 			block.handle();
@@ -70,7 +70,7 @@ public class AsyncUtils {
 	public static <T> Handler<AsyncResult<T>> onSuccessOnly(Handler<T> handler) {
 		return (res -> {
 			if (res.failed()) {
-				log.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
+				LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
 				return;
 			}
 			handler.handle(res.result());
