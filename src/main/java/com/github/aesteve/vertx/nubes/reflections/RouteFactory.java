@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
 import io.vertx.core.Handler;
+import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -94,7 +95,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 			instance = controller.newInstance();
 			injectServicesIntoController(router, instance);
 		} catch (InstantiationException | IllegalAccessException ie) {
-			throw new RuntimeException("Could not instanciate controller : ", ie);
+			throw new VertxException("Could not instanciate controller : ", ie);
 		}
 		String trBasePath = "";
 		if (base.value() != null) {

@@ -16,6 +16,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.TypedParamInje
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxException;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -139,7 +140,7 @@ public class Config {
 				Class<?> clazz = Class.forName(className);
 				instance.serviceRegistry.registerService(name, clazz.newInstance());
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				throw new RuntimeException(e);
+				throw new VertxException(e);
 			}
 		});
 

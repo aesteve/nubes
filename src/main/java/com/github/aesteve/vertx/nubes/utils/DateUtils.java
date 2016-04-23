@@ -1,5 +1,7 @@
 package com.github.aesteve.vertx.nubes.utils;
 
+import io.vertx.core.VertxException;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,7 +28,7 @@ public enum DateUtils {
 		try {
 			factory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException dtce) {
-			throw new RuntimeException(dtce);
+			throw new VertxException(dtce);
 		}
 	}
 

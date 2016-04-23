@@ -134,7 +134,7 @@ public class ServiceRegistry {
 			PeriodicTask periodicTask = method.getAnnotation(PeriodicTask.class);
 			if (periodicTask != null) {
 				if (method.getParameterTypes().length > 0) {
-					throw new RuntimeException("Periodic tasks should not have parameters");
+					throw new VertxException("Periodic tasks should not have parameters");
 				}
 				vertx.setPeriodic(periodicTask.value(), timerId -> {
 					timerIds.add(timerId);
@@ -151,7 +151,7 @@ public class ServiceRegistry {
 				if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
 					String msg = "Cannot register consumer on method : " + getFullName(service, method);
 					msg += " .Method should only declare one parameter of io.vertx.core.eventbus.Message type.";
-					throw new RuntimeException(msg);
+					throw new VertxException(msg);
 				}
 				vertx.eventBus().consumer(consumes.value(), message -> {
 					try {

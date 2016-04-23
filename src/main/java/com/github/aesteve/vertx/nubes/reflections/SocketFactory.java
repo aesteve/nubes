@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxException;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.logging.Logger;
@@ -53,7 +54,7 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 			ctrlInstance = controller.newInstance();
 			injectServicesIntoController(router, ctrlInstance);
 		} catch (Exception e) {
-			throw new RuntimeException("Could not instanciate socket controller : " + controller.getName(), e);
+			throw new VertxException("Could not instanciate socket controller : " + controller.getName(), e);
 		}
 		final Object instance = ctrlInstance;
 		for (Method method : controller.getMethods()) {

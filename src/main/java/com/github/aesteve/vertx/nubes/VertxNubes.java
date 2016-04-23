@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import javax.xml.bind.JAXBException;
 
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
+import io.vertx.core.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -66,11 +67,6 @@ import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 import com.github.aesteve.vertx.nubes.utils.async.MultipleFutures;
 import com.github.aesteve.vertx.nubes.views.TemplateEngineManager;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.auth.AuthProvider;
@@ -119,7 +115,7 @@ public class VertxNubes {
 				Reflections reflections = new Reflections(domainPackage, new SubTypesScanner(false));
 				registerMarshaller("application/xml", new JAXBPayloadMarshaller(reflections.getSubTypesOf(Object.class)));
 			} catch (JAXBException je) {
-				throw new RuntimeException(je);
+				throw new VertxException(je);
 			}
 		}
 		failureHandler = new DefaultErrorHandler(config, templManager, marshallers);
