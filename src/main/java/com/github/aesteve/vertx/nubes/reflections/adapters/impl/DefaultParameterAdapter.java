@@ -5,6 +5,9 @@ import io.vertx.core.MultiMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -13,21 +16,23 @@ import com.github.aesteve.vertx.nubes.utils.DateUtils;
 
 public class DefaultParameterAdapter implements ParameterAdapter<Object> {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private final static Map<Class<?>, Function<String, Object>> adapters = new HashMap<>();
+	static {
+		adapters.put(String.class, String::valueOf);
+		adapters.put(Long.class, Long::valueOf);
+		adapters.put(Integer.class, Integer::valueOf);
+		adapters.put(Float.class, Float::valueOf);
+		adapters.put(Date.class, DateUtils.INSTANCE::parseIso8601);
+	}
+
+	@SuppressWarnings("unchecked")
 	public Object adaptParam(String value, Class<?> parameterClass) {
 		if (value == null) {
 			return null;
 		}
-		if (parameterClass.equals(String.class)) {
-			return value;
-		} else if (parameterClass.equals(Long.class)) {
-			return Long.valueOf(value);
-		} else if (parameterClass.equals(Integer.class)) {
-			return Integer.valueOf(value);
-		} else if (parameterClass.equals(Float.class)) {
-			return Float.valueOf(value);
-		} else if (parameterClass.equals(Date.class)) {
-			return DateUtils.INSTANCE.parseIso8601(value);
+		Function<String, Object> adapter = adapters.get(parameterClass);
+		if (adapter != null) {
+			return adapter.apply(value);
 		} else if (parameterClass.isEnum()) {
 			return Enum.valueOf((Class<Enum>) parameterClass, value);
 		}
