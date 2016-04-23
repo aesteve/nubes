@@ -128,19 +128,10 @@ public class MVCRoute {
 		return httpMethod;
 	}
 
-	public void attachHandlersToRouter(Router router, HttpMethod httpMethod, String path) {
-		boolean isRedirect = httpMethod != null && path != null;
-		if (httpMethod == null) {
-			httpMethod = this.httpMethod;
-		}
-		if (path == null) {
-			path = this.path;
-		}
+	public void attachHandlersToRouter(Router router) {
 		final HttpMethod httpMethodFinal = httpMethod;
 		final String pathFinal = path;
-		if (!isRedirect) {
-			config.forEachGlobalHandler(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
-		}
+		config.forEachGlobalHandler(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
 		final Vertx vertx = config.getVertx();
 		if (authHandler != null) {
 			final AuthProvider authProvider = config.getAuthProvider();
@@ -160,14 +151,7 @@ public class MVCRoute {
 			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 		}
 		handlers.forEach(handler -> {
-			if (isRedirect) {
-				if (!(handler instanceof BodyHandler)) { // we can't attach this handler twice
-					router.route(httpMethodFinal, pathFinal).handler(handler);
-				}
-			} else {
 				router.route(httpMethodFinal, pathFinal).handler(handler);
-			}
-
 		});
 		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::preHandle));
 		int i = 0;
@@ -184,7 +168,9 @@ public class MVCRoute {
 		setHandler(router, mainHandler, httpMethodFinal, pathFinal, mainHasNext);
 		if (redirectRoute != null) {
 			// intercepted -> redirected => do not call post processing handlers
-			redirectRoute.attachHandlersToRouter(router, httpMethod, path);
+			router.route(httpMethodFinal, pathFinal).handler(ctx -> {
+				ctx.reroute(redirectRoute.method(), redirectRoute.path());
+			});
 		}
 		if (postInterceptor != null) {
 			router.route(httpMethodFinal, pathFinal).handler(postInterceptor);

@@ -72,7 +72,7 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 
 	public void createHandlers() {
 		List<MVCRoute> routes = extractRoutesFromControllers();
-		routes.stream().filter(MVCRoute::isEnabled).forEach(route -> route.attachHandlersToRouter(router, null, null));
+		routes.stream().filter(MVCRoute::isEnabled).forEach(route -> route.attachHandlersToRouter(router));
 	}
 
 	private List<MVCRoute> extractRoutesFromControllers() {
