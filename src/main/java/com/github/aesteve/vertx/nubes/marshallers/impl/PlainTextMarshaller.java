@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.nubes.marshallers.impl;
 
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
+import io.vertx.core.VertxException;
 
 public class PlainTextMarshaller implements PayloadMarshaller {
 
@@ -9,7 +10,7 @@ public class PlainTextMarshaller implements PayloadMarshaller {
 	@SuppressWarnings("unchecked")
 	public <T> T unmarshallPayload(String body, Class<T> clazz) {
 		if (!String.class.isAssignableFrom(clazz)) {
-			throw new RuntimeException("text/plain should only be used to marshall Strings");
+			throw new VertxException("text/plain should only be used to marshall Strings");
 		}
 		return (T) body;
 	}
@@ -19,7 +20,7 @@ public class PlainTextMarshaller implements PayloadMarshaller {
 		if (payload instanceof String) {
 			return payload.toString();
 		} else {
-			throw new RuntimeException("text/plain should only be used to marshall Strings");
+			throw new VertxException("text/plain should only be used to marshall Strings");
 		}
 	}
 
