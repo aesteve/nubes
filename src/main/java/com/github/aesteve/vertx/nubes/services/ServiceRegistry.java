@@ -133,35 +133,43 @@ public class ServiceRegistry {
 		for (Method method : service.getClass().getMethods()) {
 			PeriodicTask periodicTask = method.getAnnotation(PeriodicTask.class);
 			if (periodicTask != null) {
-				if (method.getParameterTypes().length > 0) {
-					throw new VertxException("Periodic tasks should not have parameters");
-				}
-				vertx.setPeriodic(periodicTask.value(), timerId -> {
-					timerIds.add(timerId);
-					try {
-						method.invoke(service);
-					} catch (Exception e) {
-						LOG.error("Error while running periodic task", e);
-					}
-				});
+				createPeriodicTask(service, periodicTask, method);
 			}
 			Consumer consumes = method.getAnnotation(Consumer.class);
 			if (consumes != null) {
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
-					String msg = "Cannot register consumer on method : " + getFullName(service, method);
-					msg += " .Method should only declare one parameter of io.vertx.core.eventbus.Message type.";
-					throw new VertxException(msg);
-				}
-				vertx.eventBus().consumer(consumes.value(), message -> {
-					try {
-						method.invoke(service, message);
-					} catch (Exception e) {
-						LOG.error("Exception happened during message handling on method : " + getFullName(service, method), e);
-					}
-				});
+				createConsumer(service, consumes, method);
 			}
 		}
+	}
+
+	private void createConsumer(Object service, Consumer consumes, Method method) {
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		if (parameterTypes.length != 1 || !parameterTypes[0].equals(Message.class)) {
+			String msg = "Cannot register consumer on method : " + getFullName(service, method);
+			msg += " .Method should only declare one parameter of io.vertx.core.eventbus.Message type.";
+			throw new VertxException(msg);
+		}
+		vertx.eventBus().consumer(consumes.value(), message -> {
+			try {
+				method.invoke(service, message);
+			} catch (Exception e) {
+				LOG.error("Exception happened during message handling on method : " + getFullName(service, method), e);
+			}
+		});
+	}
+
+	private void  createPeriodicTask(Object service, PeriodicTask annotation, Method method) {
+		if (method.getParameterTypes().length > 0) {
+			throw new VertxException("Periodic tasks should not have parameters");
+		}
+		vertx.setPeriodic(annotation.value(), timerId -> {
+			timerIds.add(timerId);
+			try {
+				method.invoke(service);
+			} catch (Exception e) {
+				LOG.error("Error while running periodic task", e);
+			}
+		});
 	}
 
 	private static String getFullName(Object service, Method method) {
