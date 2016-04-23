@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
+import com.github.aesteve.vertx.nubes.exceptions.http.impl.BadRequestException;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -21,28 +22,21 @@ public class CheckTokenHandler extends AuthHandlerImpl {
 			authorise(user, context);
 			return;
 		}
-		HttpServerRequest request = context.request();
 		String apiToken;
-		String authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
-		if (authorization != null) {
-			String[] parts = authorization.split(" ");
-			String sscheme = parts[0];
-			if (!"token".equals(sscheme)) {
-				context.fail(400);
-				return;
-			}
-			if (parts.length < 2) {
-				context.fail(400);
-				return;
-			}
-			apiToken = parts[1];
-		} else {
-			apiToken = request.getParam("access_token");
+		try {
+			apiToken = parseApiToken(context.request());
+		} catch(BadRequestException bre) {
+			context.fail(400);
+			return;
 		}
 		if (apiToken == null) {
 			context.fail(401);
 			return;
 		}
+		doAuth(context, apiToken);
+	}
+
+	private void doAuth(RoutingContext context, String apiToken) {
 		JsonObject authInfo = new JsonObject().put("access_token", apiToken);
 		authProvider.authenticate(authInfo, res -> {
 			if (res.succeeded()) {
@@ -54,6 +48,24 @@ public class CheckTokenHandler extends AuthHandlerImpl {
 				context.fail(401);
 			}
 		});
+	}
+
+	private String parseApiToken(HttpServerRequest request) throws BadRequestException {
+		String authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
+		if (authorization != null) {
+			String[] parts = authorization.split(" ");
+			String sscheme = parts[0];
+			if (!"token".equals(sscheme)) {
+				throw new BadRequestException();
+			}
+			if (parts.length < 2) {
+				throw new BadRequestException();
+			}
+			return parts[1];
+		} else {
+			return request.getParam("access_token");
+		}
 
 	}
+
 }
