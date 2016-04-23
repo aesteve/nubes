@@ -129,68 +129,78 @@ public class MVCRoute {
 	}
 
 	public void attachHandlersToRouter(Router router) {
-		final HttpMethod httpMethodFinal = httpMethod;
-		final String pathFinal = path;
-		config.forEachGlobalHandler(handler -> router.route(httpMethodFinal, pathFinal).handler(handler));
+		config.forEachGlobalHandler(handler -> router.route(httpMethod, path).handler(handler));
 		final Vertx vertx = config.getVertx();
 		if (authHandler != null) {
-			final AuthProvider authProvider = config.getAuthProvider();
-			router.route(httpMethodFinal, pathFinal).handler(CookieHandler.create());
-			// router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
-			router.route(httpMethodFinal, pathFinal).handler(UserSessionHandler.create(authProvider));
-			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
-			router.route(httpMethodFinal, pathFinal).handler(authHandler);
-			if (loginRedirect != null && !"".equals(loginRedirect)) {
-				router.post(loginRedirect).handler(CookieHandler.create());
-				router.post(loginRedirect).handler(BodyHandler.create());
-				router.post(loginRedirect).handler(UserSessionHandler.create(authProvider));
-				router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
-				router.post(loginRedirect).handler(FormLoginHandler.create(authProvider));
-			}
+			attachAuthHandler(router, vertx);
 		} else if (usesSession) {
-			router.route(httpMethodFinal, pathFinal).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+			router.route(httpMethod, path).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 		}
 		handlers.forEach(handler -> {
-				router.route(httpMethodFinal, pathFinal).handler(handler);
+				router.route(httpMethod, path).handler(handler);
 		});
-		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::preHandle));
+		attachPreProcessingHandlers(router);
+		boolean hasPostProcessors = redirectRoute != null || postInterceptor != null || afterFilters.size() > 0 || processors.size() > 0;
+		setHandler(router, mainHandler, hasPostProcessors);
+		if (redirectRoute != null) {
+			// intercepted -> redirected => do not call post processing handlers
+			router.route(httpMethod, path).handler(ctx -> {
+				ctx.reroute(redirectRoute.method(), redirectRoute.path());
+			});
+		}
+		attachPostProcessingHandlers(router);
+	}
+
+	private void attachPreProcessingHandlers(Router router) {
+		processors.forEach(processor -> router.route(httpMethod, path).handler(processor::preHandle));
 		int i = 0;
 		boolean beforeFiltersHaveNext = mainHandler != null;
 		for (Filter filter : beforeFilters) {
 			boolean hasNext = beforeFiltersHaveNext || i < beforeFilters.size() - 1;
-			setHandler(router, filter.method(), httpMethodFinal, pathFinal, hasNext);
+			setHandler(router, filter.method(), hasNext);
 			i++;
 		}
 		if (preInterceptor != null) {
-			router.route(httpMethodFinal, pathFinal).handler(preInterceptor);
+			router.route(httpMethod, path).handler(preInterceptor);
 		}
-		boolean mainHasNext = redirectRoute != null || postInterceptor != null || afterFilters.size() > 0 || processors.size() > 0;
-		setHandler(router, mainHandler, httpMethodFinal, pathFinal, mainHasNext);
-		if (redirectRoute != null) {
-			// intercepted -> redirected => do not call post processing handlers
-			router.route(httpMethodFinal, pathFinal).handler(ctx -> {
-				ctx.reroute(redirectRoute.method(), redirectRoute.path());
-			});
-		}
+	}
+
+	private void attachPostProcessingHandlers(Router router) {
 		if (postInterceptor != null) {
-			router.route(httpMethodFinal, pathFinal).handler(postInterceptor);
-			// FIXME ?? : return;
+			router.route(httpMethod, path).handler(postInterceptor);
 		}
-		i = 0;
+		int i = 0;
 		boolean afterFiltersHaveNext = processors.size() > 0;
 		for (Filter filter : afterFilters) {
 			boolean hasNext = afterFiltersHaveNext || i < afterFilters.size() - 1;
-			setHandler(router, filter.method(), httpMethodFinal, pathFinal, hasNext);
+			setHandler(router, filter.method(), hasNext);
 			i++;
 		}
 		if (!mainHandler.getReturnType().equals(Void.TYPE) && returnHandler == null) { // try to set as payload
 			processors.add(new PayloadTypeProcessor(config.getMarshallers()));
 		}
-		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::postHandle));
-		processors.forEach(processor -> router.route(httpMethodFinal, pathFinal).handler(processor::afterAll));
+		processors.forEach(processor -> router.route(httpMethod, path).handler(processor::postHandle));
+		processors.forEach(processor -> router.route(httpMethod, path).handler(processor::afterAll));
+
 	}
 
-	private void setHandler(Router router, Method method, HttpMethod httpMethod, String path, boolean hasNext) {
+	private void attachAuthHandler(Router router, Vertx vertx) {
+		final AuthProvider authProvider = config.getAuthProvider();
+		router.route(httpMethod, path).handler(CookieHandler.create());
+		// router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
+		router.route(httpMethod, path).handler(UserSessionHandler.create(authProvider));
+		router.route(httpMethod, path).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+		router.route(httpMethod, path).handler(authHandler);
+		if (loginRedirect != null && !"".equals(loginRedirect)) {
+			router.post(loginRedirect).handler(CookieHandler.create());
+			router.post(loginRedirect).handler(BodyHandler.create());
+			router.post(loginRedirect).handler(UserSessionHandler.create(authProvider));
+			router.post(loginRedirect).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+			router.post(loginRedirect).handler(FormLoginHandler.create(authProvider));
+		}
+	}
+
+	private void setHandler(Router router, Method method, boolean hasNext) {
 		Handler<RoutingContext> handler = new DefaultMethodInvocationHandler<>(instance, method, config, hasNext, returnHandler);
 		if (method.isAnnotationPresent(Blocking.class)) {
 			router.route(httpMethod, path).blockingHandler(handler);
