@@ -65,6 +65,8 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 					response.setStatusCode(204);
 					response.end();
 				} catch (IllegalStateException ise) {
+					// do not log for the user, this means the response has already been written
+					// that'd mean something is wrong with the **framework** not users' code
 					routingContext.next();
 				}
 			}
