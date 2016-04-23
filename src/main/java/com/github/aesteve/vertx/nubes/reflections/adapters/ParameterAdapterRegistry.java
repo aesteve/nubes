@@ -1,11 +1,10 @@
 package com.github.aesteve.vertx.nubes.reflections.adapters;
 
+import com.github.aesteve.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
 import io.vertx.core.MultiMap;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.github.aesteve.vertx.nubes.reflections.adapters.impl.DefaultParameterAdapter;
 
 public class ParameterAdapterRegistry {
 
@@ -35,7 +34,7 @@ public class ParameterAdapterRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T adaptParam(String value, Class<T> parameterClass) throws Exception {
+	public <T> T adaptParam(String value, Class<T> parameterClass) {
 		ParameterAdapter<T> adapter = getAdapter(parameterClass);
 		if (adapter != null) {
 			return adapter.adaptParam(value, parameterClass);
@@ -46,7 +45,7 @@ public class ParameterAdapterRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T adaptParams(MultiMap values, Class<T> parameterClass) throws Exception {
+	public <T> T adaptParams(MultiMap values, Class<T> parameterClass) {
 		ParameterAdapter<T> adapter = getAdapter(parameterClass);
 		if (adapter != null) {
 			return adapter.adaptParams(values, parameterClass);
