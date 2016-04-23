@@ -8,12 +8,12 @@ import mock.custom.domains.CustomObject;
 public class CustomObjectAdapter implements ParameterAdapter<CustomObject> {
 
 	@Override
-	public CustomObject adaptParam(String value, Class<? extends CustomObject> parameterClass) throws Exception {
+	public CustomObject adaptParam(String value, Class<? extends CustomObject> parameterClass) {
 		return new CustomObject(value);
 	}
 
 	@Override
-	public CustomObject adaptParams(MultiMap map, Class<? extends CustomObject> parameterClass) throws Exception {
+	public CustomObject adaptParams(MultiMap map, Class<? extends CustomObject> parameterClass) {
 		return null;
 	}
 
