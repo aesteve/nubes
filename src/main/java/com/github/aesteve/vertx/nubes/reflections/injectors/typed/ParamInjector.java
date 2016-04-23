@@ -4,5 +4,5 @@ import io.vertx.ext.web.RoutingContext;
 
 @FunctionalInterface
 public interface ParamInjector<T> {
-	T resolve(RoutingContext context);
+  T resolve(RoutingContext context);
 }

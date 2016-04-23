@@ -1,9 +1,8 @@
 package mock.controllers.basepath;
 
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.ext.web.RoutingContext;
 
 @Controller
 public class HelloController {

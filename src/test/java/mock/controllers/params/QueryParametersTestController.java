@@ -1,13 +1,12 @@
 package mock.controllers.params;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.params.Param;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Date;
-
-import com.github.aesteve.vertx.nubes.annotations.Controller;
-import com.github.aesteve.vertx.nubes.annotations.params.Param;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/params/query/")
 public class QueryParametersTestController {

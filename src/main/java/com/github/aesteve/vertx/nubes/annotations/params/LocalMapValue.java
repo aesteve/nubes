@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface LocalMapValue {
 
-	String key() default "";
+  String key() default "";
 
-	String mapName();
+  String mapName();
 }

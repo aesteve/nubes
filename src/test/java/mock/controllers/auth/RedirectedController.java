@@ -1,11 +1,11 @@
 package mock.controllers.auth;
 
-import static com.github.aesteve.vertx.nubes.auth.AuthMethod.REDIRECT;
-import io.vertx.core.http.HttpServerResponse;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.core.http.HttpServerResponse;
+
+import static com.github.aesteve.vertx.nubes.auth.AuthMethod.REDIRECT;
 
 @Controller("/auth/redirected")
 public class RedirectedController {

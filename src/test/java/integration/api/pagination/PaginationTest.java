@@ -1,14 +1,12 @@
 package integration.api.pagination;
 
+import com.google.common.net.HttpHeaders;
 import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-
 import org.junit.Test;
-
-import com.google.common.net.HttpHeaders;
 
 public class PaginationTest extends VertxNubesTestBase {
 

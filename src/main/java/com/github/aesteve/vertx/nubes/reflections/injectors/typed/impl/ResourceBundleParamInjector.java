@@ -1,28 +1,27 @@
 package com.github.aesteve.vertx.nubes.reflections.injectors.typed.impl;
 
+import com.github.aesteve.vertx.nubes.Config;
+import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.github.aesteve.vertx.nubes.Config;
-import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
-
 public class ResourceBundleParamInjector implements ParamInjector<ResourceBundle> {
 
-	private final Config config;
+  private final Config config;
 
-	public ResourceBundleParamInjector(Config config) {
-		this.config = config;
-	}
+  public ResourceBundleParamInjector(Config config) {
+    this.config = config;
+  }
 
-	@Override
-	public ResourceBundle resolve(RoutingContext context) {
-		String tag = context.get(LocaleParamInjector.LOCALE_ATTR);
-		if (tag == null) {
-			return null;
-		}
-		return config.getResourceBundle(Locale.forLanguageTag(tag));
-	}
+  @Override
+  public ResourceBundle resolve(RoutingContext context) {
+    String tag = context.get(LocaleParamInjector.LOCALE_ATTR);
+    if (tag == null) {
+      return null;
+    }
+    return config.getResourceBundle(Locale.forLanguageTag(tag));
+  }
 
 }

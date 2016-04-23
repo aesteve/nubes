@@ -5,35 +5,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Dog {
 
-	private String name;
-	private String breed;
-	public Long age;
+  public Long age;
+  private String name;
+  private String breed;
 
-	public Dog() {}
+  public Dog() {
+  }
 
-	public Dog(String name, String breed) {
-		this.name = name;
-		this.breed = breed;
-	}
+  public Dog(String name, String breed) {
+    this.name = name;
+    this.breed = breed;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getBreed() {
-		return breed;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setBreed(String breed) {
-		this.breed = breed;
-	}
+  public String getBreed() {
+    return breed;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setBreed(String breed) {
+    this.breed = breed;
+  }
 
-	@Override
-	public String toString() {
-		return "My name is : " + name + " and I'm a " + breed;
-	}
+  @Override
+  public String toString() {
+    return "My name is : " + name + " and I'm a " + breed;
+  }
 }

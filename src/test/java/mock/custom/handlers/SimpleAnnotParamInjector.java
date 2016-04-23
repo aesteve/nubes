@@ -2,7 +2,6 @@ package mock.custom.handlers;
 
 import com.github.aesteve.vertx.nubes.exceptions.params.WrongParameterException;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
-
 import io.vertx.ext.web.RoutingContext;
 import mock.custom.annotations.SimpleAnnot;
 

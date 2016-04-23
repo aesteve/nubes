@@ -1,12 +1,11 @@
 package mock.controllers.injection;
 
-import io.vertx.core.http.HttpServerResponse;
-import mock.services.ParrotService;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.annotations.services.ServiceProxy;
+import io.vertx.core.http.HttpServerResponse;
+import mock.services.ParrotService;
 
 @Controller("/injectedProxy")
 public class TestInjectedProxyController {

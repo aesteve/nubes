@@ -1,12 +1,11 @@
 package mock.controllers.api.throttling;
 
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.mixins.Throttled;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import mock.domains.Dog;
 
 @Controller("/throttling/")
 @ContentType("application/json")

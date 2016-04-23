@@ -1,12 +1,11 @@
 package mock.controllers.i18n;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import com.github.aesteve.vertx.nubes.annotations.Controller;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/locales")
 public class LocaleController {

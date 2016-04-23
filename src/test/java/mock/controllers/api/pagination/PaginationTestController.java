@@ -1,18 +1,16 @@
 package mock.controllers.api.pagination;
 
-import io.vertx.core.http.HttpServerResponse;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import io.vertx.core.http.HttpServerResponse;
+import mock.domains.Dog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller("/pagination/")
 @ContentType("application/json")

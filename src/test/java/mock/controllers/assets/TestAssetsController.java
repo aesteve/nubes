@@ -1,10 +1,9 @@
 package mock.controllers.assets;
 
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
 @Controller("/assets")
 public class TestAssetsController {

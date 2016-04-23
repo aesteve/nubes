@@ -1,15 +1,9 @@
 package mock.controllers.sockjs;
 
+import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.EventBusBridge;
+import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.ext.web.handler.sockjs.BridgeEvent;
-
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.EventBusBridge;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.PUBLISH;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.RECEIVE;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.REGISTER;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SEND;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CLOSED;
-import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.SOCKET_CREATED;
 
 @EventBusBridge("/eventbus/default/*")
 public class EBBridgeDefaultController {

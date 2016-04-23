@@ -5,8 +5,8 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ContextBasedPa
 
 public class PaginationContextParamInjector extends ContextBasedParamInjector<PaginationContext> {
 
-	protected String dataAttr() {
-		return PaginationContext.DATA_ATTR;
-	}
+  protected String dataAttr() {
+    return PaginationContext.DATA_ATTR;
+  }
 
 }

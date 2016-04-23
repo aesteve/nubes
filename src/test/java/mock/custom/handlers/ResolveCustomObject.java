@@ -1,7 +1,6 @@
 package mock.custom.handlers;
 
 import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ParamInjector;
-
 import io.vertx.ext.web.RoutingContext;
 import mock.custom.domains.CustomObject;
 

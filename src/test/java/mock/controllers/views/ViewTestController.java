@@ -1,18 +1,16 @@
 package mock.controllers.views;
 
-import io.vertx.ext.web.RoutingContext;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.View;
 import com.github.aesteve.vertx.nubes.annotations.params.ContextData;
 import com.github.aesteve.vertx.nubes.annotations.params.Params;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
+import io.vertx.ext.web.RoutingContext;
+import mock.domains.Dog;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller("/views")
 public class ViewTestController {

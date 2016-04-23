@@ -1,11 +1,10 @@
 package mock.controllers.redirect;
 
-import io.vertx.core.http.HttpServerResponse;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.Forward;
 import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.core.http.HttpServerResponse;
 
 @Controller("/redirect")
 public class RedirectController {

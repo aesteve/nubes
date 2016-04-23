@@ -9,15 +9,15 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Verticle {
 
-	boolean inheritsConfig() default false;
+  boolean inheritsConfig() default false;
 
-	int instances() default -1;
+  int instances() default -1;
 
-	boolean ha() default false;
+  boolean ha() default false;
 
-	String isolationGroup() default "";
+  String isolationGroup() default "";
 
-	boolean multiThreaded() default false;
+  boolean multiThreaded() default false;
 
-	boolean worker() default false;
+  boolean worker() default false;
 }

@@ -1,13 +1,12 @@
 package mock.controllers.params;
 
-import io.vertx.ext.web.RoutingContext;
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.Params;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
+import io.vertx.ext.web.RoutingContext;
+import mock.domains.Dog;
 
 @Controller("/params/form/")
 public class FormParametersTestController {

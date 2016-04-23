@@ -1,14 +1,8 @@
 package mock.controllers.methods;
 
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.DELETE;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.OPTIONS;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.PATCH;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.PUT;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.*;
+import io.vertx.ext.web.RoutingContext;
 
 @Controller("/testmethods/")
 public class SamePathDifferentMethodsController {

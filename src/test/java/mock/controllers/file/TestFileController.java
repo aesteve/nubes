@@ -1,11 +1,10 @@
 package mock.controllers.file;
 
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.File;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.context.FileResolver;
+import io.vertx.ext.web.RoutingContext;
 
 @Controller("/file")
 public class TestFileController {

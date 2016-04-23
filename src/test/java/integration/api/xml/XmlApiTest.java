@@ -1,22 +1,20 @@
 package integration.api.xml;
 
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
-import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
-
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import integration.VertxNubesTestBase;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import integration.VertxNubesTestBase;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
+
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 // TODO : test errors
 

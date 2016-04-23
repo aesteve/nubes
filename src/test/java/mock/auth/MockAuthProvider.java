@@ -9,14 +9,14 @@ import io.vertx.ext.auth.User;
 
 public class MockAuthProvider implements AuthProvider {
 
-	@Override
-	public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
-		String userId = authInfo.getString("username");
-		if (userId == null) {
-			userId = authInfo.getString("access_token");
-		}
-		User user = new MockUser(userId);
-		resultHandler.handle(Future.succeededFuture(user));
-	}
+  @Override
+  public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
+    String userId = authInfo.getString("username");
+    if (userId == null) {
+      userId = authInfo.getString("access_token");
+    }
+    User user = new MockUser(userId);
+    resultHandler.handle(Future.succeededFuture(user));
+  }
 
 }

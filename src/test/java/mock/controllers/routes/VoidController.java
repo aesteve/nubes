@@ -1,10 +1,9 @@
 package mock.controllers.routes;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerResponse;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerResponse;
 
 @Controller("/void")
 public class VoidController {

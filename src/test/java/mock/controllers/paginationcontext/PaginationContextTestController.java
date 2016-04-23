@@ -4,7 +4,6 @@ import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
-
 import io.vertx.core.json.JsonObject;
 
 @Controller("/paginationcontext")

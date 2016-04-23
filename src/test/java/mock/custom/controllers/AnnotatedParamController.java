@@ -2,7 +2,6 @@ package mock.custom.controllers;
 
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
-
 import io.vertx.core.http.HttpServerResponse;
 import mock.custom.annotations.SimpleAnnot;
 

@@ -1,13 +1,12 @@
 package mock.controllers.api.xml;
 
-import mock.domains.Dog;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.RequestBody;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import mock.domains.Dog;
 
 @Controller("/xml/")
 @ContentType("application/xml")

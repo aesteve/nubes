@@ -4,10 +4,10 @@ import io.vertx.ext.web.RoutingContext;
 
 public interface Processor {
 
-	void preHandle(RoutingContext context);
+  void preHandle(RoutingContext context);
 
-	void postHandle(RoutingContext context);
+  void postHandle(RoutingContext context);
 
-	void afterAll(RoutingContext context);
+  void afterAll(RoutingContext context);
 
 }

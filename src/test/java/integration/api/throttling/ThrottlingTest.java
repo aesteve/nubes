@@ -1,11 +1,11 @@
 package integration.api.throttling;
 
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
 import integration.VertxNubesTestBase;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-
 import org.junit.Test;
+
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
 
 public class ThrottlingTest extends VertxNubesTestBase {
 

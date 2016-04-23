@@ -7,9 +7,9 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorF
 
 public class AuthProcessorFactory implements AnnotationProcessorFactory<Auth> {
 
-	@Override
-	public AnnotationProcessor<Auth> create(Auth annotation) {
-		return new CheckAuthorityProcessor(annotation);
-	}
+  @Override
+  public AnnotationProcessor<Auth> create(Auth annotation) {
+    return new CheckAuthorityProcessor(annotation);
+  }
 
 }

@@ -1,12 +1,5 @@
 package mock.controllers.injection;
 
-import integration.TestVerticle;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
-import mock.domains.Dog;
-import mock.services.DogService;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
@@ -15,6 +8,12 @@ import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.POST;
 import com.github.aesteve.vertx.nubes.annotations.services.Service;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import integration.TestVerticle;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import mock.domains.Dog;
+import mock.services.DogService;
 
 @Controller("/inject")
 @ContentType("application/json")

@@ -2,7 +2,6 @@ package mock.custom.handlers;
 
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.impl.NoopAfterAllProcessor;
-
 import io.vertx.ext.web.RoutingContext;
 import mock.custom.annotations.InjectCustomObjectByName;
 import mock.custom.domains.CustomObject;

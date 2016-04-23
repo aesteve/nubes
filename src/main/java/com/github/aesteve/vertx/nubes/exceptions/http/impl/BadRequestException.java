@@ -5,17 +5,17 @@ import com.github.aesteve.vertx.nubes.exceptions.http.HttpException;
 
 public class BadRequestException extends HttpException {
 
-	private static final long serialVersionUID = -8255219554555226446L;
+  private static final long serialVersionUID = -8255219554555226446L;
 
-	public BadRequestException() {
-		super(400, "Bad request");
-	}
+  public BadRequestException() {
+    super(400, "Bad request");
+  }
 
-	public BadRequestException(String msg) {
-		super(400, "Bad request. " + msg);
-	}
+  public BadRequestException(String msg) {
+    super(400, "Bad request. " + msg);
+  }
 
-	public BadRequestException(ValidationException ve) {
-		this(ve.getValidationMsg());
-	}
+  public BadRequestException(ValidationException ve) {
+    this(ve.getValidationMsg());
+  }
 }

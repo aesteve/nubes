@@ -1,9 +1,9 @@
 package com.github.aesteve.vertx.nubes.reflections.factories;
 
-import java.lang.annotation.Annotation;
-
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 
+import java.lang.annotation.Annotation;
+
 public interface AnnotationProcessorFactory<T extends Annotation> {
-	AnnotationProcessor<T> create(T annotation);
+  AnnotationProcessor<T> create(T annotation);
 }

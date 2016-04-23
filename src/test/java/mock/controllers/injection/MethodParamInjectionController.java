@@ -1,17 +1,16 @@
 package mock.controllers.injection;
 
+import com.github.aesteve.vertx.nubes.annotations.Controller;
+import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
+import com.github.aesteve.vertx.nubes.annotations.params.Headers;
+import com.github.aesteve.vertx.nubes.annotations.params.Param;
+import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.SocketAddress;
-
-import com.github.aesteve.vertx.nubes.annotations.Controller;
-import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
-import com.github.aesteve.vertx.nubes.annotations.params.Headers;
-import com.github.aesteve.vertx.nubes.annotations.params.Param;
-import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 
 @Controller("/params/injection")
 public class MethodParamInjectionController {

@@ -1,5 +1,5 @@
 package com.github.aesteve.vertx.nubes.auth;
 
 public enum AuthMethod {
-	BASIC, JWT, REDIRECT, API_TOKEN
+  BASIC, JWT, REDIRECT, API_TOKEN
 }

@@ -1,7 +1,6 @@
 package mock.custom.handlers;
 
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapter;
-
 import io.vertx.core.MultiMap;
 import mock.custom.domains.CustomObject;
 

@@ -1,8 +1,5 @@
 package mock.controllers.auth;
 
-import io.vertx.ext.web.RoutingContext;
-import mock.auth.MockUser;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.auth.Auth;
 import com.github.aesteve.vertx.nubes.annotations.auth.Logout;
@@ -10,6 +7,8 @@ import com.github.aesteve.vertx.nubes.annotations.auth.User;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
 import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
+import io.vertx.ext.web.RoutingContext;
+import mock.auth.MockUser;
 
 @Controller("/private")
 public class PrivateController {

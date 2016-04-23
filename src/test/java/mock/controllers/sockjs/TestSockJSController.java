@@ -1,13 +1,12 @@
 package mock.controllers.sockjs;
 
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.ext.web.handler.sockjs.SockJSSocket;
-
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnClose;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnOpen;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.ext.web.handler.sockjs.SockJSSocket;
 
 @SockJS("/sockjs")
 public class TestSockJSController {

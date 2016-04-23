@@ -1,20 +1,19 @@
 package integration.api.json;
 
-import static io.vertx.core.http.HttpHeaders.ACCEPT;
-import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import integration.TestVerticle;
 import integration.VertxNubesTestBase;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import mock.domains.Dog;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import mock.domains.Dog;
-
-import org.junit.Test;
+import static io.vertx.core.http.HttpHeaders.ACCEPT;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class JsonSyncApiTest extends VertxNubesTestBase {
 

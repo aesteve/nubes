@@ -1,14 +1,13 @@
 package mock.controllers.shared;
 
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.shareddata.LocalMap;
-import io.vertx.ext.web.RoutingContext;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.params.LocalMapValue;
 import com.github.aesteve.vertx.nubes.annotations.params.Param;
 import com.github.aesteve.vertx.nubes.annotations.params.VertxLocalMap;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.web.RoutingContext;
 
 @Controller("/shared/local")
 public class TestLocalMap {

@@ -1,7 +1,5 @@
 package mock.controllers.exceptions;
 
-import java.util.Arrays;
-
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.routing.http.GET;
@@ -10,6 +8,8 @@ import com.github.aesteve.vertx.nubes.exceptions.http.impl.BadRequestException;
 import com.github.aesteve.vertx.nubes.exceptions.http.impl.ForbiddenException;
 import com.github.aesteve.vertx.nubes.exceptions.http.impl.NotFoundException;
 import com.github.aesteve.vertx.nubes.exceptions.http.impl.UnauthorizedException;
+
+import java.util.Arrays;
 
 @Controller("/exceptions")
 @ContentType("application/json")
