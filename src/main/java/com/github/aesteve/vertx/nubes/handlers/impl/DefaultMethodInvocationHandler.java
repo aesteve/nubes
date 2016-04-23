@@ -41,41 +41,46 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
 			@SuppressWarnings("unchecked")
 			T returned = (T) method.invoke(instance, parameters);
 			if (returnsSomething) {
-				boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;
-				if (returnHandler != null) {
-					returnHandler.accept(routingContext, returned);
-				} else if (hasNext && contentTypeSet) {
-					// try to set as Payload
-					Payload<Object> payload = routingContext.get(Payload.DATA_ATTR);
-					if (payload == null) {
-						payload = new Payload<>();
-						routingContext.put(Payload.DATA_ATTR, payload);
-					}
-					payload.set(returned);
-				} else if (returned instanceof String) {
-					routingContext.response().end((String) returned);
-				}
+				handleMethodReturn(routingContext, returned);
 			}
 			if (!usesRoutingContext && hasNext) { // cannot call context.next(), assume the method is sync
 				routingContext.next();
 			}
 			if (!usesRoutingContext && !usesHttpResponse && !hasNext) {
-				HttpServerResponse response = routingContext.response();
-				try {
-					response.setStatusCode(204);
-					response.end();
-				} catch (IllegalStateException ise) {
-					// do not log for the user, this means the response has already been written
-					// that'd mean something is wrong with the **framework** not users' code
-					routingContext.next();
-				}
+				sendResponse(routingContext);
 			}
 		} catch (InvocationTargetException | IllegalAccessException ite) {
 			LOG.error(ite);
 			routingContext.fail(ite.getCause());
 		}
-		/* catch (Throwable others) {
-			routingContext.fail(others);
-		} */
+	}
+
+	private void sendResponse(RoutingContext routingContext) {
+		HttpServerResponse response = routingContext.response();
+		try {
+			response.setStatusCode(204);
+			response.end();
+		} catch (IllegalStateException ise) {
+			// do not log for the user, this means the response has already been written
+			// that'd mean something is wrong with the **framework** not users' code
+			routingContext.next();
+		}
+	}
+
+	private void handleMethodReturn(RoutingContext routingContext, T returned) {
+		boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;
+		if (returnHandler != null) {
+			returnHandler.accept(routingContext, returned);
+		} else if (hasNext && contentTypeSet) {
+			// try to set as Payload
+			Payload<Object> payload = routingContext.get(Payload.DATA_ATTR);
+			if (payload == null) {
+				payload = new Payload<>();
+				routingContext.put(Payload.DATA_ATTR, payload);
+			}
+			payload.set(returned);
+		} else if (returned instanceof String) {
+			routingContext.response().end((String) returned);
+		}
 	}
 }
