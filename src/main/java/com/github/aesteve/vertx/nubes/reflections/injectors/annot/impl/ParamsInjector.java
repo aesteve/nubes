@@ -20,8 +20,8 @@ public class ParamsInjector implements AnnotatedParamInjector<Params> {
 	public Object resolve(RoutingContext context, Params annotation, String paramName, Class<?> resultClass) throws WrongParameterException {
 		try {
 			return adapters.adaptParams(context.request().params(), resultClass);
-		} catch (Exception e) {
-			throw new InvalidParamValueException(null, null, null);
+		} catch (IllegalArgumentException iae) {
+			throw new InvalidParamValueException(null, null, null, iae);
 		}
 	}
 

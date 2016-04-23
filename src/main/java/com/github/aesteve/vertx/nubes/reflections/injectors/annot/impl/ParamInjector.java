@@ -32,8 +32,8 @@ public class ParamInjector implements AnnotatedParamInjector<Param> {
 		}
 		try {
 			return adapters.adaptParam(paramValue, resultClass);
-		} catch (Exception e) {
-			throw new InvalidParamValueException(ParamType.REQUEST_PARAM, requestParamName, paramValue);
+		} catch (IllegalArgumentException iae) {
+			throw new InvalidParamValueException(ParamType.REQUEST_PARAM, requestParamName, paramValue, iae);
 		}
 	}
 

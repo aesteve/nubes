@@ -32,8 +32,8 @@ public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
 		}
 		try {
 			return registry.adaptParam(headerValue, resultClass);
-		} catch (Exception e) {
-			throw new InvalidParamValueException(ParamType.HEADER, headerName, headerValue);
+		} catch (IllegalArgumentException iae) {
+			throw new InvalidParamValueException(ParamType.HEADER, headerName, headerValue, iae);
 		}
 	}
 

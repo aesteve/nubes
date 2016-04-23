@@ -23,8 +23,8 @@ public class WrongParameterException extends Exception {
 	protected final String paramName;
 	protected final ParamType type;
 
-	public WrongParameterException(ParamType type, String paramName) {
-		super();
+	public WrongParameterException(ParamType type, String paramName, Exception cause) {
+		super(cause);
 		this.type = type;
 		this.paramName = paramName;
 	}

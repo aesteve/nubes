@@ -6,8 +6,8 @@ public class InvalidParamValueException extends WrongParameterException {
 
 	private final Object paramValue;
 
-	public InvalidParamValueException(ParamType type, String paramName, Object paramValue) {
-		super(type, paramName);
+	public InvalidParamValueException(ParamType type, String paramName, Object paramValue, Exception cause) {
+		super(type, paramName, cause);
 		this.paramValue = paramValue;
 	}
 

@@ -5,7 +5,7 @@ public class MandatoryParamException extends WrongParameterException {
 	private static final long serialVersionUID = -4570023655611653765L;
 
 	public MandatoryParamException(ParamType type, String paramName) {
-		super(type, paramName);
+		super(type, paramName, null);
 	}
 
 	@Override
