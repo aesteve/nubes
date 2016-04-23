@@ -1,6 +1,7 @@
 package integration.auth;
 
 import integration.VertxNubesTestBase;
+import io.vertx.core.json.JsonArray;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import mock.auth.MockUser;
@@ -8,6 +9,11 @@ import mock.auth.MockUser;
 import org.junit.Test;
 
 public class LogoutTest extends VertxNubesTestBase {
+
+	@Override
+	protected JsonArray getControllerPackages() {
+		return new JsonArray().add("mock.controllers.auth");
+	}
 
 	@Test
 	public void testLogout(TestContext context) {

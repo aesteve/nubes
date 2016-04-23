@@ -4,7 +4,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -19,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.Blocking;
@@ -137,7 +137,7 @@ public class MVCRoute {
 			router.route(httpMethod, path).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 		}
 		handlers.forEach(handler -> {
-				router.route(httpMethod, path).handler(handler);
+			router.route(httpMethod, path).handler(handler);
 		});
 		attachPreProcessingHandlers(router);
 		boolean hasPostProcessors = redirectRoute != null || postInterceptor != null || afterFilters.size() > 0 || processors.size() > 0;

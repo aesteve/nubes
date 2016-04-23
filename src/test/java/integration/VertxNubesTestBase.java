@@ -8,6 +8,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import mock.verticles.AnnotatedVerticle;
@@ -23,11 +25,16 @@ public abstract class VertxNubesTestBase {
 
 	protected Vertx vertx;
 
+	protected JsonArray getControllerPackages() {
+		return new JsonArray().add("mock.controllers");
+	}
+
 	@Before
 	public void setUp(TestContext context) throws Exception {
 		vertx = Vertx.vertx();
 		DeploymentOptions options = new DeploymentOptions();
 		options.setInstances(NB_INSTANCES);
+		options.setConfig(new JsonObject().put("controller-packages", getControllerPackages()));
 		vertx.deployVerticle("integration.TestVerticle", options, context.asyncAssertSuccess(handler -> {
 			context.assertTrue(TestVerticle.dogService.size() > 0);
 			context.assertEquals(NB_INSTANCES, AnnotatedVerticle.nbInstances.get());

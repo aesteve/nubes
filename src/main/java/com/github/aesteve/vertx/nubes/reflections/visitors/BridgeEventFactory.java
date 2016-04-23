@@ -1,4 +1,4 @@
-package com.github.aesteve.vertx.nubes.reflections;
+package com.github.aesteve.vertx.nubes.reflections.visitors;
 
 import static io.vertx.ext.web.handler.sockjs.BridgeEventType.PUBLISH;
 import static io.vertx.ext.web.handler.sockjs.BridgeEventType.RECEIVE;

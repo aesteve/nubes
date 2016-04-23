@@ -89,11 +89,9 @@ public class TestVerticle extends AbstractVerticle {
 		nubes.stop(completeOrFail(stopFuture));
 	}
 
-	private static JsonObject createTestConfig() {
+	private JsonObject createTestConfig() {
 		JsonObject config = new JsonObject();
-		JsonArray controllerPackages = new JsonArray();
-		controllerPackages.add("mock.controllers");
-		config.put("controller-packages", controllerPackages);
+		config.put("controller-packages", context.config().getJsonArray("controller-packages"));
 		config.put("domain-package", "mock.domains");
 		config.put("verticle-package", "mock.verticles");
 		JsonArray fixturePackages = new JsonArray();

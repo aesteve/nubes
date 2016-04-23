@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import com.github.aesteve.vertx.nubes.reflections.visitors.SockJSVisitor;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxException;
 import io.vertx.core.buffer.Buffer;
@@ -23,11 +24,12 @@ import com.github.aesteve.vertx.nubes.annotations.sockjs.OnMessage;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.OnOpen;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 
-public class SocketFactory extends AbstractInjectionFactory implements HandlerFactory {
+public class SocketFactory implements HandlerFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SocketFactory.class);
 
 	private final Router router;
+	private final Config config;
 
 	public SocketFactory(Router router, Config config) {
 		this.router = router;
@@ -42,71 +44,9 @@ public class SocketFactory extends AbstractInjectionFactory implements HandlerFa
 		});
 	}
 
-	private void createSocketHandlers(Class<?> controller) {
-		SockJSHandler sockJSHandler = SockJSHandler.create(config.getVertx(), config.getSockJSOptions());
-		SockJS annot = controller.getAnnotation(SockJS.class);
-		String path = annot.value();
-		List<Method> openHandlers = new ArrayList<>();
-		List<Method> messageHandlers = new ArrayList<>();
-		List<Method> closeHandlers = new ArrayList<>();
-		Object ctrlInstance;
-		try {
-			ctrlInstance = controller.newInstance();
-			injectServicesIntoController(router, ctrlInstance);
-		} catch (Exception e) {
-			throw new VertxException("Could not instanciate socket controller : " + controller.getName(), e);
-		}
-		final Object instance = ctrlInstance;
-		for (Method method : controller.getMethods()) {
-			OnOpen openAnnot = method.getAnnotation(OnOpen.class);
-			OnClose closeAnnot = method.getAnnotation(OnClose.class);
-			OnMessage messageAnnot = method.getAnnotation(OnMessage.class);
-			if (openAnnot != null) {
-				openHandlers.add(method);
-			}
-			if (closeAnnot != null) {
-				closeHandlers.add(method);
-			}
-			if (messageAnnot != null) {
-				messageHandlers.add(method);
-			}
-		}
-		sockJSHandler.socketHandler(ws -> {
-			openHandlers.forEach(handler -> tryToInvoke(instance, handler, ws, null));
-			ws.handler(buff -> messageHandlers.forEach(messageHandler -> tryToInvoke(instance, messageHandler, ws, buff)));
-			ws.endHandler(voidz -> closeHandlers.forEach(closeHandler -> {
-				tryToInvoke(instance, closeHandler, ws, null);
-			}));
-		});
-		if (!path.endsWith("/*")) {
-			if (path.endsWith("/")) {
-				path += "*";
-			} else {
-				path += "/*";
-			}
-		}
-		router.route(path).handler(sockJSHandler);
+	private<T> void createSocketHandlers(Class<T> controller) {
+		SockJSVisitor<T> visitor = new SockJSVisitor<>(controller, config, router);
+		visitor.visit();
 	}
 
-	private void tryToInvoke(Object instance, Method method, SockJSSocket socket, Buffer msg) {
-		List<Object> paramInstances = new ArrayList<>();
-		final Vertx vertx = config.getVertx();
-		for (Class<?> parameterClass : method.getParameterTypes()) {
-			if (parameterClass.equals(SockJSSocket.class)) {
-				paramInstances.add(socket);
-			} else if (Buffer.class.isAssignableFrom(parameterClass)) {
-				paramInstances.add(msg);
-			} else if (parameterClass.equals(EventBus.class)) {
-				paramInstances.add(vertx.eventBus());
-			} else if (parameterClass.equals(Vertx.class)) {
-				paramInstances.add(vertx);
-			}
-		}
-		try {
-			method.invoke(instance, paramInstances.toArray());
-		} catch (Exception e) {
-			LOG.error("Error while handling websocket", e);
-			socket.close();
-		}
-	}
 }

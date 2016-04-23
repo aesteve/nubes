@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
+import com.github.aesteve.vertx.nubes.reflections.visitors.ControllerVisitor;
 import io.vertx.core.Handler;
 import io.vertx.core.VertxException;
 import io.vertx.core.http.HttpMethod;
@@ -42,13 +43,12 @@ import com.github.aesteve.vertx.nubes.reflections.factories.AuthenticationFactor
 import com.github.aesteve.vertx.nubes.routing.HttpMethodFactory;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
 
-public class RouteFactory extends AbstractInjectionFactory implements HandlerFactory {
-
-	private static final Logger LOG = LoggerFactory.getLogger(RouteFactory.class);
+public class RouteFactory implements HandlerFactory {
 
 	private final Router router;
-	private final RouteRegistry routeRegistry;
+	private final Config config;
 	private final AuthenticationFactory authFactory;
+	private final RouteRegistry routeRegistry;
 	private Map<Class<? extends Annotation>, BiConsumer<RoutingContext, ?>> returnHandlers;
 
 	public RouteFactory(Router router, Config config) {
@@ -65,7 +65,9 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 			if (res instanceof String) {
 				ViewResolver.resolve(context, (String) res);
 			} else if (res instanceof Map) {
-				context.data().putAll((Map)res);
+				@SuppressWarnings("unchecked") // we have to...
+				Map<? extends String, ?> mapRes = (Map<? extends String, ?>) res;
+				context.data().putAll(mapRes);
 			}
 		});
 		returnHandlers.put(File.class, (context, res) -> FileResolver.resolve(context, (String) res));
@@ -87,144 +89,12 @@ public class RouteFactory extends AbstractInjectionFactory implements HandlerFac
 	}
 
 	private List<MVCRoute> extractRoutesFromController(Class<?> controller) {
-		List<MVCRoute> routes = new ArrayList<>();
-		Set<Processor> processors = new LinkedHashSet<>();
-		Controller base = controller.getAnnotation(Controller.class);
-		Object instance;
 		try {
-			instance = controller.newInstance();
-			injectServicesIntoController(router, instance);
-		} catch (InstantiationException | IllegalAccessException ie) {
-			throw new VertxException("Could not instanciate controller : ", ie);
-		}
-		String trBasePath = "";
-		if (base.value() != null) {
-			trBasePath = base.value();
-		}
-		final String basePath = trBasePath; // java 8...
-		for (Method method : controller.getDeclaredMethods()) {
-			if (HttpMethodFactory.isRouteMethod(method)) {
-				boolean usesSession = false;
-				Auth trAuth = method.getAnnotation(Auth.class);
-				if (trAuth == null) {
-					trAuth = controller.getAnnotation(Auth.class);
-				}
-				final Auth auth = trAuth; // java 8...
-				Set<Handler<RoutingContext>> paramsHandlers = new LinkedHashSet<>();
-				Class<?>[] parameterClasses = method.getParameterTypes();
-				Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-
-				for (int i = 0; i < parameterClasses.length; i++) {
-					Class<?> parameterClass = parameterClasses[i];
-					if (Session.class.isAssignableFrom(parameterClass)) {
-						usesSession = true;
-					}
-					Processor typeProcessor = config.getTypeProcessor(parameterClass);
-					if (typeProcessor != null) {
-						processors.add(typeProcessor);
-					}
-					Handler<RoutingContext> handler = config.getParamHandler(parameterClass);
-					if (handler != null) {
-						paramsHandlers.add(handler);
-					}
-					Annotation[] paramAnnotations = parametersAnnotations[i];
-					if (paramAnnotations != null) {
-						for (Annotation annotation : paramAnnotations) {
-							Set<Handler<RoutingContext>> paramHandler = config.getAnnotationHandler(annotation.annotationType());
-							if (paramHandler != null) {
-								paramsHandlers.addAll(paramHandler);
-							}
-						}
-					}
-				}
-
-				Map<HttpMethod, String> httpMethods = HttpMethodFactory.fromAnnotatedMethod(method);
-				final boolean doesUseSession = usesSession;
-				httpMethods.forEach((httpMethod, path) -> {
-					Handler<RoutingContext> authHandler = null;
-					String redirectURL = null;
-					if (auth != null) {
-						authHandler = authFactory.create(auth);
-						if (AuthMethod.REDIRECT.equals(auth.method())) {
-							redirectURL = auth.redirectURL();
-						}
-					}
-					boolean disabled = method.isAnnotationPresent(Disabled.class) || controller.isAnnotationPresent(Disabled.class);
-					MVCRoute route = new MVCRoute(instance, basePath + path, httpMethod, config, authHandler, disabled, doesUseSession);
-					route.setLoginRedirect(redirectURL);
-					for (Annotation methodAnnotation : method.getDeclaredAnnotations()) {
-						Class<? extends Annotation> annotClass = methodAnnotation.annotationType();
-						Set<Handler<RoutingContext>> handler = config.getAnnotationHandler(annotClass);
-						if (handler != null) {
-							route.attachHandlers(handler);
-						}
-						AnnotationProcessor<?> annProcessor = config.getAnnotationProcessor(methodAnnotation);
-						if (annProcessor != null) {
-							route.addProcessor(annProcessor);
-						}
-						BiConsumer<RoutingContext, ?> returnHandler = returnHandlers.get(annotClass);
-						if (returnHandler != null) {
-							route.attachReturnHandler(returnHandler);
-						}
-					}
-					Before before = method.getAnnotation(Before.class);
-					After after = method.getAnnotation(After.class);
-					if (before != null) {
-						Handler<RoutingContext> beforeHandler = config.getAopHandler(before.name());
-						if (beforeHandler == null) {
-							LOG.warn("The interceptor with name" + (before.name()) + " could not be found");
-						} else {
-							route.attachInterceptor(beforeHandler, true);
-						}
-					}
-					if (after != null) {
-						Handler<RoutingContext> afterHandler = config.getAopHandler(after.name());
-						if (afterHandler == null) {
-							LOG.warn("The interceptor with name" + (after.name()) + " could not be found");
-						} else {
-							route.attachInterceptor(afterHandler, false);
-						}
-					}
-					route.addProcessors(processors);
-					route.attachHandlers(paramsHandlers);
-					route.setMainHandler(method);
-					routes.add(route);
-					routeRegistry.register(controller, method, route);
-					if (method.isAnnotationPresent(Forward.class)) {
-						Forward redirect = method.getAnnotation(Forward.class);
-						routeRegistry.bindRedirect(route, redirect);
-					}
-				});
-			}
-		}
-		extractFiltersFromController(routes, controller);
-		return routes;
-	}
-
-	private void extractFiltersFromController(List<MVCRoute> routes, Class<?> controller) {
-		Set<Filter> beforeFilters = new TreeSet<>();
-		Set<Filter> afterFilters = new TreeSet<>();
-		for (Method method : controller.getDeclaredMethods()) {
-			if (method.getAnnotation(BeforeFilter.class) != null) {
-				beforeFilters.add(new Filter(method, method.getAnnotation(BeforeFilter.class)));
-			} else if (method.getAnnotation(AfterFilter.class) != null) {
-				afterFilters.add(new Filter(method, method.getAnnotation(AfterFilter.class)));
-			}
-		}
-		Set<Processor> controllerProcessors = new LinkedHashSet<>();
-		for (Annotation annotation : controller.getDeclaredAnnotations()) {
-			AnnotationProcessor<?> controllerProcessor = config.getAnnotationProcessor(annotation);
-			if (controllerProcessor != null) {
-				controllerProcessors.add(controllerProcessor);
-			}
-		}
-		for (MVCRoute route : routes) {
-			route.addProcessorsFirst(controllerProcessors);
-			route.addBeforeFilters(beforeFilters);
-			route.addAfterFilters(afterFilters);
-		}
-		if (controller.getSuperclass() != null && !controller.getSuperclass().equals(Object.class)) {
-			extractFiltersFromController(routes, controller.getSuperclass());
+			ControllerVisitor<?> visitor = new ControllerVisitor<>(controller, config, router, authFactory, routeRegistry, returnHandlers);
+			return visitor.visit();
+		} catch (IllegalAccessException | InstantiationException e) {
+			throw new VertxException(e);
 		}
 	}
+
 }
