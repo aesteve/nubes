@@ -11,7 +11,6 @@ import java.util.TimeZone;
 
 /**
  * Singleton pattern implementation using enums.
- * <p>
  * See "Effective Java" by Joshua Bloch
  *
  * @author aesteve
@@ -20,7 +19,7 @@ public enum DateUtils {
 
   INSTANCE;
 
-  private DatatypeFactory factory;
+  private transient DatatypeFactory factory;
 
   DateUtils() {
     try {
