@@ -1,7 +1,6 @@
 
 package com.github.aesteve.vertx.nubes;
 
-import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
@@ -55,7 +54,6 @@ public class Config {
   }
 
   private JsonObject json;
-  private String srcPackage;
   private List<String> controllerPackages;
   private List<String> fixturePackages;
   private String verticlePackage;
@@ -67,7 +65,6 @@ public class Config {
   private boolean displayErrors;
   private Vertx vertx;
   private AuthProvider authProvider;
-  private AuthMethod authMethod;
   private String i18nDir;
 
   private AnnotationProcessorRegistry apRegistry;
@@ -85,113 +82,26 @@ public class Config {
   private Map<String, PayloadMarshaller> marshallers;
 
   /**
-   * TODO : check config instead of throwing exceptions
    * TODO : we should be consistent on single/multiple values
    * (controllers is an array, fixtures is a list, domain is a single value, verticle is a single value) : this is wrong
    *
-   * @param json
-   * @return config
+   * @param json JsonObject describing the config
+   * @return config a type safe config object
    */
-  @SuppressWarnings("unchecked")
   public static Config fromJsonObject(JsonObject json, Vertx vertx) {
     Config instance = new Config();
-
     instance.json = json;
     instance.vertx = vertx;
-    instance.srcPackage = json.getString("src-package");
-    instance.i18nDir = json.getString("i18nDir", "web/i18n/");
-    if (!instance.i18nDir.endsWith("/")) {
-      instance.i18nDir = instance.i18nDir + "/";
-    }
-    JsonArray controllers = json.getJsonArray("controller-packages");
-    if (controllers == null) {
-      controllers = new JsonArray();
-      if (instance.srcPackage != null) {
-        controllers.add(instance.srcPackage + ".controllers");
-      }
-    }
-    instance.controllerPackages = controllers.getList();
 
-    instance.verticlePackage = json.getString("verticle-package");
-    if (instance.verticlePackage == null && instance.srcPackage != null) {
-      instance.verticlePackage = instance.srcPackage + ".verticles";
-    }
-
-    instance.domainPackage = json.getString("domain-package");
-    if (instance.domainPackage == null && instance.srcPackage != null) {
-      instance.domainPackage = instance.srcPackage + ".domains";
-    }
-    JsonArray fixtures = json.getJsonArray("fixture-packages");
-    if (fixtures == null) {
-      fixtures = new JsonArray();
-      if (instance.srcPackage != null) {
-        fixtures.add(instance.srcPackage + ".fixtures");
-      }
-    }
-    instance.fixturePackages = fixtures.getList();
-
+    instance.readPackages();
     // Register services included in config
-    JsonObject services = json.getJsonObject("services", new JsonObject());
-    instance.serviceRegistry = new ServiceRegistry(vertx, instance);
-    services.forEach(entry -> {
-      String name = entry.getKey();
-      String className = (String) entry.getValue();
-      try {
-        Class<?> clazz = Class.forName(className);
-        instance.serviceRegistry.registerService(name, clazz.newInstance());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-        throw new VertxException(e);
-      }
-    });
-
+    instance.createServices();
     // Register templateEngines for extensions added in config
-    JsonArray templates = json.getJsonArray("templates", new JsonArray());
-    if (templates.contains("hbs")) {
-      instance.templateEngines.put("hbs", HandlebarsTemplateEngine.create());
-    }
-    if (templates.contains("jade")) {
-      instance.templateEngines.put("jade", JadeTemplateEngine.create());
-    }
-    if (templates.contains("templ")) {
-      instance.templateEngines.put("templ", MVELTemplateEngine.create());
-    }
-    if (templates.contains("thymeleaf")) {
-      instance.templateEngines.put("html", ThymeleafTemplateEngine.create());
-    }
+    instance.createTemplateEngines();
 
-    JsonObject rateLimitJson = json.getJsonObject("throttling");
-    if (rateLimitJson != null) {
-      int count = rateLimitJson.getInteger("count");
-      int value = rateLimitJson.getInteger("time-frame");
-      TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
-      instance.rateLimit = new RateLimit(count, value, timeUnit);
-    }
+    instance.createRateLimit();
 
-    String auth = json.getString("auth-type");
-    JsonObject authProperties = json.getJsonObject("auth-properties");
-
-    // TODO : discuss it. I'm really not convinced about all the boilerplate needed in config (dbName only for JDBC, etc.)
-    if (authProperties != null) {
-      // For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
-      switch (auth) {
-        case "JWT":// For now only allow properties realm
-          instance.authProvider = JWTAuth.create(vertx, authProperties);
-          break;
-        case "Shiro":
-          ShiroAuth.create(vertx, new ShiroAuthOptions(authProperties));
-          break;
-        case "JDBC":
-          String dbName = json.getString("db-name");
-          Objects.requireNonNull(dbName);
-          JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
-          instance.authProvider = JDBCAuth.create(client);
-          break;
-        default:
-          LOG.warn("Unknown type of auth : " + auth + " . Ignoring.");
-      }
-    } else if (auth != null) {
-      LOG.warn("You have defined " + auth + " as auth type, but didn't provide any configuration, can't create authProvider");
-    }
+    instance.createAuthHandlers();
 
     instance.webroot = json.getString("webroot", "web/assets");
     instance.assetsPath = json.getString("static-path", "/assets");
@@ -201,6 +111,111 @@ public class Config {
 
     instance.globalHandlers.add(BodyHandler.create());
     return instance;
+  }
+
+  private void createAuthHandlers() {
+    String auth = json.getString("auth-type");
+    JsonObject authProperties = json.getJsonObject("auth-properties");
+
+    // TODO : discuss it. I'm really not convinced about all the boilerplate needed in config (dbName only for JDBC, etc.)
+    if (authProperties != null) {
+      // For now, only JWT,Shiro and JDBC supported (same as for Vert.x web)
+      switch (auth) {
+        case "JWT":// For now only allow properties realm
+          this.authProvider = JWTAuth.create(vertx, authProperties);
+          break;
+        case "Shiro":
+          ShiroAuth.create(vertx, new ShiroAuthOptions(authProperties));
+          break;
+        case "JDBC":
+          String dbName = json.getString("db-name");
+          Objects.requireNonNull(dbName);
+          JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
+          this.authProvider = JDBCAuth.create(client);
+          break;
+        default:
+          LOG.warn("Unknown type of auth : " + auth + " . Ignoring.");
+      }
+    } else if (auth != null) {
+      LOG.warn("You have defined " + auth + " as auth type, but didn't provide any configuration, can't create authProvider");
+    }
+
+  }
+
+  private void createRateLimit() {
+    JsonObject rateLimitJson = json.getJsonObject("throttling");
+    if (rateLimitJson != null) {
+      int count = rateLimitJson.getInteger("count");
+      int value = rateLimitJson.getInteger("time-frame");
+      TimeUnit timeUnit = TimeUnit.valueOf(rateLimitJson.getString("time-unit"));
+      this.rateLimit = new RateLimit(count, value, timeUnit);
+    }
+  }
+
+  private void createTemplateEngines() {
+    JsonArray templates = json.getJsonArray("templates", new JsonArray());
+    if (templates.contains("hbs")) {
+      this.templateEngines.put("hbs", HandlebarsTemplateEngine.create());
+    }
+    if (templates.contains("jade")) {
+      this.templateEngines.put("jade", JadeTemplateEngine.create());
+    }
+    if (templates.contains("templ")) {
+      this.templateEngines.put("templ", MVELTemplateEngine.create());
+    }
+    if (templates.contains("thymeleaf")) {
+      this.templateEngines.put("html", ThymeleafTemplateEngine.create());
+    }
+  }
+
+  private void createServices() {
+    JsonObject services = json.getJsonObject("services", new JsonObject());
+    this.serviceRegistry = new ServiceRegistry(vertx, this);
+    services.forEach(entry -> {
+      String name = entry.getKey();
+      String className = (String) entry.getValue();
+      try {
+        Class<?> clazz = Class.forName(className);
+        this.serviceRegistry.registerService(name, clazz.newInstance());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        throw new VertxException(e);
+      }
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  private void readPackages() {
+    this.i18nDir = json.getString("i18nDir", "web/i18n/");
+    if (!this.i18nDir.endsWith("/")) {
+      this.i18nDir = this.i18nDir + "/";
+    }
+    String srcPackage = json.getString("src-package");
+    JsonArray controllers = json.getJsonArray("controller-packages");
+    if (controllers == null) {
+      controllers = new JsonArray();
+      if (srcPackage != null) {
+        controllers.add(srcPackage + ".controllers");
+      }
+    }
+    this.controllerPackages = controllers.getList();
+
+    this.verticlePackage = json.getString("verticle-package");
+    if (this.verticlePackage == null && srcPackage != null) {
+      this.verticlePackage = srcPackage + ".verticles";
+    }
+
+    this.domainPackage = json.getString("domain-package");
+    if (this.domainPackage == null && srcPackage != null) {
+      this.domainPackage = srcPackage + ".domains";
+    }
+    JsonArray fixtures = json.getJsonArray("fixture-packages");
+    if (fixtures == null) {
+      fixtures = new JsonArray();
+      if (srcPackage != null) {
+        fixtures.add(srcPackage + ".fixtures");
+      }
+    }
+    this.fixturePackages = fixtures.getList();
   }
 
   public ResourceBundle getResourceBundle(Locale loc) {
@@ -261,10 +276,6 @@ public class Config {
 
   void setAuthProvider(AuthProvider authProvider) {
     this.authProvider = authProvider;
-  }
-
-  void setAuthMethod(AuthMethod authMethod) {
-    this.authMethod = authMethod;
   }
 
   void registerInterceptor(String name, Handler<RoutingContext> handler) {

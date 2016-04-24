@@ -63,7 +63,7 @@ import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFa
 
 public class VertxNubes {
 
-  public static final int CLEAN_HISTORY_DELAY = 60000;
+  private static final int CLEAN_HISTORY_DELAY = 60000;
   protected final Config config;
   protected final Vertx vertx;
 
@@ -76,7 +76,7 @@ public class VertxNubes {
   private final List<String> deploymentIds;
 
   /**
-   * @param vertx
+   * @param vertx the vertx instance
    */
   public VertxNubes(Vertx vertx, JsonObject json) {
     this.vertx = vertx;
@@ -158,10 +158,6 @@ public class VertxNubes {
 
   public void setAuthProvider(AuthProvider authProvider) {
     config.setAuthProvider(authProvider);
-  }
-
-  public void setAuthMethod(AuthMethod authMethod) {
-    config.setAuthMethod(authMethod);
   }
 
   public void registerInterceptor(String name, Handler<RoutingContext> handler) {
