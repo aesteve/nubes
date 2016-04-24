@@ -9,6 +9,10 @@ import org.boon.json.JsonSerializer;
 import org.boon.json.JsonSerializerFactory;
 import org.boon.json.ObjectMapper;
 
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_CODE_KEY;
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_KEY;
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_MESSAGE_KEY;
+
 public class BoonPayloadMarshaller implements PayloadMarshaller {
 
   protected final JsonSerializer serializer;
@@ -44,12 +48,12 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
   public String marshallUnexpectedError(Throwable error, boolean displayDetails) {
     JsonObject json = new JsonObject();
     JsonObject jsonError = new JsonObject();
-    json.put("error", jsonError);
-    jsonError.put("code", 500);
+    json.put(ERROR_KEY, jsonError);
+    jsonError.put(ERROR_CODE_KEY, 500);
     if (displayDetails) {
-      jsonError.put("message", StackTracePrinter.asLineString(new StringBuilder(), error));
+      jsonError.put(ERROR_MESSAGE_KEY, StackTracePrinter.asLineString(new StringBuilder(), error));
     } else {
-      jsonError.put("message", "Internal Server Error");
+      jsonError.put(ERROR_MESSAGE_KEY, "Internal Server Error");
     }
     return json.toString();
   }
@@ -58,9 +62,9 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
   public String marshallHttpStatus(int statusCode, String errorMessage) {
     JsonObject json = new JsonObject();
     JsonObject jsonError = new JsonObject();
-    json.put("error", jsonError);
-    jsonError.put("code", statusCode);
-    jsonError.put("message", errorMessage);
+    json.put(ERROR_KEY, jsonError);
+    jsonError.put(ERROR_CODE_KEY, statusCode);
+    jsonError.put(ERROR_MESSAGE_KEY, errorMessage);
     return json.toString();
   }
 

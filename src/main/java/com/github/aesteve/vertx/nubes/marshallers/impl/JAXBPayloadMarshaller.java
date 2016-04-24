@@ -19,6 +19,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Set;
 
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_CODE_KEY;
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_KEY;
+import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_MESSAGE_KEY;
+
 public class JAXBPayloadMarshaller implements PayloadMarshaller {
 
   protected Marshaller marshaller;
@@ -71,11 +75,11 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
     if (message == null && error != null) {
       message = StackTracePrinter.asLineString(new StringBuilder(), error).toString();
     }
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + "<error>\n" +
-        "\t<code>500</code>\n" +
-        "\t<message>\n<![CDATA[" +
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + "<" + ERROR_KEY + ">\n" +
+        "\t<" + ERROR_CODE_KEY + ">500</" + ERROR_CODE_KEY + ">\n" +
+        "\t<" + ERROR_MESSAGE_KEY + ">\n<![CDATA[" +
         message +
-        "]]>\n\t</message>\n" +
-        "</error>";
+        "]]>\n\t</" + ERROR_MESSAGE_KEY + ">\n" +
+        "</" + ERROR_KEY + ">";
   }
 }
