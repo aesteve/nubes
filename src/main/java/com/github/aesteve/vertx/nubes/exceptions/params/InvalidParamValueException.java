@@ -4,7 +4,7 @@ public class InvalidParamValueException extends WrongParameterException {
 
   private static final long serialVersionUID = -8469141240265252774L;
 
-  private final Object paramValue;
+  private final transient Object paramValue;
 
   public InvalidParamValueException(ParamType type, String paramName, Object paramValue, Exception cause) {
     super(type, paramName, cause);
@@ -15,7 +15,8 @@ public class InvalidParamValueException extends WrongParameterException {
     if (type == null && paramName == null && paramValue == null) {
       return "Some request of form parameter has an invalid value";
     }
-    return "Invalid value : " + paramValue + " for " + type.toString() + " : " + paramName;
+    final String typeName = type == null ? "null" : type.toString();
+    return "Invalid value : " + paramValue + " for " + typeName + " : " + paramName;
   }
 
 }
