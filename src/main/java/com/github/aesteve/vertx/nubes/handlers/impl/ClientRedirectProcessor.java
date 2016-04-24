@@ -9,7 +9,7 @@ import static io.vertx.core.http.HttpHeaders.LOCATION;
 
 public class ClientRedirectProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<Redirect> {
 
-  private final static String LOCATION_DATA = "client-redirect-location";
+  private static final String LOCATION_DATA = "client-redirect-location";
 
   private final Redirect annotation;
 

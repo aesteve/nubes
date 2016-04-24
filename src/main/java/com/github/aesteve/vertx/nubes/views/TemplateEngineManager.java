@@ -12,7 +12,7 @@ import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class TemplateEngineManager implements TemplateHandler {
 
-  private final static Logger LOG = LoggerFactory.getLogger(TemplateEngineManager.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TemplateEngineManager.class);
 
   private final Config config;
 

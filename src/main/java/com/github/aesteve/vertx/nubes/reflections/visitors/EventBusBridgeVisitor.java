@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class EventBusBridgeVisitor<T> extends BaseVisitor<T> {
 
-  private final static Logger LOG = LoggerFactory.getLogger(EventBusBridgeVisitor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EventBusBridgeVisitor.class);
 
   private SockJSHandler sockJSHandler;
 

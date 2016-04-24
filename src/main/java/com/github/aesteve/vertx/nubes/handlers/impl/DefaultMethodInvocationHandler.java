@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 
 public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationHandler<T> {
 
-  private final static Logger LOG = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultMethodInvocationHandler.class);
 
   public DefaultMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
     super(instance, method, config, hasNext, returnHandler);

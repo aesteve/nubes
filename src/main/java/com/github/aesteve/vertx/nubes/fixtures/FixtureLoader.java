@@ -11,6 +11,8 @@ import org.reflections.Reflections;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static java.lang.Integer.compare;
+
 public class FixtureLoader {
 
   private final Vertx vertx;
@@ -18,9 +20,7 @@ public class FixtureLoader {
   private final ServiceRegistry serviceRegistry;
   private final Set<Fixture> fixtures;
 
-  public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> {
-    return Integer.compare(f1.executionOrder(), f2.executionOrder());
-  };
+  public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> compare(f1.executionOrder(), f2.executionOrder());
 
   public FixtureLoader(Vertx vertx, Config config, ServiceRegistry serviceRegistry) {
     this.vertx = vertx;
@@ -91,7 +91,6 @@ public class FixtureLoader {
         }
       }
     }
-
   }
 
 }

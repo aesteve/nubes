@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 class MethodVisitor<T> {
 
-  private final static Logger LOG = LoggerFactory.getLogger(MethodVisitor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MethodVisitor.class);
 
   private final Class<T> controller;
   private final Method method;

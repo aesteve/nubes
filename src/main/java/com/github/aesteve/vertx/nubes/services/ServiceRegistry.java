@@ -22,7 +22,7 @@ import java.util.*;
 
 public class ServiceRegistry {
 
-  private final static Logger LOG = LoggerFactory.getLogger(ServiceRegistry.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistry.class);
 
   private final Map<String, Object> services;
   private final Map<String, Object> serviceProxies;

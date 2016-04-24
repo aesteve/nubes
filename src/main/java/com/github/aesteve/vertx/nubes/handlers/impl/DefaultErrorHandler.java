@@ -20,9 +20,9 @@ import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class DefaultErrorHandler implements Handler<RoutingContext> {
 
-  private final static String ERROR_DETAILS = "nubes-error-details";
+  private static final String ERROR_DETAILS = "nubes-error-details";
 
-  private final static Logger LOG = LoggerFactory.getLogger(DefaultErrorHandler.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultErrorHandler.class);
 
   private final Config config;
   private final Map<Integer, String> errorTemplates;

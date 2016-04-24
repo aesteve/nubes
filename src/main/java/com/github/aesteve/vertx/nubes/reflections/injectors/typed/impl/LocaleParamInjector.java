@@ -7,7 +7,7 @@ import java.util.Locale;
 
 public class LocaleParamInjector implements ParamInjector<Locale> {
 
-  public final static String LOCALE_ATTR = "nubes-user-locale";
+  public static final String LOCALE_ATTR = "nubes-user-locale";
 
   @Override
   public Locale resolve(RoutingContext context) {

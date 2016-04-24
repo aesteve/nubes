@@ -14,7 +14,7 @@ import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class ContentTypeProcessor extends NoopAfterAllProcessor implements AnnotationProcessor<ContentType> {
 
-  public final static String BEST_CONTENT_TYPE = "nubes-best-content-type";
+  public static final String BEST_CONTENT_TYPE = "nubes-best-content-type";
 
   private final ContentType annotation;
 

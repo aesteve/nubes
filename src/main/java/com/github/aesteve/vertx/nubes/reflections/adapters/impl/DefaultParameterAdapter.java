@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class DefaultParameterAdapter implements ParameterAdapter<Object> {
 
-  private final static Map<Class<?>, Function<String, Object>> adapters = new HashMap<>();
+  private static final Map<Class<?>, Function<String, Object>> adapters = new HashMap<>();
 
   static {
     adapters.put(String.class, String::valueOf);
