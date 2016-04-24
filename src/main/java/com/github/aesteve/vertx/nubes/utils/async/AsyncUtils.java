@@ -179,13 +179,13 @@ public class AsyncUtils {
     return AsyncUtils.chainOnSuccess(globalHandler, future, list);
   }
 
-  public static <T> Handler<AsyncResult<T>> logIfFailed(final String msg, final Logger LOG) {
+  public static <T> Handler<AsyncResult<T>> logIfFailed(final String msg, final Logger log) {
     return res -> {
       if (res.failed()) {
         if (msg != null) {
-          LOG.error(msg, res.cause());
+          log.error(msg, res.cause());
         } else {
-          LOG.error(res.cause());
+          log.error(res.cause());
         }
       }
     };
