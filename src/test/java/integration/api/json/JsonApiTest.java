@@ -219,7 +219,7 @@ public class JsonApiTest extends VertxNubesTestBase {
 	private void testError(TestContext context, Integer statusCode, String expectedMessage) {
 		Async async = context.async();
 		getJSON("/json/fail/" + statusCode, response -> {
-			context.assertEquals(statusCode.intValue(), response.statusCode());
+			context.assertEquals(statusCode, response.statusCode());
 			response.bodyHandler(buff -> {
 				JsonObject json = new JsonObject(buff.toString());
 				JsonObject error = json.getJsonObject("error");
