@@ -13,7 +13,7 @@ public interface PayloadMarshaller {
   final class Constants {
     private Constants() {}
     public static final String ERROR_KEY = "error";
-    public static final String ERROR_CODE_KEY = "error";
+    public static final String ERROR_CODE_KEY = "code";
     public static final String ERROR_MESSAGE_KEY = "message";
   }
 
