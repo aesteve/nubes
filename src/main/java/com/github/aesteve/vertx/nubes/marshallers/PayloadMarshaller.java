@@ -11,10 +11,10 @@ public interface PayloadMarshaller {
   String marshallHttpStatus(int statusCode, String statusMessage);
 
   final class Constants {
+    public static final String ERROR_KEY = "error";
+    public static final String ERROR_CODE_KEY = "code";
+    public static final String ERROR_MESSAGE_KEY = "message";
     private Constants() {}
-    public final static String ERROR_KEY = "error";
-    public final static String ERROR_CODE_KEY = "code";
-    public final static String ERROR_MESSAGE_KEY = "message";
   }
 
 }
