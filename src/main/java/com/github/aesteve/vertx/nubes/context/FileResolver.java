@@ -7,7 +7,11 @@ import static com.github.aesteve.vertx.nubes.context.FileResolver.Constants.CONT
 public interface FileResolver {
 
   final class Constants {
+
+    private Constants() {}
+
     final static String CONTEXT_FILE_NAME = "file-name";
+
   }
 
   static void resolve(RoutingContext context, String fileName) {
