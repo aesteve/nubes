@@ -364,7 +364,7 @@ public class Config {
     return paramHandlers.get(parameterClass);
   }
 
-  public AnnotationProcessor<?> getAnnotationProcessor(Annotation methodAnnotation) {
+  public<T extends Annotation> AnnotationProcessor<T> getAnnotationProcessor(T methodAnnotation) {
     return apRegistry.getProcessor(methodAnnotation);
   }
 
@@ -387,4 +387,5 @@ public class Config {
   public List<String> getControllerPackages() {
     return controllerPackages;
   }
+
 }
