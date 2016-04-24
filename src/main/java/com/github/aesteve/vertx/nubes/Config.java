@@ -38,6 +38,32 @@ import java.util.concurrent.TimeUnit;
 public class Config {
 
   private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+  private final Map<Locale, ResourceBundle> bundlesByLocale;
+  private final List<Handler<RoutingContext>> globalHandlers;
+  private final Map<String, TemplateEngine> templateEngines;
+  private final SockJSHandlerOptions sockJSOptions;
+  private JsonObject json;
+  private List<String> controllerPackages;
+  private List<String> fixturePackages;
+  private String verticlePackage;
+  private String domainPackage;
+  private RateLimit rateLimit;
+  private String webroot;
+  private String assetsPath;
+  private String tplDir;
+  private boolean displayErrors;
+  private Vertx vertx;
+  private AuthProvider authProvider;
+  private String i18nDir;
+  private AnnotationProcessorRegistry apRegistry;
+  private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
+  private Map<Class<?>, Processor> typeProcessors;
+  private TypedParamInjectorRegistry typeInjectors;
+  private AnnotatedParamInjectorRegistry annotInjectors;
+  private ServiceRegistry serviceRegistry;
+  private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
+  private Map<String, Handler<RoutingContext>> aopHandlerRegistry;
+  private Map<String, PayloadMarshaller> marshallers;
 
   private Config() {
     bundlesByLocale = new HashMap<>();
@@ -52,34 +78,6 @@ public class Config {
     typeInjectors = new TypedParamInjectorRegistry(this);
     aopHandlerRegistry = new HashMap<>();
   }
-
-  private JsonObject json;
-  private List<String> controllerPackages;
-  private List<String> fixturePackages;
-  private String verticlePackage;
-  private String domainPackage;
-  private RateLimit rateLimit;
-  private String webroot;
-  private String assetsPath;
-  private String tplDir;
-  private boolean displayErrors;
-  private Vertx vertx;
-  private AuthProvider authProvider;
-  private String i18nDir;
-
-  private AnnotationProcessorRegistry apRegistry;
-  private Map<Class<? extends Annotation>, Set<Handler<RoutingContext>>> annotationHandlers;
-  private Map<Class<?>, Processor> typeProcessors;
-  private TypedParamInjectorRegistry typeInjectors;
-  private AnnotatedParamInjectorRegistry annotInjectors;
-  private ServiceRegistry serviceRegistry;
-  private Map<Class<?>, Handler<RoutingContext>> paramHandlers;
-  private Map<String, Handler<RoutingContext>> aopHandlerRegistry;
-  private final Map<Locale, ResourceBundle> bundlesByLocale;
-  private final List<Handler<RoutingContext>> globalHandlers;
-  private final Map<String, TemplateEngine> templateEngines;
-  private final SockJSHandlerOptions sockJSOptions;
-  private Map<String, PayloadMarshaller> marshallers;
 
   /**
    * TODO : we should be consistent on single/multiple values
@@ -254,10 +252,6 @@ public class Config {
     return rateLimit;
   }
 
-  public void setMarshallers(Map<String, PayloadMarshaller> marshallers) {
-    this.marshallers = marshallers;
-  }
-
   void createAnnotInjectors(ParameterAdapterRegistry registry) {
     annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
   }
@@ -272,10 +266,6 @@ public class Config {
 
   void registerTemplateEngine(String extension, TemplateEngine engine) {
     templateEngines.put(extension, engine);
-  }
-
-  void setAuthProvider(AuthProvider authProvider) {
-    this.authProvider = authProvider;
   }
 
   void registerInterceptor(String name, Handler<RoutingContext> handler) {
@@ -338,6 +328,10 @@ public class Config {
     return authProvider;
   }
 
+  void setAuthProvider(AuthProvider authProvider) {
+    this.authProvider = authProvider;
+  }
+
   String getI18nDir() {
     return i18nDir;
   }
@@ -362,7 +356,6 @@ public class Config {
     return sockJSOptions;
   }
 
-
   public Processor getTypeProcessor(Class<?> parameterClass) {
     return typeProcessors.get(parameterClass);
   }
@@ -385,6 +378,10 @@ public class Config {
 
   public Map<String, PayloadMarshaller> getMarshallers() {
     return marshallers;
+  }
+
+  public void setMarshallers(Map<String, PayloadMarshaller> marshallers) {
+    this.marshallers = marshallers;
   }
 
   public List<String> getControllerPackages() {
