@@ -137,9 +137,7 @@ public class MultipleFutures<T> extends SimpleFuture<T> {
   }
 
   public <K, V> MultipleFutures<T> addAll(Map<K, V> map, TriConsumer<K, V, Future<T>> transform) {
-    map.forEach((key, value) -> add(res -> {
-      transform.accept(key, value, res);
-    }));
+    map.forEach((key, value) -> add(res -> transform.accept(key, value, res)));
     return this;
   }
 
