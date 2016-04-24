@@ -134,7 +134,7 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
         return;
       }
       if (config.isDisplayErrors()) {
-        context.put("stackTrace", StackTracePrinter.asHtml(null, cause).toString());
+        context.put("stackTrace", StackTracePrinter.asHtml(new StringBuilder(), cause).toString());
       }
       templManager.fromViewName(tpl).render(context, tpl, res -> {
         if (res.succeeded()) {

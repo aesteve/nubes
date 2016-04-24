@@ -27,7 +27,7 @@ public class PlainTextMarshaller implements PayloadMarshaller {
   @Override
   public String marshallUnexpectedError(Throwable error, boolean displayDetails) {
     if (displayDetails) {
-      return StackTracePrinter.asLineString(null, error).toString();
+      return StackTracePrinter.asLineString(new StringBuilder(), error).toString();
     } else {
       return "Internal server error";
     }

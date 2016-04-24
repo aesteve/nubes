@@ -47,7 +47,7 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
     json.put("error", jsonError);
     jsonError.put("code", 500);
     if (displayDetails) {
-      jsonError.put("message", StackTracePrinter.asLineString(null, error));
+      jsonError.put("message", StackTracePrinter.asLineString(new StringBuilder(), error));
     } else {
       jsonError.put("message", "Internal Server Error");
     }

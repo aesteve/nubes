@@ -69,7 +69,7 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
 
   private static String marshallError(int status, Throwable error, String message) {
     if (message == null && error != null) {
-      message = StackTracePrinter.asLineString(null, error).toString();
+      message = StackTracePrinter.asLineString(new StringBuilder(), error).toString();
     }
     return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + "<error>\n" +
         "\t<code>500</code>\n" +

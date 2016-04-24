@@ -1,11 +1,8 @@
 package com.github.aesteve.vertx.nubes.utils;
 
-public class StackTracePrinter {
+public interface StackTracePrinter {
 
-  public static StringBuilder asHtml(StringBuilder sb, Throwable error) {
-    if (sb == null) {
-      sb = new StringBuilder();
-    }
+  static StringBuilder asHtml(StringBuilder sb, Throwable error) {
     sb.append("<div class=\"exception\">");
     sb.append("<div class=\"exception-msg\">").append(error.getMessage()).append("</div>");
     sb.append("<ul class=\"stacktrace\">");
@@ -21,10 +18,7 @@ public class StackTracePrinter {
     return sb;
   }
 
-  public static StringBuilder asLineString(StringBuilder sb, Throwable error) {
-    if (sb == null) {
-      sb = new StringBuilder();
-    }
+  static StringBuilder asLineString(StringBuilder sb, Throwable error) {
     sb.append("Exception : ").append(error.getMessage()).append("\n");
     for (StackTraceElement ste : error.getStackTrace()) {
       sb.append("    ").append(ste.toString()).append("\n");
