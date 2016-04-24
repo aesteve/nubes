@@ -21,13 +21,13 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
 
   protected final Method method;
   protected final Object instance;
+  protected final boolean hasNext;
+  protected final BiConsumer<RoutingContext, T> returnHandler;
+  protected final boolean returnsSomething;
   private final Config config;
   private final Parameter[] parameters;
   protected boolean usesRoutingContext;
   protected boolean usesHttpResponse;
-  protected final boolean hasNext;
-  protected final BiConsumer<RoutingContext, T> returnHandler;
-  protected final boolean returnsSomething;
 
   protected AbstractMethodInvocationHandler(Object instance, Method method, Config config, boolean hasNext, BiConsumer<RoutingContext, T> returnHandler) {
     this.method = method;
