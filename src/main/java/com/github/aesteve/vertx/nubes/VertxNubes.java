@@ -63,6 +63,7 @@ import static com.github.aesteve.vertx.nubes.utils.async.AsyncUtils.completeOrFa
 
 public class VertxNubes {
 
+  public static final int CLEAN_HISTORY_DELAY = 60000;
   protected final Config config;
   protected final Vertx vertx;
 
@@ -75,8 +76,6 @@ public class VertxNubes {
   private final List<String> deploymentIds;
 
   /**
-   * TODO check config
-   *
    * @param vertx
    */
   public VertxNubes(Vertx vertx, JsonObject json) {
@@ -129,7 +128,7 @@ public class VertxNubes {
         serviceRegistry::startAll,
         fixtureLoader::setUp,
         res -> {
-          vertx.setPeriodic(60000, this::cleanHistoryMap);
+          vertx.setPeriodic(CLEAN_HISTORY_DELAY, this::cleanHistoryMap);
           handler.handle(Future.succeededFuture(router));
         });
     vertFutures.start();
@@ -297,12 +296,12 @@ public class VertxNubes {
 
   private Predicate<String> clientsWithNoAccessPredicate(LocalMap<String, ClientAccesses> rateLimitations) {
     RateLimit rateLimit = config.getRateLimit();
-    return (clientIp -> {
+    return clientIp -> {
       ClientAccesses accesses = rateLimitations.get(clientIp);
       long keepAfter = rateLimit.getTimeUnit().toMillis(rateLimit.getValue());
       accesses.clearHistory(keepAfter);
       return accesses.noAccess();
-    });
+    };
   }
 
   private void loadResourceBundle(Locale loc) {

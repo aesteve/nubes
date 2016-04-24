@@ -26,7 +26,7 @@ public class CheckTokenHandler extends AuthHandlerImpl {
     try {
       apiToken = parseApiToken(context.request());
     } catch (BadRequestException bre) {
-      context.fail(400);
+      context.fail(bre);
       return;
     }
     if (apiToken == null) {
