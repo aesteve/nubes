@@ -9,7 +9,6 @@ import com.github.aesteve.vertx.nubes.annotations.cookies.Cookies;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.annotations.mixins.Throttled;
 import com.github.aesteve.vertx.nubes.annotations.routing.Redirect;
-import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.context.ClientAccesses;
 import com.github.aesteve.vertx.nubes.context.PaginationContext;
 import com.github.aesteve.vertx.nubes.context.RateLimit;
