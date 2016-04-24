@@ -8,7 +8,7 @@ import io.vertx.core.Vertx;
 import mock.domains.Dog;
 import mock.services.DogService;
 
-public class DogFixture extends Fixture {
+public class DogFixture implements Fixture {
 
   @Service(TestVerticle.DOG_SERVICE_NAME)
   private DogService dogs;
