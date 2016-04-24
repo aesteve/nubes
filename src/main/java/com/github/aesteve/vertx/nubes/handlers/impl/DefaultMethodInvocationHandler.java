@@ -32,7 +32,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
     Object[] parameters;
     try {
       parameters = getParameters(routingContext);
-    } catch (WrongParameterException e) {
+    } catch (WrongParameterException e) { //NOSONAR
       DefaultErrorHandler.badRequest(routingContext, e.getMessage());
       return;
     }
@@ -59,7 +59,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
     try {
       response.setStatusCode(204);
       response.end();
-    } catch (IllegalStateException ise) {
+    } catch (IllegalStateException ise) { //NOSONAR
       // do not log for the user, this means the response has already been written
       // that'd mean something is wrong with the **framework** not users' code
       routingContext.next();

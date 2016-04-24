@@ -38,7 +38,7 @@ public class RequestBodyParamInjector implements AnnotatedParamInjector<RequestB
     }
     try {
       return marshaller.unmarshallPayload(body, resultClass);
-    } catch (Exception e) {
+    } catch (Exception e) { //NOSONAR
       // not logged, since it could lead to vulnerabilities (generating huge logs + overhead simply by sending bad payloads)
       context.fail(400);
       return null;
