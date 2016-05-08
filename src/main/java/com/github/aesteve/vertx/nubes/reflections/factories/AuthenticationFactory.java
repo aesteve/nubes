@@ -6,12 +6,13 @@ import com.github.aesteve.vertx.nubes.auth.AuthMethod;
 import com.github.aesteve.vertx.nubes.handlers.impl.CheckTokenHandler;
 import io.vertx.core.Handler;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BasicAuthHandler;
 import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.ext.web.handler.RedirectAuthHandler;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -24,9 +25,9 @@ public class AuthenticationFactory {
 
   public AuthenticationFactory(Config config) {
     this.config = config;
-    authHandlers = new HashMap<>();
+    authHandlers = new EnumMap<>(AuthMethod.class);
     authHandlers.put(BASIC, BasicAuthHandler::create);
-    authHandlers.put(JWT, JWTAuthHandler::create);
+    authHandlers.put(JWT, auth -> JWTAuthHandler.create((JWTAuth)config.getAuthProvider()));
     authHandlers.put(API_TOKEN, CheckTokenHandler::new);
   }
 
