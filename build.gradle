@@ -13,7 +13,6 @@ group = 'com.github.aesteve'
 version = '2.0-SNAPSHOT'
 
 repositories {
-  mavenLocal()
   mavenCentral()
   maven {
     url = 'https://oss.sonatype.org/content/repositories/snapshots/'
