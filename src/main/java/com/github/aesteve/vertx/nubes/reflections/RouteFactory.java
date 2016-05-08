@@ -48,6 +48,7 @@ public class RouteFactory implements HandlerFactory {
     returnHandlers.put(File.class, (context, res) -> FileResolver.resolve(context, (String) res));
   }
 
+  @Override
   public void createHandlers() {
     List<MVCRoute> routes = extractRoutesFromControllers();
     routes.stream().filter(MVCRoute::isEnabled).forEach(route -> route.attachHandlersToRouter(router));

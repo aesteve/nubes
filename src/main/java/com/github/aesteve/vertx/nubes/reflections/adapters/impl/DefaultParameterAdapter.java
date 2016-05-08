@@ -25,6 +25,7 @@ public class DefaultParameterAdapter implements ParameterAdapter<Object> {
   }
 
   @SuppressWarnings("unchecked")
+  @Override
   public Object adaptParam(String value, Class<?> parameterClass) {
     if (value == null) {
       return null;
@@ -38,8 +39,9 @@ public class DefaultParameterAdapter implements ParameterAdapter<Object> {
     return null;
   }
 
+  @Override
   public Object adaptParams(MultiMap params, Class<?> parameterClass) {
-    Object instance = null;
+    Object instance;
     try {
       instance = parameterClass.newInstance();
       Field[] fields = parameterClass.getDeclaredFields();

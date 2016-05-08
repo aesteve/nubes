@@ -5,6 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public abstract class AfterProcessor extends NoopAfterAllProcessor implements Processor {
 
+  @Override
   public void preHandle(RoutingContext context) {
     context.next();
   }

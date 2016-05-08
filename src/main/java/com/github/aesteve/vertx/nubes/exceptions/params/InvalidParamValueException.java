@@ -11,6 +11,7 @@ public class InvalidParamValueException extends WrongParameterException {
     this.paramValue = paramValue;
   }
 
+  @Override
   public String getMessage() {
     if (type == null && paramName == null && paramValue == null) {
       return "Some request of form parameter has an invalid value";

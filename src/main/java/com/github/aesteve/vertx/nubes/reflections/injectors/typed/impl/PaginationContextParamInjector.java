@@ -5,6 +5,7 @@ import com.github.aesteve.vertx.nubes.reflections.injectors.typed.ContextBasedPa
 
 public class PaginationContextParamInjector extends ContextBasedParamInjector<PaginationContext> {
 
+  @Override
   protected String dataAttr() {
     return PaginationContext.DATA_ATTR;
   }

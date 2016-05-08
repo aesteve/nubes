@@ -22,6 +22,7 @@ public class SocketFactory implements HandlerFactory {
     this.config = config;
   }
 
+  @Override
   public void createHandlers() {
     config.forEachControllerPackage(controllerPackage -> {
       Reflections reflections = new Reflections(controllerPackage);
