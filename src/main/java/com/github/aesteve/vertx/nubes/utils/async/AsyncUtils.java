@@ -4,22 +4,19 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AsyncUtils {
+public interface AsyncUtils {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AsyncUtils.class);
-
-  public static <T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
+  static <T> Handler<AsyncResult<T>> completeFinally(Future<T> fut) {
     return (res -> fut.complete());
   }
 
-  public static <T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {
+  static <T> Handler<AsyncResult<T>> completeOrFail(Future<T> fut) {
     return res -> {
       if (res.failed()) {
         fut.fail(res.cause());
@@ -29,7 +26,7 @@ public class AsyncUtils {
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> ignoreResult(Future<Void> future) {
+  static <T> Handler<AsyncResult<T>> ignoreResult(Future<Void> future) {
     return res -> {
       if (res.failed()) {
         future.fail(res.cause());
@@ -39,7 +36,7 @@ public class AsyncUtils {
     };
   }
 
-  public static <T> AsyncResult<Void> withoutResult(AsyncResult<T> res) {
+  static <T> AsyncResult<Void> withoutResult(AsyncResult<T> res) {
     if (res.failed()) {
       return Future.failedFuture(res.cause());
     } else {
@@ -47,7 +44,7 @@ public class AsyncUtils {
     }
   }
 
-  public static <T> Handler<AsyncResult<T>> onSuccessOnly(Future<Void> future, Handler<T> handler) {
+  static <T> Handler<AsyncResult<T>> onSuccessOnly(Future<Void> future, Handler<T> handler) {
     return res -> {
       if (res.failed()) {
         future.fail(res.cause());
@@ -57,27 +54,25 @@ public class AsyncUtils {
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> onSuccessOnly(NoArgHandler block) {
+  static <T> Handler<AsyncResult<T>> onSuccessOnly(NoArgHandler block) {
     return res -> {
       if (res.failed()) {
-        LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
         return;
       }
       block.handle();
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> onSuccessOnly(Handler<T> handler) {
+  static <T> Handler<AsyncResult<T>> onSuccessOnly(Handler<T> handler) {
     return res -> {
       if (res.failed()) {
-        LOG.warn("Exception has been swallowed by AsyncUtils.onSuccess", res.cause());
         return;
       }
       handler.handle(res.result());
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> onFailureOnly(Handler<T> handler) {
+  static <T> Handler<AsyncResult<T>> onFailureOnly(Handler<T> handler) {
     return res -> {
       if (res.failed()) {
         handler.handle(res.result());
@@ -85,7 +80,7 @@ public class AsyncUtils {
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> nextOrFail(RoutingContext context) {
+  static <T> Handler<AsyncResult<T>> nextOrFail(RoutingContext context) {
     return res -> {
       if (res.failed()) {
         context.fail(res.cause());
@@ -95,7 +90,7 @@ public class AsyncUtils {
     };
   }
 
-  public static <T> Handler<AsyncResult<T>> failOr(RoutingContext context, Handler<AsyncResult<T>> handler) {
+  static <T> Handler<AsyncResult<T>> failOr(RoutingContext context, Handler<AsyncResult<T>> handler) {
     return res -> {
       if (res.failed()) {
         context.fail(res.cause());
@@ -105,7 +100,7 @@ public class AsyncUtils {
     };
   }
 
-  public static <T, U, V> Future<V> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<V>> nextHandler) {
+  static <T, U, V> Future<V> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<V>> nextHandler) {
     Future<V> nextFuture = Future.future();
     future.setHandler(res -> {
       if (res.failed()) {
@@ -117,7 +112,7 @@ public class AsyncUtils {
     return nextFuture;
   }
 
-  public static <T> void chainHandlers(Handler<AsyncResult<T>> global, List<Handler<Future<T>>> handlers) {
+  static <T> void chainHandlers(Handler<AsyncResult<T>> global, List<Handler<Future<T>>> handlers) {
     if (handlers == null || handlers.isEmpty()) {
       global.handle(Future.succeededFuture());
       return;
@@ -143,7 +138,7 @@ public class AsyncUtils {
     handlers.get(0).handle(firstFuture);
   }
 
-  public static <T> void chainHandlers(Future<T> global, List<Handler<Future<T>>> handlers) {
+  static <T> void chainHandlers(Future<T> global, List<Handler<Future<T>>> handlers) {
     chainHandlers(res -> {
       if (res.failed()) {
         global.fail(res.cause());
@@ -153,7 +148,7 @@ public class AsyncUtils {
     }, handlers);
   }
 
-  public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, List<Handler<Future<Void>>> list) {
+  static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, List<Handler<Future<Void>>> list) {
     List<Future<Void>> futures = new ArrayList<>(list.size());
     int i = 0;
     Future<Void> firstFuture = Future.future();
@@ -174,12 +169,12 @@ public class AsyncUtils {
 
   @SafeVarargs
   // or we're screwed...
-  public static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>>... handlers) {
+  static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>>... handlers) {
     List<Handler<Future<Void>>> list = Arrays.asList(handlers);
     return AsyncUtils.chainOnSuccess(globalHandler, future, list);
   }
 
-  public static <T> Handler<AsyncResult<T>> logIfFailed(final String msg, final Logger log) {
+  static <T> Handler<AsyncResult<T>> logIfFailed(final String msg, final Logger log) {
     return res -> {
       if (res.failed()) {
         if (msg != null) {
@@ -190,4 +185,5 @@ public class AsyncUtils {
       }
     };
   }
+
 }
