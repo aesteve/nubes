@@ -94,10 +94,6 @@ public class MVCRoute {
     returnHandler = handler;
   }
 
-  public void attachHandler(Handler<RoutingContext> handler) {
-    handlers.add(handler);
-  }
-
   public void attachHandlers(Set<Handler<RoutingContext>> newHandlers) {
     handlers.addAll(newHandlers);
   }
@@ -130,17 +126,17 @@ public class MVCRoute {
     } else if (usesSession) {
       router.route(httpMethod, path).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
     }
-    handlers.forEach(handler -> {
-      router.route(httpMethod, path).handler(handler);
-    });
+    handlers.forEach(handler ->
+      router.route(httpMethod, path).handler(handler)
+    );
     attachPreProcessingHandlers(router);
-    boolean hasPostProcessors = redirectRoute != null || postInterceptor != null || afterFilters.size() > 0 || processors.size() > 0;
+    boolean hasPostProcessors = redirectRoute != null || postInterceptor != null || !afterFilters.isEmpty()|| !processors.isEmpty();
     setHandler(router, mainHandler, hasPostProcessors);
     if (redirectRoute != null) {
       // intercepted -> redirected => do not call post processing handlers
-      router.route(httpMethod, path).handler(ctx -> {
-        ctx.reroute(redirectRoute.method(), redirectRoute.path());
-      });
+      router.route(httpMethod, path).handler(ctx ->
+        ctx.reroute(redirectRoute.method(), redirectRoute.path())
+      );
     }
     attachPostProcessingHandlers(router);
   }
@@ -164,7 +160,7 @@ public class MVCRoute {
       router.route(httpMethod, path).handler(postInterceptor);
     }
     int i = 0;
-    boolean afterFiltersHaveNext = processors.size() > 0;
+    boolean afterFiltersHaveNext = !processors.isEmpty();
     for (Filter filter : afterFilters) {
       boolean hasNext = afterFiltersHaveNext || i < afterFilters.size() - 1;
       setHandler(router, filter.method(), hasNext);
@@ -181,7 +177,6 @@ public class MVCRoute {
   private void attachAuthHandler(Router router, Vertx vertx) {
     final AuthProvider authProvider = config.getAuthProvider();
     router.route(httpMethod, path).handler(CookieHandler.create());
-    // router.route(httpMethodFinal, pathFinal).handler(BodyHandler.create());
     router.route(httpMethod, path).handler(UserSessionHandler.create(authProvider));
     router.route(httpMethod, path).handler(SessionHandler.create(LocalSessionStore.create(vertx)));
     router.route(httpMethod, path).handler(authHandler);
