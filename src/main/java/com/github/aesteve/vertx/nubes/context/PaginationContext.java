@@ -1,6 +1,5 @@
 package com.github.aesteve.vertx.nubes.context;
 
-import com.github.aesteve.vertx.nubes.exceptions.params.MandatoryParamException;
 import com.github.aesteve.vertx.nubes.handlers.impl.DefaultErrorHandler;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -8,6 +7,8 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Reflects the pagination state for a RoutingContext (request parameters)
@@ -21,14 +22,10 @@ public class PaginationContext {
 
   public static final String DATA_ATTR = "paginationContext";
 
-  // TODO : (to make it a generic service)
-  // That's some configuration stuff, should not be found in an instanciated object (reflecting one request)
-  // -> move it in config or let the user define it (set/get)
-  // if it changes, clients are broken...
-  public static final String CURRENT_PAGE_QUERY_PARAM = "page";
-  public static final String PER_PAGE_QUERY_PARAM = "perPage";
-  public static final Integer DEFAULT_PER_PAGE = 30;
-  public static final Integer MAX_PER_PAGE = 100;
+  private static final String CURRENT_PAGE_QUERY_PARAM = "page";
+  private static final String PER_PAGE_QUERY_PARAM = "perPage";
+  private static final Integer DEFAULT_PER_PAGE = 30;
+  private static final Integer MAX_PER_PAGE = 100;
 
   private Integer pageAsked = 1;
   private Integer itemsPerPage = DEFAULT_PER_PAGE;
@@ -38,10 +35,8 @@ public class PaginationContext {
    * Prefer using fromRoutingContext but can be instanciated directly
    * (for static page generation for instance)
    *
-   * @param pageAsked
-   * @param itemsPerPage
    */
-  public PaginationContext(Integer pageAsked, Integer itemsPerPage) {
+  private PaginationContext(Integer pageAsked, Integer itemsPerPage) {
     if (pageAsked != null)
       this.pageAsked = pageAsked;
     if (itemsPerPage != null)
@@ -51,9 +46,6 @@ public class PaginationContext {
   /**
    * The preferred way to create a PaginationContext
    *
-   * @param context
-   * @return
-   * @throws MandatoryParamException
    */
   public static PaginationContext fromContext(RoutingContext context) {
     HttpServerRequest request = context.request();
@@ -79,15 +71,15 @@ public class PaginationContext {
 
   public String buildLinkHeader(HttpServerRequest request) {
     List<String> links = getNavLinks(request);
-    if (links == null) {
+    if (links.isEmpty()) {
       return null;
     }
     return String.join(", ", links);
   }
 
-  public List<String> getNavLinks(HttpServerRequest request) {
+  private List<String> getNavLinks(HttpServerRequest request) {
     if (totalPages == null) {
-      return null;
+      return emptyList();
     }
     List<String> links = new ArrayList<>();
     if (pageAsked > 1) {
@@ -101,7 +93,6 @@ public class PaginationContext {
     return links;
   }
 
-  // FIXME : refactor that in a cleaner way once I'm not tired as hell
   private String pageUrl(HttpServerRequest request, int pageNum, String rel) {
     StringBuilder sb = new StringBuilder("<");
     String url = request.absoluteURI();
@@ -109,7 +100,7 @@ public class PaginationContext {
       url += "?" + CURRENT_PAGE_QUERY_PARAM + "=" + pageNum;
       url += "&" + PER_PAGE_QUERY_PARAM + "=" + itemsPerPage;
     } else {
-      if (url.indexOf(CURRENT_PAGE_QUERY_PARAM + "=") > url.indexOf("?")) {
+      if (url.indexOf(CURRENT_PAGE_QUERY_PARAM + "=") > url.indexOf('?')) {
         url = url.replaceAll(CURRENT_PAGE_QUERY_PARAM + "=([^&]+)", CURRENT_PAGE_QUERY_PARAM + "=" + pageNum);
       } else {
         url += "&" + CURRENT_PAGE_QUERY_PARAM + "=" + pageNum;
