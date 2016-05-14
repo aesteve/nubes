@@ -139,10 +139,9 @@ public class VertxNubes {
 
   public void stop(Handler<AsyncResult<Void>> handler) {
     router.clear();
-    final ServiceRegistry serviceRegistry = config.getServiceRegistry();
     MultipleFutures<Void> futures = new MultipleFutures<>(handler);
     futures.add(fixtureLoader::tearDown);
-    futures.add(serviceRegistry::stopAll);
+    futures.add(config.getServiceRegistry()::stopAll);
     futures.add(this::stopDeployments);
     futures.start();
   }
