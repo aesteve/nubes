@@ -13,4 +13,5 @@ public interface ViewResolver {
   static String getViewName(RoutingContext context) {
     return context.get(CONTEXT_TPL_NAME);
   }
+
 }

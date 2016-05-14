@@ -5,6 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.List;
 import java.util.Locale;
 
+@FunctionalInterface
 public interface LocaleResolver {
   Locale resolve(RoutingContext context, List<Locale> availableLocales);
 }

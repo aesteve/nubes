@@ -1,6 +1,6 @@
 package com.github.aesteve.vertx.nubes.exceptions.http;
 
-public abstract class HttpException extends Throwable {
+public abstract class HttpException extends Exception {
 
   private static final long serialVersionUID = 7595158960102835228L;
 

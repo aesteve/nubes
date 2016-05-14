@@ -5,12 +5,13 @@ import io.vertx.ext.web.handler.sockjs.BridgeEventType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
 
-class BridgeEventFactory {
+abstract class BridgeEventFactory {
 
   private static final Map<Class<? extends Annotation>, BridgeEventType> types = new HashMap<>();
 
@@ -24,19 +25,28 @@ class BridgeEventFactory {
     types.put(UNREGISTER.class, UNREGISTER);
   }
 
-  public static Map<BridgeEventType, Method> createFromController(Class<?> controller) {
-    Map<BridgeEventType, Method> map = new HashMap<>();
+  static Map<BridgeEventType, Method> createFromController(Class<?> controller) {
+    Map<BridgeEventType, Method> map = new EnumMap<>(BridgeEventType.class);
     for (Method method : controller.getMethods()) {
-      for (Annotation annot : method.getDeclaredAnnotations()) {
-        BridgeEventType type = types.get(annot.annotationType());
-        if (type != null) {
-          if (map.get(type) != null) {
-            throw new IllegalArgumentException("You cannot register many methods on the same BridgeEvent.Type");
-          }
-          map.put(type, method);
-        }
-      }
+      createFromMethod(map, method);
     }
     return map;
   }
+
+  private static void createFromMethod(Map<BridgeEventType, Method> map, Method method) {
+    for (Annotation annot : method.getDeclaredAnnotations()) {
+      createFromAnnotation(map, method, annot);
+    }
+  }
+
+  private static void createFromAnnotation(Map<BridgeEventType, Method> map, Method method, Annotation annot) {
+    BridgeEventType type = types.get(annot.annotationType());
+    if (type != null && map.get(type) != null) {
+      throw new IllegalArgumentException("You cannot register many methods on the same BridgeEvent.Type");
+    }
+    else {
+      map.put(type, method);
+    }
+  }
+
 }

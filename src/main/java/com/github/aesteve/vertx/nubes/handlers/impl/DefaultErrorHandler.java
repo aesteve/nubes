@@ -56,48 +56,56 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
     String contentType = ContentTypeProcessor.getContentType(context);
     PayloadMarshaller marshaller = marshallers.get(contentType);
     if (cause != null) {
-      int statusCode = 500;
-      String statusMsg = errorMessages.get(500);
-      if (cause instanceof HttpException) {
-        HttpException he = (HttpException) cause;
-        statusCode = he.status;
-        statusMsg = he.getMessage();
-      } else if (cause instanceof ValidationException) {
-        ValidationException he = (ValidationException) cause;
-        statusCode = 400;
-        statusMsg = he.getValidationMsg();
-      } else {
-        LOG.error("Error caught by default error handler", cause);
-      }
-      response.setStatusCode(statusCode);
-      if (isView(context)) {
-        String tplFile = errorTemplates.get(statusCode);
-        renderViewError(tplFile, context, cause);
-      } else {
-        if (marshaller != null) {
-          response.putHeader(CONTENT_TYPE, contentType);
-          if (statusCode == 500) {
-            response.end(marshaller.marshallUnexpectedError(cause, config.isDisplayErrors()));
-          } else {
-            response.end(marshaller.marshallHttpStatus(statusCode, statusMsg));
-          }
-        } else {
-          response.end(statusMsg);
-        }
-      }
+      handleErrorWithCause(context, cause, response, contentType, marshaller);
     } else {
-      int status = context.statusCode();
-      response.setStatusCode(status);
-      String msg = errorMessages.getOrDefault(status, "Internal server error");
-      if (context.get(ERROR_DETAILS) != null) {
-        msg = context.get(ERROR_DETAILS);
+      handleHttpError(context, response, marshaller);
+    }
+  }
+
+  private void handleHttpError(RoutingContext context, HttpServerResponse response, PayloadMarshaller marshaller) {
+    final int status = context.statusCode();
+    response.setStatusCode(status);
+    String msg = errorMessages.getOrDefault(status, "Internal server error");
+    if (context.get(ERROR_DETAILS) != null) {
+      msg = context.get(ERROR_DETAILS);
+    }
+    if (marshaller != null) {
+      response.end(marshaller.marshallHttpStatus(status, msg));
+    } else {
+      if (!response.ended()) {
+        response.end(msg);
       }
-      if (marshaller != null) {
-        response.end(marshaller.marshallHttpStatus(status, msg));
+    }
+  }
+
+  private void handleErrorWithCause(RoutingContext context, Throwable cause, HttpServerResponse response, String contentType, PayloadMarshaller marshaller) {
+    int statusCode = 500;
+    String statusMsg = errorMessages.get(500);
+    if (cause instanceof HttpException) {
+      HttpException he = (HttpException) cause;
+      statusCode = he.status;
+      statusMsg = he.getMessage();
+    } else if (cause instanceof ValidationException) {
+      ValidationException he = (ValidationException) cause;
+      statusCode = 400;
+      statusMsg = he.getValidationMsg();
+    } else {
+      LOG.error("Error caught by default error handler", cause);
+    }
+    response.setStatusCode(statusCode);
+    if (isView(context)) {
+      String tplFile = errorTemplates.get(statusCode);
+      renderViewError(tplFile, context, cause);
+    } else {
+      if (marshaller == null) {
+        response.end(statusMsg);
+        return;
+      }
+      response.putHeader(CONTENT_TYPE, contentType);
+      if (statusCode == 500) {
+        response.end(marshaller.marshallUnexpectedError(cause, config.isDisplayErrors()));
       } else {
-        if (!response.ended()) {
-          response.end(msg);
-        }
+        response.end(marshaller.marshallHttpStatus(statusCode, statusMsg));
       }
     }
   }

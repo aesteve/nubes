@@ -1,5 +1,6 @@
 package com.github.aesteve.vertx.nubes.marshallers.impl;
 
+import com.github.aesteve.vertx.nubes.exceptions.MarshallingException;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
 import io.vertx.core.VertxException;
@@ -38,7 +39,7 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
   public <T> T unmarshallPayload(String body, Class<T> clazz) {
     try {
       return unmarshaller.unmarshal(loadXMLFromString(body), clazz).getValue();
-    } catch (ParserConfigurationException | IOException | SAXException | JAXBException e) {
+    } catch (MarshallingException | JAXBException e) {
       throw new VertxException(e);
     }
   }
@@ -54,11 +55,19 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
     return writer.toString();
   }
 
-  public static Document loadXMLFromString(String xml) throws ParserConfigurationException, IOException, SAXException {
+  public static Document loadXMLFromString(String xml) throws MarshallingException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    InputSource is = new InputSource(new StringReader(xml));
-    return builder.parse(is);
+    DocumentBuilder builder;
+    try {
+      builder = factory.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      throw new MarshallingException(e);
+    }
+    try (StringReader reader = new StringReader(xml)){
+      return builder.parse(new InputSource(reader));
+    } catch (SAXException | IOException e) {
+      throw new MarshallingException(e);
+    }
   }
 
   @Override
@@ -72,13 +81,14 @@ public class JAXBPayloadMarshaller implements PayloadMarshaller {
   }
 
   private static String marshallError(int status, Throwable error, String message) {
+    String errorMsg = message;
     if (message == null && error != null) {
-      message = StackTracePrinter.asLineString(new StringBuilder(), error).toString();
+      errorMsg = StackTracePrinter.asLineString(new StringBuilder(), error).toString();
     }
     return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + "<" + ERROR_KEY + ">\n" +
-        "\t<" + ERROR_CODE_KEY + ">500</" + ERROR_CODE_KEY + ">\n" +
+        "\t<" + ERROR_CODE_KEY + ">" + status + "</" + ERROR_CODE_KEY + ">\n" +
         "\t<" + ERROR_MESSAGE_KEY + ">\n<![CDATA[" +
-        message +
+        errorMsg +
         "]]>\n\t</" + ERROR_MESSAGE_KEY + ">\n" +
         "</" + ERROR_KEY + ">";
   }

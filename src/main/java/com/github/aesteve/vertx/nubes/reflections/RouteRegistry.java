@@ -7,15 +7,14 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * FIXME : two methods could have the same name but not the same declaration...
- */
 public class RouteRegistry {
+
+  private static final String SEP = "::";
 
   private final Map<String, MVCRoute> discovered;
   private final Map<String, MVCRoute> waiting;
 
-  public RouteRegistry() {
+  RouteRegistry() {
     discovered = new HashMap<>();
     waiting = new HashMap<>();
   }
@@ -41,10 +40,6 @@ public class RouteRegistry {
     return discovered.get(buildKey(controller, handler));
   }
 
-  public MVCRoute get(Class<?> controller, String methodName) {
-    return discovered.get(buildKey(controller, methodName));
-  }
-
   public boolean exists(Class<?> controller, Method handler) {
     return discovered.get(buildKey(controller, handler)) != null;
   }
@@ -53,15 +48,13 @@ public class RouteRegistry {
     return discovered.get(buildKey(annotation));
   }
 
-  private static String buildKey(Class<?> controller, String methodName) {
-    return controller.getName() + "::" + methodName;
-  }
-
   private static String buildKey(Class<?> controller, Method handler) {
-    return buildKey(controller, handler.getName());
+    // Either we're relying on user to name his methods right or have to put the parameter in the "Forward" annotation
+    // in this case : params.forEach(-> add to StringJoiner)
+    return controller.getName() + SEP + handler.getName();
   }
 
   private static String buildKey(Forward annotation) {
-    return buildKey(annotation.controller(), annotation.action());
+    return annotation.controller().getName() + SEP + annotation.action();
   }
 }

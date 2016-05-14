@@ -24,10 +24,8 @@ public class HeaderParamInjector implements AnnotatedParamInjector<Header> {
       headerName = paramName;
     }
     String headerValue = context.request().getHeader(headerName);
-    if (headerValue == null) {
-      if (annotation.mandatory()) {
-        throw new MandatoryParamException(ParamType.HEADER, headerName);
-      }
+    if (headerValue == null && annotation.mandatory()) {
+      throw new MandatoryParamException(ParamType.HEADER, headerName);
     }
     try {
       return registry.adaptParam(headerValue, resultClass);

@@ -9,9 +9,10 @@ import io.vertx.core.Vertx;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
-import java.util.*;
-
-import static java.lang.Integer.compare;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class FixtureLoader {
 
@@ -19,8 +20,6 @@ public class FixtureLoader {
   private final Config config;
   private final ServiceRegistry serviceRegistry;
   private final Set<Fixture> fixtures;
-
-  public Comparator<? extends Fixture> fixtureComparator = (f1, f2) -> compare(f1.executionOrder(), f2.executionOrder());
 
   public FixtureLoader(Vertx vertx, Config config, ServiceRegistry serviceRegistry) {
     this.vertx = vertx;

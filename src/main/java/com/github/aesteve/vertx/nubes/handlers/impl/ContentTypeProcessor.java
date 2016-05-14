@@ -24,14 +24,13 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
 
   @Override
   public void preHandle(RoutingContext context) {
-    List<String> contentTypes = Arrays.asList(annotation.value());
     String accept = context.request().getHeader(ACCEPT.toString());
     if (accept == null) {
       context.fail(406);
       return;
     }
     List<String> acceptableTypes = Utils.getSortedAcceptableMimeTypes(accept);
-    Optional<String> bestType = acceptableTypes.stream().filter(contentTypes::contains).findFirst();
+    Optional<String> bestType = acceptableTypes.stream().filter(Arrays.asList(annotation.value())::contains).findFirst();
     if (bestType.isPresent()) {
       ContentTypeProcessor.setContentType(context, bestType.get());
       context.next();

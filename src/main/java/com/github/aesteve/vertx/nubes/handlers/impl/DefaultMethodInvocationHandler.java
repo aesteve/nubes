@@ -37,20 +37,24 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
       return;
     }
     try {
-      @SuppressWarnings("unchecked")
-      T returned = (T) method.invoke(instance, parameters);
-      if (returnsSomething) {
-        handleMethodReturn(routingContext, returned);
-      }
-      if (!usesRoutingContext && hasNext) { // cannot call context.next(), assume the method is sync
-        routingContext.next();
-      }
-      if (!usesRoutingContext && !usesHttpResponse && !hasNext) {
-        sendResponse(routingContext);
-      }
+      handleInvokation(routingContext, parameters);
     } catch (InvocationTargetException | IllegalAccessException ite) {
       LOG.error(ite);
       routingContext.fail(ite.getCause());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleInvokation(RoutingContext routingContext, Object[] parameters) throws IllegalAccessException, InvocationTargetException {
+    final T returned = (T) method.invoke(instance, parameters);
+    if (returnsSomething) {
+      handleMethodReturn(routingContext, returned);
+    }
+    if (!usesRoutingContext && hasNext) { // cannot call context.next(), assume the method is sync
+      routingContext.next();
+    }
+    if (!usesRoutingContext && !usesHttpResponse && !hasNext) {
+      sendResponse(routingContext);
     }
   }
 
@@ -67,7 +71,7 @@ public class DefaultMethodInvocationHandler<T> extends AbstractMethodInvocationH
   }
 
   private void handleMethodReturn(RoutingContext routingContext, T returned) {
-    boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;
+    final boolean contentTypeSet = routingContext.get(ContentTypeProcessor.BEST_CONTENT_TYPE) != null;
     if (returnHandler != null) {
       returnHandler.accept(routingContext, returned);
     } else if (hasNext && contentTypeSet) {
