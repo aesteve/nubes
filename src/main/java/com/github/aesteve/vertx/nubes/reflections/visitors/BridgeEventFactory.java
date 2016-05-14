@@ -43,8 +43,7 @@ abstract class BridgeEventFactory {
     BridgeEventType type = types.get(annot.annotationType());
     if (type != null && map.get(type) != null) {
       throw new IllegalArgumentException("You cannot register many methods on the same BridgeEvent.Type");
-    }
-    else {
+    } else if (type != null ){
       map.put(type, method);
     }
   }
