@@ -75,10 +75,10 @@ public abstract class AbstractMethodInvocationHandler<T> implements Handler<Rout
     }
     final Annotation annotation = annotations[0]; // rely on annotation
     final AnnotatedParamInjectorRegistry annotatedInjectors = config.getAnnotatedInjectors();
-    final AnnotatedParamInjector injector = (AnnotatedParamInjector) annotatedInjectors.getInjector(annotation.annotationType());
-    if (injector != null) {
-      return injector.resolve(context, annotation, paramName, parameterClass);
+    final AnnotatedParamInjector injector = annotatedInjectors.getInjector(annotation.annotationType());
+    if (injector == null) {
+      return null;
     }
-    return null;
+    return injector.resolve(context, annotation, paramName, parameterClass);
   }
 }
