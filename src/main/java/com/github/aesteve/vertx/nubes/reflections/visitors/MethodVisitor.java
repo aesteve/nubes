@@ -156,13 +156,17 @@ class MethodVisitor<T> {
       if (handler != null) {
         paramsHandlers.add(handler);
       }
-      Annotation[] paramAnnotations = p.getAnnotations();
-      if (paramAnnotations != null) {
-        for (Annotation annotation : paramAnnotations) {
-          Set<Handler<RoutingContext>> paramHandler = config.getAnnotationHandler(annotation.annotationType());
-          if (paramHandler != null) {
-            paramsHandlers.addAll(paramHandler);
-          }
+      createParamAnnotationHandlers(p);
+    }
+  }
+
+  private void createParamAnnotationHandlers(Parameter p) {
+    Annotation[] paramAnnotations = p.getAnnotations();
+    if (paramAnnotations != null) {
+      for (Annotation annotation : paramAnnotations) {
+        Set<Handler<RoutingContext>> paramHandler = config.getAnnotationHandler(annotation.annotationType());
+        if (paramHandler != null) {
+          paramsHandlers.addAll(paramHandler);
         }
       }
     }
