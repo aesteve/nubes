@@ -15,6 +15,8 @@ abstract class BridgeEventFactory {
 
   private static final Map<Class<? extends Annotation>, BridgeEventType> types = new HashMap<>();
 
+  private BridgeEventFactory() {}
+
   static {
     types.put(PUBLISH.class, PUBLISH);
     types.put(RECEIVE.class, RECEIVE);
