@@ -21,7 +21,7 @@ public class TemplateEngineManager implements TemplateHandler {
   }
 
   public TemplateEngine fromViewName(String tplName) {
-    int pointIdx = tplName.lastIndexOf(".");
+    int pointIdx = tplName.lastIndexOf('.');
     String extension = tplName.substring(pointIdx + 1, tplName.length());
     return config.getTemplateEngines().get(extension);
   }
@@ -45,9 +45,10 @@ public class TemplateEngineManager implements TemplateHandler {
   }
 
   private static String normalize(String dir) {
+    String normalizedDir = dir;
     if (!dir.endsWith("/")) {
-      dir += "/";
+      normalizedDir += "/";
     }
-    return dir;
+    return normalizedDir;
   }
 }
