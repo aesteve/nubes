@@ -21,7 +21,7 @@ import com.github.aesteve.vertx.nubes.i18n.LocaleResolverRegistry;
 import com.github.aesteve.vertx.nubes.i18n.impl.AcceptLanguageLocaleResolver;
 import com.github.aesteve.vertx.nubes.marshallers.Payload;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
-import com.github.aesteve.vertx.nubes.marshallers.impl.BoonPayloadMarshaller;
+import com.github.aesteve.vertx.nubes.marshallers.impl.JacksonPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.JAXBPayloadMarshaller;
 import com.github.aesteve.vertx.nubes.marshallers.impl.PlainTextMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.AnnotVerticleFactory;
@@ -91,7 +91,7 @@ public class VertxNubes {
     registerAnnotationProcessor(View.class, new ViewProcessorFactory(templManager));
     registerAnnotationProcessor(File.class, new FileProcessorFactory());
     registerMarshaller("text/plain", new PlainTextMarshaller());
-    registerMarshaller("application/json", new BoonPayloadMarshaller());
+    registerMarshaller("application/json", new JacksonPayloadMarshaller());
     String domainPackage = config.getDomainPackage();
     if (domainPackage != null) {
       try {

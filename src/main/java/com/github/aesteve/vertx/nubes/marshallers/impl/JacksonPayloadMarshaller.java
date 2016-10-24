@@ -1,26 +1,24 @@
 package com.github.aesteve.vertx.nubes.marshallers.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.utils.StackTracePrinter;
+import io.vertx.core.VertxException;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.boon.json.JsonFactory;
-import org.boon.json.JsonSerializer;
-import org.boon.json.JsonSerializerFactory;
-import org.boon.json.ObjectMapper;
+
+import java.io.IOException;
 
 import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_CODE_KEY;
 import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_KEY;
 import static com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller.Constants.ERROR_MESSAGE_KEY;
 
-public class BoonPayloadMarshaller implements PayloadMarshaller {
+public class JacksonPayloadMarshaller implements PayloadMarshaller {
 
-  protected final JsonSerializer serializer;
   protected final ObjectMapper mapper;
 
-  public BoonPayloadMarshaller() {
-    this.serializer = new JsonSerializerFactory().useAnnotations().create();
-    this.mapper = JsonFactory.create();
+  public JacksonPayloadMarshaller() {
+    this.mapper = new ObjectMapper();
   }
 
   @Override
@@ -31,7 +29,11 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
     } else if (clazz.equals(JsonArray.class)) {
       return (T) new JsonArray(body);
     }
-    return mapper.fromJson(body, clazz);
+    try {
+      return mapper.readValue(body, clazz);
+    } catch(IOException ioe) {
+      throw new VertxException(ioe);
+    }
   }
 
   @Override
@@ -41,7 +43,11 @@ public class BoonPayloadMarshaller implements PayloadMarshaller {
     } else if (payload instanceof JsonArray) {
       return payload.toString();
     }
-    return serializer.serialize(payload).toString();
+    try {
+      return mapper.writeValueAsString(payload);
+    } catch(IOException ioe) {
+      throw new VertxException(ioe);
+    }
   }
 
   @Override
