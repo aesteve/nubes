@@ -18,7 +18,7 @@ Indicates that this route is accessible by this http method.
 * Attributes : 
 	* value (mandatory) : the path this route is accessible from
 
-### `@AfterFilter`
+### `@BeforeFilter`
 
 A method which will be executed before every route defined in this controller. (see it as an pre-interceptor, or pre-filter).
 
@@ -26,7 +26,7 @@ A method which will be executed before every route defined in this controller. (
 * Attributes : 
 	* value : an Integer : the execution order of this filter (the smallest the first in execution order)
 
-### `@BeforeFilter`
+### `@AfterFilter`
 
 A method which will be executed after every route defined in this controller. (see it as a post-interceptor, or post-filter).
 
