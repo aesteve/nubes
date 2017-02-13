@@ -21,6 +21,7 @@ public class DefaultParameterAdapter implements ParameterAdapter<Object> {
     adapters.put(Long.class, Long::valueOf);
     adapters.put(Integer.class, Integer::valueOf);
     adapters.put(Float.class, Float::valueOf);
+    adapters.put(Boolean.class, Boolean::valueOf);
     adapters.put(Date.class, DateUtils.INSTANCE::parseIso8601);
   }
 

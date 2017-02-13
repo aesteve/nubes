@@ -58,7 +58,7 @@ public class ViewsTest extends VertxNubesTestBase {
   public void testDynamicSync(TestContext context) {
     Dog dog = TestVerticle.dogService.someDog();
     Async async = context.async();
-    client().getNow("/views/dynamic/sync?name=" + dog.getName() + "&breed=" + dog.getBreed(), response -> {
+    client().getNow("/views/dynamic/sync?name=" + dog.getName() + "&breed=" + dog.getBreed() + "&puppy=" + dog.isPuppy(), response -> {
       context.assertEquals(200, response.statusCode());
       response.bodyHandler(buffer -> {
         String result = buffer.toString("UTF-8");
