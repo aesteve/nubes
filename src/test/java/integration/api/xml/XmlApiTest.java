@@ -20,7 +20,7 @@ import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class XmlApiTest extends VertxNubesTestBase {
 
-	private final static String dogXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><dog><breed>Beagle</breed><name>Snoopy</name></dog>";
+	private final static String dogXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><dog><breed>Beagle</breed><name>Snoopy</name><puppy>true</puppy></dog>";
 
 	@Test
 	public void noContentType(TestContext context) {

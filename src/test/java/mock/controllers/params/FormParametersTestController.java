@@ -26,4 +26,10 @@ public class FormParametersTestController {
 	public void testParam(RoutingContext context, @Params Dog dog) {
 		context.response().end(dog.toString());
 	}
+
+	@GET("boolean")
+	@POST("boolean")
+	public void testParam(RoutingContext context, @Param Boolean value) {
+		context.response().end(Boolean.toString(value));
+	}
 }

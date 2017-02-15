@@ -18,6 +18,7 @@ public class XmlApiTestController {
 	@GET("dog")
 	public void sendDomainObject(Payload<Dog> payload) {
 		Dog snoopy = new Dog("Snoopy", "Beagle");
+		snoopy.setPuppy(true);
 		payload.set(snoopy);
 	}
 
