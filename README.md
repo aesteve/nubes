@@ -1,6 +1,11 @@
 ----------------
 Unfortunately, this project relies on an old version of Vert.x. Upgrading it to Vert.x 3.5 requires a lot of work, I am looking at it, but since it's a "weekend" project, it might take months. Sorry for the inconvenience. Obviously any kind of help would be greatly appreciated.
 Thank you for your comprehension.
+
+If you feel like you want to help, any pull request would be highly welcomed. You can also fork the project, and start working on your own stuff, with your own vision of what such an annotation framework would be to suit your needs. The license allows you to do so.
+
+You can start by forking the project, changing Vert.x dependency to 3.5 get it to compile (which requires some work) then run the tests (there's a pretty good code coverage) and start fixing stuff from there. That's probably the best way to help.
+
 ----------------
 
 # Vert.x Nubes
