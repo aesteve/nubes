@@ -129,7 +129,7 @@ public class Config {
           String dbName = json.getString("db-name");
           Objects.requireNonNull(dbName);
           JDBCClient client = JDBCClient.createShared(vertx, authProperties, dbName);
-          this.authProvider = JDBCAuth.create(client);
+          this.authProvider = JDBCAuth.create(vertx, client);
           break;
         default:
           LOG.warn("Unknown type of auth : " + auth + " . Ignoring.");

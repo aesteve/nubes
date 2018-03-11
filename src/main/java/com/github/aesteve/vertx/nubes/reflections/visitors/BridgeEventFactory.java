@@ -1,15 +1,13 @@
 package com.github.aesteve.vertx.nubes.reflections.visitors;
 
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.events.*;
-import io.vertx.ext.web.handler.sockjs.BridgeEventType;
+import io.vertx.ext.bridge.BridgeEventType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-
-import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
 
 abstract class BridgeEventFactory {
 
@@ -18,13 +16,13 @@ abstract class BridgeEventFactory {
   private BridgeEventFactory() {}
 
   static {
-    types.put(PUBLISH.class, PUBLISH);
-    types.put(RECEIVE.class, RECEIVE);
-    types.put(REGISTER.class, REGISTER);
-    types.put(SEND.class, SEND);
-    types.put(SOCKET_CLOSED.class, SOCKET_CLOSED);
-    types.put(SOCKET_CREATED.class, SOCKET_CREATED);
-    types.put(UNREGISTER.class, UNREGISTER);
+    types.put(PUBLISH.class, BridgeEventType.PUBLISH);
+    types.put(RECEIVE.class, BridgeEventType.RECEIVE);
+    types.put(REGISTER.class, BridgeEventType.REGISTER);
+    types.put(SEND.class, BridgeEventType.SEND);
+    types.put(SOCKET_CLOSED.class, BridgeEventType.SOCKET_CLOSED);
+    types.put(SOCKET_CREATED.class, BridgeEventType.SOCKET_CREATED);
+    types.put(UNREGISTER.class, BridgeEventType.UNREGISTER);
   }
 
   static Map<BridgeEventType, Method> createFromController(Class<?> controller) {

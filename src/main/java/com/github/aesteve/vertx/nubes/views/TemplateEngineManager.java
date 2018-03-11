@@ -51,4 +51,9 @@ public class TemplateEngineManager implements TemplateHandler {
     }
     return normalizedDir;
   }
+
+  @Override
+  public TemplateHandler setIndexTemplate(String indexTemplate) {
+    return this;
+  }
 }
