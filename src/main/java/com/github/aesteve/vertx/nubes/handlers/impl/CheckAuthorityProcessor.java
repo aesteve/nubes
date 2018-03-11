@@ -20,7 +20,7 @@ public class CheckAuthorityProcessor extends NoopAfterAllProcessor implements An
       context.fail(401);
       return;
     }
-    user.isAuthorised(annotation.authority(), result -> {
+    user.isAuthorized(annotation.authority(), result -> {
       if (!result.result()) {
         context.fail(403);
       } else {
