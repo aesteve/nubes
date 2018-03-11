@@ -77,6 +77,9 @@ public class FixtureLoader {
       return;
     }
     for (String fixturePackage : fixturePackages) {
+      if (fixturePackage == null)
+        continue;
+
       Reflections reflections = new Reflections(fixturePackage);
       Set<Class<? extends Fixture>> fixtureClasses = reflections.getSubTypesOf(Fixture.class);
       for (Class<? extends Fixture> fixtureClass : fixtureClasses) {
