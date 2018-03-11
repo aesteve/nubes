@@ -1,4 +1,4 @@
-package com.github.aesteve.vertx.nubes;
+package com.github.aesteve.vertx.nubes.utils;
 
 import java.util.*;
 
