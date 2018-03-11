@@ -1,15 +1,17 @@
 package integration.sockjs;
 
+import io.vertx.core.http.WebSocketBase;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.BridgeEventType;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.web.handler.sockjs.BridgeEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.vertx.ext.web.handler.sockjs.BridgeEventType.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -25,12 +27,13 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
       assertEquals(msg, ebMsg.body());
       latch.countDown();
     });
-    vertx.eventBus().consumer(SOCKET_CREATED.toString(), ebMsg -> {
-      assertEquals(SOCKET_CREATED.toString(), ebMsg.body());
+
+    vertx.eventBus().consumer(BridgeEventType.SOCKET_CREATED.toString(), ebMsg -> {
+      assertEquals(BridgeEventType.SOCKET_CREATED.toString(), ebMsg.body());
       latch.countDown();
     });
-    vertx.eventBus().consumer(SEND.toString(), ebMsg -> {
-      assertEquals(SEND.toString(), ebMsg.body());
+    vertx.eventBus().consumer(BridgeEventType.SEND.toString(), ebMsg -> {
+      assertEquals(BridgeEventType.SEND.toString(), ebMsg.body());
       latch.countDown();
     });
     client().websocket("/eventbus/default/websocket", ws -> {
@@ -43,8 +46,8 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
   public void testPublishEvent(TestContext context) throws Exception {
     Async async = context.async();
     String msg = "Happiness is a warm puppy";
-    vertx.eventBus().consumer(PUBLISH.toString(), ebMsg -> {
-      context.assertEquals(PUBLISH.toString(), ebMsg.body());
+    vertx.eventBus().consumer(BridgeEventType.PUBLISH.toString(), ebMsg -> {
+      context.assertEquals(BridgeEventType.PUBLISH.toString(), ebMsg.body());
       async.complete();
     });
     client().websocket("/eventbus/default/websocket", ws -> {
@@ -57,12 +60,12 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
   public void testRegisterThenReceive() throws Exception {
     CountDownLatch latch = new CountDownLatch(3);
     String msg = "Happiness is a warm puppy";
-    vertx.eventBus().consumer(REGISTER.toString(), ebMsg -> {
-      assertEquals(REGISTER.toString(), ebMsg.body());
+    vertx.eventBus().consumer(BridgeEventType.REGISTER.toString(), ebMsg -> {
+      assertEquals(BridgeEventType.REGISTER.toString(), ebMsg.body());
       latch.countDown();
     });
-    vertx.eventBus().consumer(RECEIVE.toString(), ebMsg -> {
-      assertEquals(RECEIVE.toString(), ebMsg.body());
+    vertx.eventBus().consumer(BridgeEventType.RECEIVE.toString(), ebMsg -> {
+      assertEquals(BridgeEventType.RECEIVE.toString(), ebMsg.body());
       latch.countDown();
     });
     client().websocket("/eventbus/default/websocket", ws -> {
@@ -85,12 +88,10 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
   @Test
   public void testCloseEvent(TestContext context) throws Exception {
     Async async = context.async();
-    vertx.eventBus().consumer(SOCKET_CLOSED.toString(), ebMsg -> {
-      context.assertEquals(SOCKET_CLOSED.toString(), ebMsg.body());
+    vertx.eventBus().consumer(BridgeEventType.SOCKET_CLOSED.toString(), ebMsg -> {
+      context.assertEquals(BridgeEventType.SOCKET_CLOSED.toString(), ebMsg.body());
       async.complete();
     });
-    client().websocket("/eventbus/default/websocket", ws -> {
-      ws.close();
-    });
+    client().websocket("/eventbus/default/websocket", WebSocketBase::close);
   }
 }
