@@ -1,6 +1,6 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
-import com.github.aesteve.vertx.nubes.Utils;
+import com.github.aesteve.vertx.nubes.utils.Utils;
 import com.github.aesteve.vertx.nubes.annotations.mixins.ContentType;
 import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessor;
 import io.vertx.ext.web.RoutingContext;
@@ -26,7 +26,7 @@ public class ContentTypeProcessor extends NoopAfterAllProcessor implements Annot
   public void preHandle(RoutingContext context) {
 
 
-    String accept = context.getAcceptableContentType();
+    String accept = context.request().getHeader(ACCEPT.toString());
     if (accept == null) {
       context.fail(406);
       return;
