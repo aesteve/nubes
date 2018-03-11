@@ -5,8 +5,8 @@ plugins {
   id 'maven'
   id 'jacoco'
   id 'maven-publish'
-  id 'com.jfrog.bintray' version '1.4'
-  id "org.sonarqube" version '1.2'
+  id 'com.jfrog.bintray' version '1.8.0'
+  id "org.sonarqube" version "2.6.2"
 }
 
 group = 'com.github.aesteve'
@@ -122,5 +122,5 @@ tasks.sonarqube.dependsOn = []
 
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '3.1'
+  gradleVersion = '4.6'
 }
