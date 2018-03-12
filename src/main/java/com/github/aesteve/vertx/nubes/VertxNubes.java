@@ -278,6 +278,7 @@ public class VertxNubes {
     router.route(config.getAssetsPath() + "/*").handler(staticHandler);
   }
 
+  //ToDO workout what timerid is for and why its not being used
   private void cleanHistoryMap(Long timerId) {
     LocalMap<String, ClientAccesses> rateLimitations = vertx.sharedData().getLocalMap("mvc.rateLimitation");
     if (rateLimitations == null) {
