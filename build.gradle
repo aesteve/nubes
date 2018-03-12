@@ -39,7 +39,8 @@ dependencies {
   compile "io.vertx:vertx-web-templ-thymeleaf:${vertxVersion}"
 
   // reflection
-  compile 'org.reflections:reflections:0.9.9'
+  compile 'io.github.lukehutch:fast-classpath-scanner:2.18.1'
+  compile 'org.reflections:reflections:0.9.11'
   compile 'commons-beanutils:commons-beanutils:1.9.2'
 
   // tests
