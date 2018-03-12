@@ -2,11 +2,13 @@ package com.github.aesteve.vertx.nubes.views;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
+import com.github.aesteve.vertx.nubes.utils.Utils;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.TemplateHandler;
 import io.vertx.ext.web.templ.TemplateEngine;
+import org.apache.commons.io.FilenameUtils;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
@@ -21,35 +23,29 @@ public class TemplateEngineManager implements TemplateHandler {
   }
 
   public TemplateEngine fromViewName(String tplName) {
-    int pointIdx = tplName.lastIndexOf('.');
-    String extension = tplName.substring(pointIdx + 1, tplName.length());
+    String extension = FilenameUtils.getExtension(tplName);
     return config.getTemplateEngines().get(extension);
   }
 
   @Override
   public void handle(RoutingContext context) {
-    String tplName = normalize(config.getTplDir()) + ViewResolver.getViewName(context);
-    TemplateEngine engine = fromViewName(tplName);
+
+    String tplDir = Utils.normalizePath(config.getTplDir());
+    String tplFile = ViewResolver.getViewName(context);
+
+    TemplateEngine engine = fromViewName(tplDir + tplFile);
     if (engine == null) {
-      LOG.error("No template handler found for " + tplName);
+      LOG.error("No template handler found for " + tplDir + tplFile);
       context.fail(500);
       return;
     }
-    engine.render(context, tplName, res -> {
+    engine.render(context, tplDir, tplFile, res -> {
       if (res.succeeded()) {
         context.response().putHeader(CONTENT_TYPE, "text/html").end(res.result());
       } else {
         context.fail(res.cause());
       }
     });
-  }
-
-  private static String normalize(String dir) {
-    String normalizedDir = dir;
-    if (!dir.endsWith("/")) {
-      normalizedDir += "/";
-    }
-    return normalizedDir;
   }
 
   @Override
