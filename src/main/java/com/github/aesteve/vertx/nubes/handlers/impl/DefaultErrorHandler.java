@@ -13,6 +13,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,7 +145,11 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
       if (config.isDisplayErrors()) {
         context.put("stackTrace", StackTracePrinter.asHtml(new StringBuilder(), cause).toString());
       }
-      templManager.fromViewName(tpl).render(context, tpl, res -> {
+
+      String fileName = Paths.get(tpl).getFileName().toString();
+      String path = tpl.replace(fileName, "");
+
+      templManager.fromViewName(tpl).render(context, fileName, path, res -> {
         if (res.succeeded()) {
           response.end(res.result());
         } else {
