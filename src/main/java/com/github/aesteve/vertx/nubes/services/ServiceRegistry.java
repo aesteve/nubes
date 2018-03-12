@@ -177,8 +177,9 @@ public class ServiceRegistry {
       LOG.error("Could not find a @ProxyGen super interface for class : " + service.getClass().getName() + " cannot proxy it ver the eventBus");
       return;
     }
-    ServiceBinder serviceBinder = new ServiceBinder(vertx);
-    serviceBinder.register(serviceClass, service);
+    new ServiceBinder(vertx)
+            .setAddress(address)
+            .register(serviceClass, service);
   }
 
   @SuppressWarnings("unchecked")
