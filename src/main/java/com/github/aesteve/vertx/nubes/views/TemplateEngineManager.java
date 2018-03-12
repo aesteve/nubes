@@ -29,9 +29,8 @@ public class TemplateEngineManager implements TemplateHandler {
 
   @Override
   public void handle(RoutingContext context) {
-
-    String tplDir = Utils.normalizePath(config.getTplDir());
-    String tplFile = ViewResolver.getViewName(context);
+    String tplDir = Utils.removeDots(config.getTplDir());
+    String tplFile = Utils.normalizePath(ViewResolver.getViewName(context));
 
     TemplateEngine engine = fromViewName(tplDir + tplFile);
     if (engine == null) {
@@ -39,6 +38,7 @@ public class TemplateEngineManager implements TemplateHandler {
       context.fail(500);
       return;
     }
+
     engine.render(context, tplDir, tplFile, res -> {
       if (res.succeeded()) {
         context.response().putHeader(CONTENT_TYPE, "text/html").end(res.result());
