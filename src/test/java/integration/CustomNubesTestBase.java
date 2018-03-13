@@ -47,6 +47,7 @@ public abstract class CustomNubesTestBase {
   private static JsonObject createConfig() {
     JsonObject config = new JsonObject();
     config.put("src-package", "mock.custom");
+    //config.put("reflectionProvider", "fastclasspathscanner");
     return config;
   }
 

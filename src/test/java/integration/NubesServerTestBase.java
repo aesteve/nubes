@@ -35,6 +35,7 @@ public abstract class NubesServerTestBase {
     config.put("host", HOST);
     config.put("port", PORT);
     config.put("src-package", "mock");
+    //config.put("reflectionProvider", "fastclasspathscanner");
     JsonObject services = new JsonObject();
     services.put("dogService", "mock.services.DogService");
     config.put("services", services);
