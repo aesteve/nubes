@@ -11,7 +11,10 @@ public class ReflectionsAnnotationProvider implements IAnnotationProvider {
     private Reflections reflections;
 
     public ReflectionsAnnotationProvider(String packaga){
-        reflections = new Reflections();
+        if (packaga.isEmpty()){
+            throw new IllegalArgumentException("Package argument must not be empty");
+        }
+        reflections = new Reflections(packaga);
     }
 
     @Override
