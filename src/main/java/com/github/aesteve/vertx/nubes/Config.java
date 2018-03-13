@@ -7,6 +7,7 @@ import com.github.aesteve.vertx.nubes.handlers.AnnotationProcessorRegistry;
 import com.github.aesteve.vertx.nubes.handlers.Processor;
 import com.github.aesteve.vertx.nubes.marshallers.PayloadMarshaller;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
+import com.github.aesteve.vertx.nubes.reflections.annotations.IAnnotationProvider;
 import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorFactory;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjectorRegistry;
@@ -45,6 +46,7 @@ public class Config {
   private JsonObject json;
   private List<String> controllerPackages;
   private List<String> fixturePackages;
+  private String reflectionProvider;
   private String verticlePackage;
   private String domainPackage;
   private RateLimit rateLimit;
@@ -254,6 +256,10 @@ public class Config {
 
   void createAnnotInjectors(ParameterAdapterRegistry registry) {
     annotInjectors = new AnnotatedParamInjectorRegistry(marshallers, registry);
+  }
+
+  public String getReflectionProvider() {
+    return reflectionProvider;
   }
 
   public String getDomainPackage() {
