@@ -56,7 +56,6 @@ public class TestEventBusBridge extends EventBusBridgeTestBase {
   }
 
   @Test
-  @Ignore
   public void testRegisterThenReceive() throws Exception {
     CountDownLatch latch = new CountDownLatch(3);
     String msg = "Happiness is a warm puppy";

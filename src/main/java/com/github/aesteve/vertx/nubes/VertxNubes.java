@@ -30,6 +30,7 @@ import com.github.aesteve.vertx.nubes.reflections.RouteFactory;
 import com.github.aesteve.vertx.nubes.reflections.SocketFactory;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapter;
 import com.github.aesteve.vertx.nubes.reflections.adapters.ParameterAdapterRegistry;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import com.github.aesteve.vertx.nubes.reflections.factories.AnnotationProcessorFactory;
 import com.github.aesteve.vertx.nubes.reflections.factories.impl.*;
 import com.github.aesteve.vertx.nubes.reflections.injectors.annot.AnnotatedParamInjector;
