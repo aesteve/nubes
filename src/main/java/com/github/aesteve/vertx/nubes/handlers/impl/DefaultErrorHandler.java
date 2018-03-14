@@ -99,7 +99,9 @@ public class DefaultErrorHandler implements Handler<RoutingContext> {
       renderViewError(tplFile, context, cause);
     } else {
       if (marshaller == null) {
-        response.end(statusMsg);
+        if (!response.ended()) {
+          response.end(statusMsg);
+        }
         return;
       }
       response.putHeader(CONTENT_TYPE, contentType);
