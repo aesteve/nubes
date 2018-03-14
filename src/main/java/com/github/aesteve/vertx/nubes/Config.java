@@ -109,6 +109,7 @@ public class Config {
     instance.displayErrors = json.getBoolean("display-errors", Boolean.FALSE);
     // TODO : read sockJSOptions from config
 
+    instance.reflectionProvider = json.getString("relectionprovider", "reflections");
     instance.globalHandlers.add(BodyHandler.create());
     return instance;
   }

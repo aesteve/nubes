@@ -5,21 +5,36 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.scanner.ScanResult;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 public class FastclassPathScannerProvider implements IAnnotationProvider {
 
-    private ScanResult scanResult;
+    private static Map<String, ScanResult> cachedScans = new HashMap();
+
+    private String packageName;
 
     public FastclassPathScannerProvider(String ppackage){
-        FastClasspathScanner fastClasspathScanner = new FastClasspathScanner(ppackage);
-        scanResult = fastClasspathScanner.scan();
+        packageName = ppackage;
+
+        if (cachedScans.containsKey(ppackage)){
+        }else{
+            FastClasspathScanner fastClasspathScanner = new FastClasspathScanner(ppackage);
+            ScanResult scanResult = fastClasspathScanner.scan();
+            cachedScans.put(ppackage, scanResult);
+        }
     }
 
     @Override
     public Set<Class<?>> getClassesTypesAnnotatedWith(Class<? extends Annotation> annotation) {
-        return new HashSet(scanResult.classNamesToClassRefs(scanResult.getNamesOfAnnotationsOnClass(annotation)));
+        return new HashSet(cachedScans.get(packageName).classNamesToClassRefs(cachedScans.get(packageName).getNamesOfClassesWithAnnotation(annotation)));
+    }
+
+    @Override
+    public <T> Set<Class<? extends T>> getSubClassOf(Class<T> clazz) {
+        if (clazz.isInterface()){
+            return new HashSet(cachedScans.get(packageName).classNamesToClassRefs(cachedScans.get(packageName).getNamesOfClassesImplementing(clazz)));
+        }
+        return new HashSet(cachedScans.get(packageName).classNamesToClassRefs(cachedScans.get(packageName).getNamesOfSubclassesOf(clazz)));
     }
 }

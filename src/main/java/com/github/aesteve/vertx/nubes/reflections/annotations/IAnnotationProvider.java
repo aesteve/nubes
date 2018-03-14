@@ -5,4 +5,6 @@ import java.util.Set;
 
 public interface IAnnotationProvider {
     public Set<Class<?>> getClassesTypesAnnotatedWith(final Class<? extends Annotation> annotation);
+
+    public <T> Set<Class<? extends T>> getSubClassOf(Class<T> clazz);
 }

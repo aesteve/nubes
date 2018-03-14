@@ -9,10 +9,11 @@ import com.github.aesteve.vertx.nubes.reflections.annotations.impl.ReflectionsAn
  */
 public class ReflectionProviderHelper {
     public static IAnnotationProvider getAnnotationProcessor(Config config, String packageName){
-        if (packageName.equals("fastclasspathscanner")){
-            return new FastclassPathScannerProvider(packageName);
-        } else {
+        if (config.getReflectionProvider().equals("reflections")){
             return new ReflectionsAnnotationProvider(packageName);
+        } else {
+            return new FastclassPathScannerProvider(packageName);
+
         }
     }
 }
