@@ -161,12 +161,13 @@ public class Config {
     if (templates.contains("jade")) {
       this.templateEngines.put("jade", JadeTemplateEngine.create());
     }
-    if (templates.contains("templ")) {
+    if (templates.contains("mvel")) {
       this.templateEngines.put("templ", MVELTemplateEngine.create());
     }
     if (templates.contains("thymeleaf")) {
       this.templateEngines.put("html", ThymeleafTemplateEngine.create());
     }
+
   }
 
   private void createServices() {
