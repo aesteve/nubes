@@ -6,6 +6,9 @@ If you feel like you want to help, any pull request would be highly welcomed. Yo
 
 You can start by forking the project, changing Vert.x dependency to 3.5 get it to compile (which requires some work) then run the tests (there's a pretty good code coverage) and start fixing stuff from there. That's probably the best way to help.
 
+As an alternative, you can have a look at [Redpipe](http://redpipe.net/), which seems to be very promising, and shares the "annotation / RESTEasy" stuff, but brings a lot more to the party.
+
+
 ----------------
 
 # Vert.x Nubes
