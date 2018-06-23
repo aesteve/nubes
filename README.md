@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.aesteve:nubes:1.3'
+  compile 'com.github.aesteve:nubes:2.0'
 }
 ```
 
