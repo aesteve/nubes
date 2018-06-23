@@ -13,6 +13,7 @@ Special thanks to [johnfg10](https://github.com/johnfg10) for upgrading to 3.5.2
 ----------------
 
 [![Build Status](https://travis-ci.com/aesteve/nubes.svg?branch=master)](https://travis-ci.com/aesteve/nubes)
+[![Codecov](https://img.shields.io/codecov/c/github/aesteve/nubes.svg)](https://codecov.io/gh/aesteve/nubes)
 
 
 
