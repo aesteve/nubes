@@ -8,8 +8,13 @@ You can start by forking the project, changing Vert.x dependency to 3.5 get it t
 
 As an alternative, you can have a look at [Redpipe](http://redpipe.net/), which seems to be very promising, and shares the "annotation / RESTEasy" stuff, but brings a lot more to the party.
 
+Special thanks to [johnfg10](https://github.com/johnfg10) for upgrading to 3.5.2. 
 
 ----------------
+
+[![Build Status](https://travis-ci.com/aesteve/nubes.svg?branch=master)](https://travis-ci.com/aesteve/nubes)
+
+
 
 # Vert.x Nubes
 
