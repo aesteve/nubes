@@ -167,8 +167,7 @@ public interface AsyncUtils {
     return futures.get(futures.size() - 1);
   }
 
-  @SafeVarargs
-  // or we're screwed...
+  @SafeVarargs // or we're screwed...
   static <T, U> Future<Void> chainOnSuccess(Handler<AsyncResult<T>> globalHandler, Future<U> future, Handler<Future<Void>>... handlers) {
     List<Handler<Future<Void>>> list = Arrays.asList(handlers);
     return AsyncUtils.chainOnSuccess(globalHandler, future, list);

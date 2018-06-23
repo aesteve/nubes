@@ -1,6 +1,7 @@
 package com.github.aesteve.vertx.nubes.fixtures;
 
 import com.github.aesteve.vertx.nubes.Config;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import com.github.aesteve.vertx.nubes.services.ServiceRegistry;
 import com.github.aesteve.vertx.nubes.utils.async.AsyncUtils;
 import io.vertx.core.Future;
@@ -77,8 +78,10 @@ public class FixtureLoader {
       return;
     }
     for (String fixturePackage : fixturePackages) {
-      Reflections reflections = new Reflections(fixturePackage);
-      Set<Class<? extends Fixture>> fixtureClasses = reflections.getSubTypesOf(Fixture.class);
+      if (fixturePackage == null)
+        continue;
+
+      Set<Class<? extends Fixture>> fixtureClasses = ReflectionProviderHelper.getAnnotationProcessor(config, fixturePackage).getSubClassOf(Fixture.class);
       for (Class<? extends Fixture> fixtureClass : fixtureClasses) {
         try {
           Fixture fixture = fixtureClass.newInstance();

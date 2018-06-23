@@ -18,10 +18,7 @@ public class ViewProcessor extends NoopAfterAllProcessor implements AnnotationPr
 
   @Override
   public void preHandle(RoutingContext context) {
-    String viewName = annotation.value();
-    if (viewName != null) {
-      ViewResolver.resolve(context, annotation.value());
-    }
+    ViewResolver.resolve(context, annotation.value());
     context.next();
   }
 

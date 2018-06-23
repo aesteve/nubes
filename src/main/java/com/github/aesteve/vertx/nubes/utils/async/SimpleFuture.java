@@ -33,6 +33,11 @@ public class SimpleFuture<T> implements Future<T> {
   }
 
   @Override
+  public void handle(AsyncResult<T> asyncResult) {
+
+  }
+
+  @Override
   public boolean isComplete() {
     return complete;
   }
@@ -67,6 +72,26 @@ public class SimpleFuture<T> implements Future<T> {
   @Override
   public void fail(String failureMessage) {
     fail(new Exception(failureMessage));
+  }
+
+  @Override
+  public boolean tryComplete(T result) {
+    return false;
+  }
+
+  @Override
+  public boolean tryComplete() {
+    return false;
+  }
+
+  @Override
+  public boolean tryFail(Throwable cause) {
+    return false;
+  }
+
+  @Override
+  public boolean tryFail(String failureMessage) {
+    return false;
   }
 
   protected void checkCallHandler() {

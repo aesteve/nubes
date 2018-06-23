@@ -5,6 +5,7 @@ import com.github.aesteve.vertx.nubes.utils.DateUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -47,6 +48,7 @@ public abstract class CustomNubesTestBase {
   private static JsonObject createConfig() {
     JsonObject config = new JsonObject();
     config.put("src-package", "mock.custom");
+    //config.put("relectionprovider", "reflections");
     return config;
   }
 

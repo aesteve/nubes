@@ -14,6 +14,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.serviceproxy.ProxyHelper;
+import io.vertx.serviceproxy.ServiceBinder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -176,7 +177,9 @@ public class ServiceRegistry {
       LOG.error("Could not find a @ProxyGen super interface for class : " + service.getClass().getName() + " cannot proxy it ver the eventBus");
       return;
     }
-    ProxyHelper.registerService(serviceClass, vertx, service, address);
+    new ServiceBinder(vertx)
+            .setAddress(address)
+            .register(serviceClass, service);
   }
 
   @SuppressWarnings("unchecked")

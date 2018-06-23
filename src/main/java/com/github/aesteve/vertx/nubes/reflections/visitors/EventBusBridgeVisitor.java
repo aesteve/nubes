@@ -9,7 +9,9 @@ import io.vertx.core.VertxException;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.bridge.BridgeEventType;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.*;
 
 import java.lang.reflect.Method;

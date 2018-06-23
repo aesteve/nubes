@@ -2,6 +2,7 @@ package com.github.aesteve.vertx.nubes.reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import com.github.aesteve.vertx.nubes.reflections.visitors.SockJSVisitor;
 import io.vertx.ext.web.Router;
 import org.reflections.Reflections;
@@ -21,8 +22,7 @@ public class SocketFactory implements HandlerFactory {
   @Override
   public void createHandlers() {
     config.forEachControllerPackage(controllerPackage -> {
-      Reflections reflections = new Reflections(controllerPackage);
-      Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(SockJS.class);
+      Set<Class<?>> controllers = ReflectionProviderHelper.getAnnotationProcessor(config, controllerPackage).getClassesTypesAnnotatedWith(SockJS.class);
       controllers.forEach(this::createSocketHandlers);
     });
   }

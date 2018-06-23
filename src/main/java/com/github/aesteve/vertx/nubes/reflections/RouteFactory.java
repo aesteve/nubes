@@ -4,8 +4,10 @@ import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.Controller;
 import com.github.aesteve.vertx.nubes.annotations.File;
 import com.github.aesteve.vertx.nubes.annotations.View;
+import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 import com.github.aesteve.vertx.nubes.context.FileResolver;
 import com.github.aesteve.vertx.nubes.context.ViewResolver;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import com.github.aesteve.vertx.nubes.reflections.factories.AuthenticationFactory;
 import com.github.aesteve.vertx.nubes.reflections.visitors.ControllerVisitor;
 import com.github.aesteve.vertx.nubes.routing.MVCRoute;
@@ -57,8 +59,7 @@ public class RouteFactory implements HandlerFactory {
   private List<MVCRoute> extractRoutesFromControllers() {
     List<MVCRoute> routes = new ArrayList<>();
     config.forEachControllerPackage(controllerPackage -> {
-      Reflections reflections = new Reflections(controllerPackage);
-      Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(Controller.class);
+      Set<Class<?>> controllers = ReflectionProviderHelper.getAnnotationProcessor(config, controllerPackage).getClassesTypesAnnotatedWith(Controller.class);
       controllers.forEach(controller -> routes.addAll(extractRoutesFromController(controller)));
     });
     return routes;

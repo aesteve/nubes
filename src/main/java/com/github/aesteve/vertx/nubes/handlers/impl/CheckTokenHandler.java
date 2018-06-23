@@ -1,6 +1,8 @@
 package com.github.aesteve.vertx.nubes.handlers.impl;
 
 import com.github.aesteve.vertx.nubes.exceptions.http.impl.BadRequestException;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -8,6 +10,7 @@ import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.AuthHandlerImpl;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class CheckTokenHandler extends AuthHandlerImpl {
 
@@ -19,7 +22,7 @@ public class CheckTokenHandler extends AuthHandlerImpl {
   public void handle(RoutingContext context) {
     User user = context.user();
     if (user != null) {
-      authorise(user, context);
+        authorize(user, event -> {});
       return;
     }
     String apiToken;
@@ -43,7 +46,8 @@ public class CheckTokenHandler extends AuthHandlerImpl {
         User authenticated = res.result();
         authenticated.setAuthProvider(authProvider);
         context.setUser(authenticated);
-        authorise(authenticated, context);
+        authorize(authenticated, event -> {});
+        context.next();
       } else {
         context.fail(401);
       }
@@ -68,4 +72,8 @@ public class CheckTokenHandler extends AuthHandlerImpl {
 
   }
 
+  @Override
+  public void parseCredentials(RoutingContext context, Handler<AsyncResult<JsonObject>> handler) {
+    throw new NotImplementedException("praseCredentials has yet to be implemented");
+  }
 }

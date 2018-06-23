@@ -42,7 +42,9 @@ public abstract class VertxNubesTestBase {
     vertx = Vertx.vertx();
     DeploymentOptions options = new DeploymentOptions();
     options.setInstances(NB_INSTANCES);
-    options.setConfig(new JsonObject().put("controller-packages", getControllerPackages()));
+    JsonObject config = new JsonObject().put("controller-packages", getControllerPackages());
+    //config.put("relectionprovider", "reflections");
+    options.setConfig(config);
     vertx.deployVerticle("integration.TestVerticle", options, context.asyncAssertSuccess(handler -> {
       context.assertTrue(TestVerticle.dogService.size() > 0);
       context.assertEquals(NB_INSTANCES, AnnotatedVerticle.nbInstances.get());

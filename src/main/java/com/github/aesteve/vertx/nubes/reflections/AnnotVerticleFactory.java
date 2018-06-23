@@ -2,6 +2,8 @@ package com.github.aesteve.vertx.nubes.reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
 import com.github.aesteve.vertx.nubes.annotations.services.Verticle;
+import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -27,8 +29,8 @@ public class AnnotVerticleFactory {
     if (verticlePackage == null) {
       return map;
     }
-    Reflections reflections = new Reflections(verticlePackage);
-    Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Verticle.class);
+
+    Set<Class<?>> classes = ReflectionProviderHelper.getAnnotationProcessor(config, verticlePackage).getClassesTypesAnnotatedWith(Verticle.class);
     classes.forEach(clazz -> {
       if (!io.vertx.core.Verticle.class.isAssignableFrom(clazz)) {
         LOG.error("Cannot create verticle " + clazz.getName() + " since it's not a subclass of io.vertx.core.Verticle");

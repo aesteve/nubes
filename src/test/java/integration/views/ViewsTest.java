@@ -83,7 +83,7 @@ public class ViewsTest extends VertxNubesTestBase {
   }
 
   @Test
-  @Ignore
+  //@Ignore
   // it's failing because we need a prefixed template engine for MVEL
   public void testMvel(TestContext context) {
     Dog dog = TestVerticle.dogService.someDog();

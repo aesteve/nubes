@@ -7,6 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -35,6 +36,7 @@ public abstract class NubesServerTestBase {
     config.put("host", HOST);
     config.put("port", PORT);
     config.put("src-package", "mock");
+    //config.put("relectionprovider", "reflections");
     JsonObject services = new JsonObject();
     services.put("dogService", "mock.services.DogService");
     config.put("services", services);

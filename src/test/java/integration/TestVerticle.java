@@ -46,6 +46,8 @@ public class TestVerticle extends AbstractVerticle {
     options.setHost(HOST);
     HttpServer server = vertx.createHttpServer(options);
     JsonObject config = createTestConfig();
+    config.put("templates", new JsonArray().add("mvel").add("hbs"));
+    //config.put("relectionprovider", "reflections");
     nubes = new VertxNubes(vertx, config);
     nubes.registerService(DOG_SERVICE_NAME, dogService);
     nubes.registerService(SNOOPY_SERVICE_NAME, SNOOPY);

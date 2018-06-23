@@ -1,7 +1,9 @@
 package com.github.aesteve.vertx.nubes.reflections;
 
 import com.github.aesteve.vertx.nubes.Config;
+import com.github.aesteve.vertx.nubes.annotations.sockjs.SockJS;
 import com.github.aesteve.vertx.nubes.annotations.sockjs.bridge.EventBusBridge;
+import com.github.aesteve.vertx.nubes.reflections.annotations.ReflectionProviderHelper;
 import com.github.aesteve.vertx.nubes.reflections.visitors.EventBusBridgeVisitor;
 import io.vertx.ext.web.Router;
 import org.reflections.Reflections;
@@ -21,8 +23,7 @@ public class EventBusBridgeFactory implements HandlerFactory {
   @Override
   public void createHandlers() {
     config.forEachControllerPackage(controllerPackage -> {
-      Reflections reflections = new Reflections(controllerPackage);
-      Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(EventBusBridge.class);
+      Set<Class<?>> controllers = ReflectionProviderHelper.getAnnotationProcessor(config, controllerPackage).getClassesTypesAnnotatedWith(EventBusBridge.class);
       controllers.forEach(this::createSocketHandlers);
     });
   }
