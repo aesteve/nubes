@@ -1,5 +1,5 @@
 ----------------
-tl;dr: don't use this repository, use something like [Quarkus](https://quarkus.io) instead.
+⚠️ tl;dr: don't use this repository, use something like [Quarkus](https://quarkus.io) instead. ⚠️
 
 Unfortunately, this project relies on an old version of Vert.x. Upgrading it to Vert.x 3.5 requires a lot of work, I am looking at it, but since it's a "weekend" project, it might take months. Sorry for the inconvenience. Obviously any kind of help would be greatly appreciated.
 Thank you for your comprehension.
